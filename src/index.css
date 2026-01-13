@@ -1,0 +1,70 @@
+@import "tailwindcss";
+@import "../node_modules/flag-icons/css/flag-icons.min.css";
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #0b0d14;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+@keyframes rowIn {
+  0% {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+
+  60% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-rowIn {
+  animation: rowIn 0.35s ease-out forwards;
+}
+
+
+@keyframes pulse-fast {
+  0%, 100% { background-color: #0f172a; }
+  50% { background-color: #1f2937; }
+}
+
+.animate-pulse-fast {
+  animation: pulse-fast 1.2s ease-in-out;
+}
+
+@keyframes slideDownGlow {
+  0% {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideDownGlow {
+  animation: slideDownGlow 0.45s ease-out;
+}
+
+
+
+
+
+
+ 
