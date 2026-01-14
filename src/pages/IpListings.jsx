@@ -228,47 +228,50 @@ const BlacklistedIPsPage = ({
 
   return (
     <div
-      style={{ fontFamily: "Outfit, sans-serif" }}
-      className="min-h-screen bg-gray-50 px-8 py-10 text-gray-800"
+      style={{ fontFamily: "Inter, Outfit, system-ui, sans-serif" }}
+      className="min-h-screen bg-gray-50 px-10 py-8 text-gray-900"
     >
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header */}
+      <div className="max-w-6xl mx-auto space-y-10">
+        {/* ===== HEADER ===== */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div>
             <h1 className="text-3xl font-semibold tracking-tight">
               Blocked IP Addresses
             </h1>
-            {/* <p className="text-sm text-gray-500 mt-1 max-w-xl">
-              Manage, add or remove blacklisted IP addresses with ease
-            </p> */}
+            <p className="text-sm text-gray-500 mt-2">
+              Manage and review blacklisted IPs
+            </p>
           </div>
 
           <div className="flex gap-3">
             <button
               onClick={() => setOpenIpModal(true)}
               className="
-        flex items-center gap-2 px-5 py-2.5
-        rounded-full text-sm font-medium
-        bg-blue-600 text-white
-        hover:bg-blue-700
-        shadow-md transition
-      "
+            inline-flex items-center gap-2
+            px-6 py-3 rounded-xl
+            text-sm font-medium
+            bg-blue-600 text-white
+            hover:bg-blue-700
+            shadow-[0_12px_30px_rgba(37,99,235,0.35)]
+            transition
+          "
             >
               <span className="text-lg leading-none">+</span>
               Add IP
             </button>
+
             <button
               onClick={handleRefresh}
               disabled={isRefreshing}
               className={`
-        flex items-center gap-2 px-5 py-2.5
-        rounded-full text-sm font-medium
-        border border-gray-300
-        bg-white
-        hover:bg-gray-100
-        shadow-sm transition
-        ${isRefreshing && "opacity-60 cursor-not-allowed"}
-      `}
+            inline-flex items-center gap-2
+            px-6 py-3 rounded-xl
+            text-sm font-medium
+            bg-white border border-gray-300
+            hover:bg-gray-100
+            shadow-sm transition
+            ${isRefreshing && "opacity-60 cursor-not-allowed"}
+          `}
             >
               <svg
                 className={`h-4 w-4 ${isRefreshing && "animate-spin"}`}
@@ -288,42 +291,58 @@ const BlacklistedIPsPage = ({
           </div>
         </div>
 
-        {/* Table */}
-        <div className="bg-white shadow-sm overflow-hidden">
-          {/* Header */}
-          <div className="grid grid-cols-[60px_1fr_180px_120px] px-6 py-4 bg-blue-50 text-xs font-semibold uppercase tracking-wide text-blue-700">
+        {/* ===== TABLE CARD ===== */}
+        <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.08)] border border-gray-200 overflow-hidden">
+          {/* TABLE HEAD */}
+          <div
+            className="
+          grid grid-cols-[80px_1fr_200px_120px]
+          px-8 py-4
+          text-xs font-medium
+          uppercase tracking-wide
+          text-gray-500
+          bg-gray-50
+          border-b border-gray-200
+        "
+          >
             <div>SN</div>
             <div>IP Address</div>
             <div>Added On</div>
             <div className="text-center">Action</div>
           </div>
 
-          {/* Body */}
+          {/* TABLE BODY */}
           <div className="max-h-[420px] overflow-y-auto">
             {!loadingIps &&
               ips.map((ip) => (
                 <div
                   key={ip.id}
                   className="
-          grid grid-cols-[60px_1fr_180px_120px]
-          px-6 py-3 text-sm
-          border-t border-gray-100
-          hover:bg-gray-50
-          transition
-        "
+                grid grid-cols-[80px_1fr_200px_120px]
+                px-8 py-5 text-sm
+                border-b border-gray-100
+                hover:bg-gray-50
+                transition
+              "
                 >
-                  <div className="text-gray-500">{ip.sn}</div>
+                  {/* SN */}
+                  <div className="text-gray-400 tabular-nums">{ip.sn}</div>
 
-                  {/* 🔥 IP COLUMN FIX */}
-                  <div className="font-mono truncate" title={ip.ip}>
+                  {/* IP */}
+                  <div
+                    className="font-mono text-xs text-gray-700 truncate"
+                    title={ip.ip}
+                  >
                     {ip.ip}
                   </div>
 
-                  <div className="text-gray-500">{ip.addedOn}</div>
+                  {/* DATE */}
+                  <div className="text-gray-600 text-sm">{ip.addedOn}</div>
 
+                  {/* ACTION */}
                   <div className="flex justify-center">
                     <TrashIcon
-                      className="text-red-500 hover:text-red-600 cursor-pointer"
+                      className="h-4 w-4 text-red-500 hover:text-red-600 cursor-pointer transition"
                       onClick={() => deleteBlacklistedIp(ip.id)}
                     />
                   </div>
@@ -332,7 +351,6 @@ const BlacklistedIPsPage = ({
           </div>
         </div>
       </div>
-
       {openIpModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
           {/* Modal Box */}

@@ -8,13 +8,17 @@ import {
 } from "../api/Apis";
 import { apiFunction } from "../api/ApiFunction";
 import { useNavigate } from "react-router-dom";
-import { showErrorToast, showInfoToast, showSuccessToast } from "../components/toast/toast";
+import {
+  showErrorToast,
+  showInfoToast,
+  showSuccessToast,
+} from "../components/toast/toast";
 
 // Note: TABS definition is kept here for reference
 
 function AllCampaignsDashboard() {
   // --- Existing State ---
-  
+
   const [dateRange, setDateRange] = useState("d/m/y to d/m/y");
   const [searchTerm, setSearchTerm] = useState("");
   const [chartData, setChartData] = useState([]);
@@ -27,7 +31,7 @@ function AllCampaignsDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
-  
+
   const ITEMS_PER_PAGE = 5;
 
   const [clickSummary, setClickSummary] = useState({
@@ -37,11 +41,11 @@ function AllCampaignsDashboard() {
   });
 
   const [stats, setStats] = useState({
-     total_campaigns: 0,
-     active_campaigns: 0,
-     blocked_campaigns: 0,
-     allowed_campaigns: 0,
-   });
+    total_campaigns: 0,
+    active_campaigns: 0,
+    blocked_campaigns: 0,
+    allowed_campaigns: 0,
+  });
 
   // ⭐ NEW STATE for Dropdown
   const [openDropdownId, setOpenDropdownId] = useState(null);
@@ -52,21 +56,25 @@ function AllCampaignsDashboard() {
   const navigate = useNavigate();
 
   // --- API Fetch Function (Unchanged, except for the console.log) ---
-  const fetchCampaigns = useCallback(async (page=1) => {
+  const fetchCampaigns = useCallback(async (page = 1) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await apiFunction("get",`${getAllCampaign}?page=${page}&limit=${ITEMS_PER_PAGE}`, null, null);
-   
+      const response = await apiFunction(
+        "get",
+        `${getAllCampaign}?page=${page}&limit=${ITEMS_PER_PAGE}`,
+        null,
+        null
+      );
 
       // Assume total items is available in response.data.total or we use array length
       const dataRows = response.data.data || [];
-      console.log(dataRows )
+      console.log(dataRows);
 
       setCampaigns(dataRows);
-       setCurrentPage(response.data.currentPage)
+      setCurrentPage(response.data.currentPage);
       setTotalPages(response.data.totalPages);
-    setTotalRecords(response.data.totalRecords);
+      setTotalRecords(response.data.totalRecords);
       setTotalItems(response.data.total || dataRows.length);
       setIsLoading(false);
     } catch (err) {
@@ -100,7 +108,7 @@ function AllCampaignsDashboard() {
       }));
 
       setChartData(formattedData);
-      
+
       const totals = rawData.reduce(
         (acc, item) => {
           acc.totalClicks += Number(item.total_t_clicks || 0);
@@ -122,96 +130,85 @@ function AllCampaignsDashboard() {
   };
 
   const fetchStats = async () => {
-      try {
-        const res = await apiFunction("get", campdata, null, null);
-  
-        
-  
-        setStats({
-          total_campaigns: res?.data?.data?.total_campaigns || 0,
-          active_campaigns: res?.data?.data?.active_campaigns || 0,
-          blocked_campaigns: res?.data?.data?.blocked_campaigns || 0,
-          allowed_campaigns: res?.data?.data?.allowed_campaigns || 0,
-        });
-      } catch (error) {
-        console.error("Stats API Error:", error);
-      }
-    };
+    try {
+      const res = await apiFunction("get", campdata, null, null);
 
+      setStats({
+        total_campaigns: res?.data?.data?.total_campaigns || 0,
+        active_campaigns: res?.data?.data?.active_campaigns || 0,
+        blocked_campaigns: res?.data?.data?.blocked_campaigns || 0,
+        allowed_campaigns: res?.data?.data?.allowed_campaigns || 0,
+      });
+    } catch (error) {
+      console.error("Stats API Error:", error);
+    }
+  };
 
   const handleStatusChange = async (uid, newStatus) => {
-  try {
-    // 🔎 current campaign find karo
-    const currentItem = campaigns.find(item => item.uid === uid);
-    const oldStatus = currentItem?.status;
+    try {
+      // 🔎 current campaign find karo
+      const currentItem = campaigns.find((item) => item.uid === uid);
+      const oldStatus = currentItem?.status;
 
-    // agar same status pe click hua to kuch mat karo
-    if (!currentItem || oldStatus === newStatus) return;
+      // agar same status pe click hua to kuch mat karo
+      if (!currentItem || oldStatus === newStatus) return;
 
-    // ⏳ loading UI
-    setCampaigns(prev =>
-      prev.map(item =>
-        item.uid === uid ? { ...item, statusLoading: true } : item
-      )
-    );
+      // ⏳ loading UI
+      setCampaigns((prev) =>
+        prev.map((item) =>
+          item.uid === uid ? { ...item, statusLoading: true } : item
+        )
+      );
 
-    const data = { status: newStatus };
+      const data = { status: newStatus };
 
-    // 🔗 PATCH API
-    const res = await apiFunction( 
-      "patch",
-      createCampaignApi,
-      uid,
-      data
-    );
+      // 🔗 PATCH API
+      const res = await apiFunction("patch", createCampaignApi, uid, data);
 
-    if (!res?.data?.success) {
-      showErrorToast("Failed updating status");
-      return;
+      if (!res?.data?.success) {
+        showErrorToast("Failed updating status");
+        return;
+      }
+
+      // ✅ update campaigns list
+      setCampaigns((prev) =>
+        prev.map((item) =>
+          item.uid === uid
+            ? { ...item, status: newStatus, statusLoading: false }
+            : item
+        )
+      );
+
+      // 🔥 UPDATE STATS WITHOUT RELOAD
+      setStats((prev) => {
+        const updated = { ...prev };
+
+        // old status decrement
+        if (oldStatus === "Active") updated.active_campaigns--;
+        if (oldStatus === "Allow") updated.allowed_campaigns--;
+        if (oldStatus === "Block") updated.blocked_campaigns--;
+
+        // new status increment
+        if (newStatus === "Active") updated.active_campaigns++;
+        if (newStatus === "Allow") updated.allowed_campaigns++;
+        if (newStatus === "Block") updated.blocked_campaigns++;
+
+        return updated;
+      });
+
+      showSuccessToast(`Status updated ✔ : ${newStatus}`);
+    } catch (err) {
+      console.error("Status update error:", err);
+      showErrorToast("Something went wrong!");
+
+      // ❌ loading hatao
+      setCampaigns((prev) =>
+        prev.map((item) =>
+          item.uid === uid ? { ...item, statusLoading: false } : item
+        )
+      );
     }
-
-    // ✅ update campaigns list
-    setCampaigns(prev =>
-      prev.map(item =>
-        item.uid === uid
-          ? { ...item, status: newStatus, statusLoading: false }
-          : item
-      )
-    );
-
-    // 🔥 UPDATE STATS WITHOUT RELOAD
-    setStats(prev => {
-      const updated = { ...prev };
-
-      // old status decrement
-      if (oldStatus === "Active") updated.active_campaigns--;
-      if (oldStatus === "Allow") updated.allowed_campaigns--;
-      if (oldStatus === "Block") updated.blocked_campaigns--;
-
-      // new status increment
-      if (newStatus === "Active") updated.active_campaigns++;
-      if (newStatus === "Allow") updated.allowed_campaigns++;
-      if (newStatus === "Block") updated.blocked_campaigns++;
-
-      return updated;
-    });
-
-    showSuccessToast(`Status updated ✔ : ${newStatus}`);
-
-  } catch (err) {
-    console.error("Status update error:", err);
-    showErrorToast("Something went wrong!");
-
-    // ❌ loading hatao
-    setCampaigns(prev =>
-      prev.map(item =>
-        item.uid === uid ? { ...item, statusLoading: false } : item
-      )
-    );
-  }
-};
-
-
+  };
 
   useEffect(() => {
     fetchCampaigns();
@@ -235,7 +232,7 @@ function AllCampaignsDashboard() {
   // --- NEW Handlers for Dropdown ---
   const handleActionClick = (e, campaignId) => {
     const rect = e.currentTarget.getBoundingClientRect();
-   
+
     setDropdownPos({
       top: rect.bottom + 2, // below button
       left: rect.right - 150, // align right (w-48 = 192px)
@@ -247,9 +244,8 @@ function AllCampaignsDashboard() {
     setOpenDropdownId(null); // मेनू बंद करें
     switch (action) {
       case "edit":
-         showInfoToast(`Editing campaign ID: ${campaignId}`);
-    
-         
+        showInfoToast(`Editing campaign ID: ${campaignId}`);
+
         navigate("/Dashboard/create-campaign", {
           state: {
             mode: "edit",
@@ -263,7 +259,7 @@ function AllCampaignsDashboard() {
         // alert(`Duplicating campaign ID: ${campaignId}`);
         // TODO: Call API to duplicate campaign
         break;
-       case "delete":
+      case "delete":
         if (window.confirm(`Are you sure you want to delete this campaign?`)) {
           const res = await apiFunction(
             "delete",
@@ -271,7 +267,7 @@ function AllCampaignsDashboard() {
             campaignId,
             null
           );
-      
+
           if (res) {
             setCampaigns((prev) =>
               prev.filter((item) => item.uid !== campaignId)
@@ -285,55 +281,28 @@ function AllCampaignsDashboard() {
   };
 
   // --- Existing Handlers ---
- const handleRefresh = async () => {
-  if (isRefreshing) return;
+  const handleRefresh = async () => {
+    if (isRefreshing) return;
 
-  try {
-    setIsRefreshing(true);
+    try {
+      setIsRefreshing(true);
 
-    await Promise.all([
-      fetchCampaigns(),
-      fetchStats(),
-    ]);
-  } catch (err) {
-    console.error(err);
-  } finally {
-    setTimeout(() => setIsRefreshing(false), 600); // smooth finish
-  }
-};
- const handlePageChange = (page) => {
-  if (page < 1 || page > totalPages) return;
-  fetchCampaigns(page);
-};
+      await Promise.all([fetchCampaigns(), fetchStats()]);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 600); // smooth finish
+    }
+  };
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
+    fetchCampaigns(page);
+  };
 
-const MAX_VISIBLE_PAGES = 5;
+  const MAX_VISIBLE_PAGES = 5;
 
-const getVisiblePages = () => {
-  let start = Math.max(
-    1,
-    currentPage - Math.floor(MAX_VISIBLE_PAGES / 2)
-  );
-
-  let end = start + MAX_VISIBLE_PAGES - 1;
-
-  if (end > totalPages) {
-    end = totalPages;
-    start = Math.max(1, end - MAX_VISIBLE_PAGES + 1);
-  }
-
-  return Array.from(
-    { length: end - start + 1 },
-    (_, i) => start + i
-  );
-};
-
-
-const startItem = (currentPage - 1) * ITEMS_PER_PAGE + 1;
-const endItem = Math.min(
-  currentPage * ITEMS_PER_PAGE,
-  totalRecords
-);
-
+  const startItem = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+  const endItem = Math.min(currentPage * ITEMS_PER_PAGE, totalRecords);
 
   const handleApplyFilter = () => {
     showInfoToast(
@@ -341,13 +310,10 @@ const endItem = Math.min(
     );
   };
 
-  
   const handleAddNewCampaign = () => {
     showInfoToast("Redirecting to Creating New Campaign");
     navigate("/Dashboard/create-campaign");
   };
-
-
 
   // ⭐ NEW Render Function: Action Dropdown Menu
   const renderActionDropdown = (campaignId, row) => (
@@ -383,118 +349,144 @@ const endItem = Math.min(
     </div>
   );
 
- const TableColGroup = () => (
-  <colgroup>
-    <col className="w-12" />
-    <col className="w-30" />
-    <col className="w-30" />
-    <col className="w-25" />
-    <col className="w-32" />
-    <col className="w-20" />
-    <col className="w-16" />
-    <col className="w-20" />
-    <col className="w-48" />
-    <col className="w-20" />
-  </colgroup>
-);
-
+  const TableColGroup = () => (
+    <colgroup>
+      <col className="w-12" />
+      <col className="w-30" />
+      <col className="w-30" />
+      <col className="w-25" />
+      <col className="w-32" />
+      <col className="w-20" />
+      <col className="w-16" />
+      <col className="w-20" />
+      <col className="w-48" />
+      <col className="w-20" />
+    </colgroup>
+  );
 
   const renderTableContent = () => {
-  if (isLoading) {
+    if (isLoading) {
+      return (
+        <tbody>
+          <tr>
+            <td colSpan="10" className="text-center py-10 text-blue-400">
+              Loading Campaigns...
+            </td>
+          </tr>
+        </tbody>
+      );
+    }
+
+    if (error || campaigns.length === 0) {
+      return (
+        <tbody>
+          <tr>
+            <td colSpan="10" className="text-center py-10 text-gray-500">
+              No campaigns found.
+            </td>
+          </tr>
+        </tbody>
+      );
+    }
+
     return (
-      <tbody>
-        <tr>
-          <td colSpan="10" className="text-center py-10 text-blue-400">
-            Loading Campaigns...
-          </td>
-        </tr>
-      </tbody>
-    );
-  }
+      <tbody className="divide-y divide-gray-100">
+        {campaigns.map((item, index) => {
+          const isDropdownOpen = openDropdownId === item?.uid;
 
-  if (error || campaigns.length === 0) {
-    return (
-      <tbody>
-        <tr>
-          <td colSpan="10" className="text-center py-10 text-gray-500">
-            No campaigns found.
-          </td>
-        </tr>
-      </tbody>
-    );
-  }
+          return (
+            <tr
+              key={item.uid}
+              className="hover:bg-gray-50 transition-colors duration-200"
+            >
+              {/* SN */}
+              <td className="px-4 py-3 text-sm text-gray-500">{index + 1}</td>
 
-  return (
-    <tbody className="bg-gray-900 divide-y divide-gray-800">
-      {campaigns.map((item, index) => {
-        const campaignId = item.campaign_info?.campaign_id || index;
-        const isDropdownOpen = openDropdownId === item?.uid;
-        return(
-          <>
-          <tr key={item.campaignId}>
-          <td className="px-3 py-3 text-sm  text-left text-gray-300">{index + 1}</td>
-          <td className="px-3 py-3 text-sm text-left text-blue-400">{item.campaign_info?.campaignName}</td>
-          <td className="px-3 py-3 text-sm text-left text-gray-300">{item.campaign_info?.trafficSource}</td>
-          <td className="px-3 py-3 text-left">
-             <button
-      disabled={item.statusLoading}
-      onClick={() => handleStatusChange(item.uid, "Active")}
-      className={`p-1 rounded transition-all duration-300 transform hover:scale-110
-        ${item.statusLoading ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}
-        ${item.status === "Active"
-          ? "text-green-500 drop-shadow-[0_0_6px_rgba(16,185,129,.8)]"
-          : "text-gray-500 hover:text-gray-300"
-        }`}
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" 
-        viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
-        <path d="M7 4v16l13-8L7 4z"/>
-      </svg>
-    </button>
+              {/* Campaign Name */}
+              <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                {item.campaign_info?.campaignName}
+              </td>
 
-    {/* ⚡ Boost */}
-    <button
-      disabled={item.statusLoading}
-      onClick={() => handleStatusChange(item.uid, "Allow")}
-      className={`p-1 rounded transition-all duration-300 transform hover:scale-110
-        ${item.statusLoading ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}
-        ${item.status === "Allow"
-          ? "text-yellow-400 drop-shadow-[0_0_6px_rgba(250,204,21,.8)]"
-          : "text-gray-500 hover:text-gray-300"
-        }`}
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" 
-        viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
-        <path d="M13 2L3 14h7v8l10-12h-7z"/>
-      </svg>
-    </button>
+              {/* Source */}
+              <td className="px-4 py-3 text-sm text-gray-600">
+                {item.campaign_info?.trafficSource}
+              </td>
 
-    {/* 🚫 Block */}
-    <button
-      disabled={item.statusLoading}
-      onClick={() => handleStatusChange(item.uid, "Block")}
-      className={`p-1 rounded transition-all duration-300 transform hover:scale-110
-        ${item.statusLoading ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}
-        ${item.status === "Block"
-          ? "text-red-500 drop-shadow-[0_0_6px_rgba(239,68,68,.8)]"
-          : "text-gray-500 hover:text-gray-300"
-        }`}
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" 
-        viewBox="0 0 24 24"
-        className="w-5 h-5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="5" y1="19" x2="19" y2="5"/>
-      </svg>
-    </button></td>
-          <td className="px-3 py-3 text-left "> {item.integration ? (
-            
+              {/* STATUS */}
+              <td className="px-4 py-3">
+                <div className="flex items-center gap-2">
+                  {/* Active */}
+                  <button
+                    disabled={item.statusLoading}
+                    onClick={() => handleStatusChange(item.uid, "Active")}
+                    className={`p-1.5 rounded-md transition hover:bg-gray-100
+                    ${
+                      item.status === "Active"
+                        ? "text-blue-600"
+                        : "text-gray-400"
+                    }
+                  `}
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="w-5 h-5"
+                      fill="currentColor"
+                    >
+                      <path d="M7 4v16l13-8L7 4z" />
+                    </svg>
+                  </button>
+
+                  {/* Allow */}
+                  <button
+                    disabled={item.statusLoading}
+                    onClick={() => handleStatusChange(item.uid, "Allow")}
+                    className={`p-1.5 rounded-md transition hover:bg-gray-100
+                    ${
+                      item.status === "Allow"
+                        ? "text-yellow-500"
+                        : "text-gray-400"
+                    }
+                  `}
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="w-5 h-5"
+                      fill="currentColor"
+                    >
+                      <path d="M13 2L3 14h7v8l10-12h-7z" />
+                    </svg>
+                  </button>
+
+                  {/* Block */}
+                  <button
+                    disabled={item.statusLoading}
+                    onClick={() => handleStatusChange(item.uid, "Block")}
+                    className={`p-1.5 rounded-md transition hover:bg-gray-100
+                    ${
+                      item.status === "Block" ? "text-red-500" : "text-gray-400"
+                    }
+                  `}
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="5" y1="19" x2="19" y2="5" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+
+              {/* Integration */}
+              <td className="px-4 py-3 text-center">
+                {item.integration ? (
                   <div className="relative group flex justify-center">
                     <svg
-                      className="h-5 w-5 text-green-500"
+                      className="h-6 w-6 text-green-500"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -507,123 +499,103 @@ const endItem = Math.min(
                       />
                     </svg>
 
-                    {/* ⭐ Tooltip container */}
-                    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block bg-gray-800 text-gray-200 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap z-50 ">
+                    <div className="absolute bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs px-3 py-1 rounded-lg shadow-lg whitespace-nowrap z-50">
                       {item.integrationUrl || "No URL Found"}
                     </div>
                   </div>
                 ) : (
-                  <div className="flex justify-center items-center w-full">
-                    <svg
-                      className="h-5 w-5 text-red-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </div>
-                )}</td>
-          <td className="px-3 py-3 text-gray-300 text-center">{item?.campclicks?.total_t_clicks || 0}</td>
-          <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-right w-16">
-  <div className="flex items-center gap-1 relative group">
-    {/* i Icon */}
-    <svg
-      className="h-4 w-4 text-blue-400 cursor-pointer"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"
-      />
-    </svg>
+                  <svg
+                    className="h-5 w-5 text-red-500 mx-auto"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                )}
+              </td>
 
-    {/* Value */}
-    <span>{item?.campclicks?.total_s_clicks || 0}</span>
+              {/* Clicks */}
+              <td className="px-4 py-3 text-sm text-gray-700 text-center">
+                {item?.campclicks?.total_t_clicks || 0}
+              </td>
 
-    {/* Tooltip */}
-    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 
-      hidden group-hover:block bg-gray-800 text-gray-200 text-xs 
-      px-3 py-1 rounded shadow-lg whitespace-nowrap z-50">
-      {item?.safe_page || "No URL Found"}
-    </div>
-  </div>
-</td>
+              {/* Safe */}
+              <td className="px-4 py-3 text-sm text-gray-700 text-right">
+                {item?.campclicks?.total_s_clicks || 0}
+              </td>
 
-        <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-right w-20">
-  <div className="flex items-center gap-1 relative group">
-    {/* i Icon */}
-    <svg
-      className="h-4 w-4 text-blue-400 cursor-pointer"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"
-      />
-    </svg>
+              {/* Money */}
+              <td className="px-4 py-3 text-sm text-gray-700 text-right">
+                {item?.campclicks?.total_m_clicks || 0}
+              </td>
 
-    {/* Value */}
-    <span>{item?.campclicks?.total_m_clicks || 0}</span>
+              {/* Created */}
+              <td className="px-4 py-3 text-sm text-gray-500">
+                {new Date(item.date_time).toLocaleString()}
+              </td>
 
-    {/* Tooltip */}
-    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 
-      hidden group-hover:block bg-gray-800 text-gray-200 text-xs 
-      px-3 py-1 rounded shadow-lg whitespace-nowrap z-50">
-      {item?.money_page?.[0]?.url || "No URL Found"}
-    </div>
-  </div>
-</td>
-
-          <td className="px-3 py-3 text-gray-300 text-left">
-            {new Date(item.date_time).toLocaleString()}
-          </td>
-          <td
-           ref={isDropdownOpen ? dropdownRef : null}
-           className="px-3 py-3"><button
+              {/* ACTION */}
+              <td
+                ref={isDropdownOpen ? dropdownRef : null}
+                className="px-4 py-3 relative"
+              >
+                <button
                   onClick={(e) => handleActionClick(e, item?.uid)}
-                  className={`text-2xl leading-none font-bold p-1 rounded-full cursor-pointer ${
-                    isDropdownOpen
-                      ? "bg-gray-600 text-white"
-                      : "hover:bg-gray-700"
-                  }`}
+                  className={`w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 transition
+                  ${isDropdownOpen ? "bg-gray-200 text-gray-800" : ""}
+                `}
                 >
-                  ⋯ {/* Vertical three dots */}
+                  ⋯
                 </button>
-                 {isDropdownOpen && renderActionDropdown(item?.uid, item)}</td>
-        </tr>
-          </>
-        )
-      })}
-    </tbody>
-  );
-};
+
+                {isDropdownOpen && renderActionDropdown(item?.uid, item)}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-[#0b0d14] text-white p-6">
+    <div className="min-h-screen bg-white text-gray-800 p-6">
       {/* Header Section (Unchanged) */}
-      <header className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold">All Campaigns ({totalItems})</h1>
-        <div className="flex space-x-3">
+      <header className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
+            All Campaigns
+            <span className="text-gray-400 font-medium ml-2">
+              ({totalItems})
+            </span>
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Manage, monitor and control your campaigns
+          </p>
+        </div>
+
+        <div className="flex gap-3">
+          {/* ADD CAMPAIGN */}
           <button
             onClick={handleAddNewCampaign}
-            className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-medium text-sm shadow-lg transition duration-150 cursor-pointer"
+            className="
+        inline-flex items-center gap-2
+        px-5 py-2.5
+        rounded-lg
+        text-sm font-medium
+        bg-blue-600 text-white
+        hover:bg-blue-700
+        shadow-[0_8px_24px_rgba(37,99,235,0.35)]
+        transition-all
+      "
           >
             <svg
-              className="h-5 w-5 mr-1"
+              className="h-4 w-4"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -635,85 +607,112 @@ const endItem = Math.min(
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            Add New Campaign
+            Add Campaign
           </button>
+
+          {/* REFRESH */}
           <button
-  onClick={handleRefresh}
-  disabled={isRefreshing}
-  className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium text-sm shadow-lg transition-all duration-200
-    ${
-      isRefreshing
-        ? "bg-gray-600 cursor-not-allowed opacity-80"
-        : "bg-gray-700 hover:bg-gray-600 cursor-pointer"
-    }
-  `}
->
-  <svg
-    className={`h-5 w-5 transition-transform ${
-      isRefreshing ? "animate-spin" : ""
-    }`}
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-    />
-  </svg>
-
-  <span>
-    {isRefreshing ? "Refreshing..." : "Refresh"}
-  </span>
-</button>
-
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className={`
+        inline-flex items-center gap-2
+        px-5 py-2.5
+        rounded-lg
+        text-sm font-medium
+        border border-gray-300
+        bg-white text-gray-700
+        hover:bg-gray-50
+        shadow-sm
+        transition
+        ${isRefreshing && "opacity-60 cursor-not-allowed"}
+      `}
+          >
+            <svg
+              className={`h-4 w-4 ${isRefreshing && "animate-spin"}`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9"
+              />
+            </svg>
+            {isRefreshing ? "Refreshing…" : "Refresh"}
+          </button>
         </div>
       </header>
 
-      <h2 className="text-lg text-gray-400 mb-4">
+      <h2 className="text-lg text-gray-800 mb-4">
         Create/Edit/Delete Campaigns
       </h2>
 
       {/* Filter and Control Bar (Unchanged) */}
-      <div className="bg-gray-800 p-4 rounded-lg shadow-xl mb-6">
-        <div className="flex justify-between items-center mb-4 border-b border-gray-700 pb-3">
+      <div
+        className="
+    bg-white
+    rounded-2xl
+    border border-gray-200
+    shadow-[0_20px_60px_rgba(0,0,0,0.06)]
+    px-6 py-5
+    mb-8
+  "
+      >
+        {/* TABS */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+          {/* TOTAL */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+              Total Campaigns
+            </p>
+            <p className="mt-2 text-3xl font-semibold text-gray-900">
+              {stats.total_campaigns || 0}
+            </p>
+            <div className="mt-3 h-1 w-10 rounded-full bg-blue-600" />
+          </div>
 
-  <div className="flex space-x-6 text-sm">
+          {/* ACTIVE */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+              Live Campaigns
+            </p>
+            <p className="mt-2 text-3xl font-semibold text-emerald-600">
+              {stats.active_campaigns || 0}
+            </p>
+            <div className="mt-3 h-1 w-10 rounded-full bg-emerald-500" />
+          </div>
 
-    <div className="font-medium py-1 text-blue-500 border-b-2 border-blue-500 cursor-default">
-      All ({stats.total_campaigns || '0'})
-    </div>
+          {/* ALLOWED */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+              Allowed Traffic
+            </p>
+            <p className="mt-2 text-3xl font-semibold text-amber-500">
+              {stats.allowed_campaigns || 0}
+            </p>
+            <div className="mt-3 h-1 w-10 rounded-full bg-amber-400" />
+          </div>
 
-    <div className="font-medium py-1 text-gray-400">
-      Active({stats.active_campaigns || '0'})
-    </div>
+          {/* BLOCKED */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+              Blocked Traffic
+            </p>
+            <p className="mt-2 text-3xl font-semibold text-red-500">
+              {stats.blocked_campaigns || 0}
+            </p>
+            <div className="mt-3 h-1 w-10 rounded-full bg-red-500" />
+          </div>
+        </div>
 
-    <div className="font-medium py-1 text-gray-400">
-      Allow All({stats.allowed_campaigns || '0'})
-    </div>
-
-    <div className="font-medium py-1 text-gray-400">
-      Block All({stats.blocked_campaigns || '0'})
-    </div>
-
-  </div>
-
-</div>
-
-
-        <div className="flex items-center space-x-4">
+        {/* FILTERS */}
+        <div className="flex items-center gap-4">
+          {/* SEARCH */}
           <div className="relative flex-grow max-w-sm">
-            <input
-              type="text"
-              placeholder="Search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full py-2 pl-10 pr-4 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
-            />
             <svg
-              className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+              className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -725,17 +724,56 @@ const endItem = Math.min(
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
+
+            <input
+              type="text"
+              placeholder="Search campaigns"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="
+          w-full pl-10 pr-4 py-2.5
+          rounded-lg
+          border border-gray-300
+          bg-white
+          text-sm text-gray-800
+          focus:outline-none
+          focus:ring-2 focus:ring-blue-500/20
+          focus:border-blue-500
+        "
+            />
           </div>
+
+          {/* DATE */}
           <input
             type="text"
-            placeholder="d/m/y to d/m/y"
+            placeholder="d/m/y → d/m/y"
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
-            className="py-2 px-3 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm max-w-[200px]"
+            className="
+        px-4 py-2.5
+        rounded-lg
+        border border-gray-300
+        bg-white
+        text-sm text-gray-800
+        focus:outline-none
+        focus:ring-2 focus:ring-blue-500/20
+        focus:border-blue-500
+        max-w-[200px]
+      "
           />
+
+          {/* APPLY */}
           <button
             onClick={handleApplyFilter}
-            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-medium cursor-pointer text-sm shadow-lg transition duration-150"
+            className="
+        px-6 py-2.5
+        rounded-lg
+        text-sm font-medium
+        bg-blue-600 text-white
+        hover:bg-blue-700
+        shadow-[0_10px_30px_rgba(37,99,235,0.35)]
+        transition
+      "
           >
             Apply
           </button>
@@ -743,125 +781,278 @@ const endItem = Math.min(
       </div>
 
       {/* Campaign Table Container (Unchanged) */}
-           <div className="mt-4 border border-gray-700 rounded-lg overflow-hidden">
-  <div className="flex flex-col border border-gray-700 rounded-lg bg-gray-900 overflow-hidden">
+      <div className="mt-6 rounded-2xl border border-gray-200 bg-white shadow-[0_12px_35px_rgba(0,0,0,0.08)] overflow-hidden">
+        <div className="flex flex-col  bg-white overflow-hidden">
+          {/* ===== FIXED HEADER ===== */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-fixed">
+              <TableColGroup />
 
-    {/* ===== FIXED HEADER ===== */}
-    <div className="flex-none overflow-x-auto bg-gray-800">
-      <table className="min-w-full table-fixed">
-        <TableColGroup />
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  {[
+                    "Sn",
+                    "Campaign Name",
+                    "Source",
+                    "Status",
+                    "Integration",
+                    "Clicks",
+                    "Safe",
+                    "Money",
+                    "Created on",
+                    "Action",
+                  ].map((head) => (
+                    <th
+                      key={head}
+                      className="px-4 py-3 text-left text-[11px] font-semibold tracking-wider text-gray-600 uppercase"
+                    >
+                      {head}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+            </table>
+          </div>
 
-        <thead className="bg-gray-800">
-          <tr>
-            <th className="px-3 py-4 text-left text-xs font-medium text-gray-400 uppercase">Sn</th>
-            <th className="px-3 py-4 text-left text-xs font-medium text-gray-400 uppercase">Campaign Name</th>
-            <th className="px-3 py-4 text-left text-xs font-medium text-gray-400 uppercase">Source</th>
-            <th className="px-3 py-4 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
-            <th className="px-3 py-4 text-left text-xs font-medium text-gray-400 uppercase">Integration</th>
-            <th className="px-3 py-4 text-left text-xs font-medium text-gray-400 uppercase">Clicks</th>
-            <th className="px-3 py-4 text-left text-xs font-medium text-gray-400 uppercase">Safe</th>
-            <th className="px-3 py-4 text-left text-xs font-medium text-gray-400 uppercase">Money</th>
-            <th className="px-3 py-4 text-left text-xs font-medium text-gray-400 uppercase">Created on</th>
-            <th className="px-3 py-4 text-left text-xs font-medium text-gray-400 uppercase">Action</th>
-          </tr>
-        </thead>
-      </table>
-    </div>
+          {/* ===== SCROLLABLE BODY ===== */}
+          <div className="flex-1 overflow-y-auto overflow-x-auto custom-scrollbar max-h-[320px]">
+            <table className="min-w-full table-fixed divide-y divide-gray-100 bg-white">
+              <TableColGroup />
+              {renderTableContent()}
+            </table>
+          </div>
 
-    {/* ===== SCROLLABLE BODY ===== */}
-    <div className="flex-1 overflow-y-auto overflow-x-auto custom-scrollbar max-h-[300px]">
-      <table className="min-w-full table-fixed divide-y divide-gray-800 border-t border-gray-700">
-        <TableColGroup />
-        {renderTableContent()}
-      </table>
-    </div>
+          {/* <div className="max-h-[360px] overflow-y-auto overflow-x-auto custom-scrollbar">
+            <table className="min-w-full table-fixed">
+              <TableColGroup />
 
-    {/* ===== FIXED FOOTER ===== */}
-    <div className="flex-none bg-gray-800 border-t border-gray-700 px-6 py-3 flex items-center justify-between">
-  {/* LEFT */}
-  <span className="text-sm text-gray-400">
-    Showing{" "}
-    <span className="text-gray-200 font-medium">
-      {startItem}–{endItem}
-    </span>{" "}
-    of{" "}
-    <span className="text-gray-200 font-medium">
-      {totalRecords}
-    </span>{" "}
-    campaigns
-  </span>
+              <tbody className="divide-y divide-gray-100">
+                {campaigns.map((item, index) => {
+                  const isDropdownOpen = openDropdownId === item?.uid;
 
-  {/* RIGHT – Numbered Pagination */}
-  <div className="flex items-center gap-1">
-    {/* Prev */}
-    <button
-      disabled={currentPage === 1}
-      onClick={() => handlePageChange(currentPage - 1)}
-      className={`px-3 py-1 text-sm rounded border ${
-        currentPage === 1
-          ? "text-gray-500 border-gray-600 cursor-not-allowed"
-          : "text-white border-gray-500 hover:bg-gray-700 cursor-pointer"
-      }`}
-    >
-      Prev
-    </button>
+                  return (
+                    <tr
+                      key={item.uid}
+                      className="hover:bg-gray-50 transition-colors duration-200"
+                    >
+                  
+                      <td className="px-4 py-3 text-sm text-gray-500">
+                        {index + 1}
+                      </td>
 
-    {/* Page Numbers */}
-    {/* Page Numbers */}
-{getVisiblePages().map((page) => (
-  <button
-    key={page}
-    onClick={() => handlePageChange(page)}
-    className={`px-3 py-1 text-sm rounded border cursor-pointer ${
-      page === currentPage
-        ? "bg-blue-600 text-white border-blue-600"
-        : "text-gray-300 border-gray-600 hover:bg-gray-700"
-    }`}
-  >
-    {page}
-  </button>
-))}
+                      
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                        {item.campaign_info?.campaignName}
+                      </td>
 
+                      
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {item.campaign_info?.trafficSource}
+                      </td>
 
-    {/* Next */}
-    <button
-      disabled={currentPage === totalPages}
-      onClick={() => handlePageChange(currentPage + 1)}
-      className={`px-3 py-1 text-sm rounded border ${
-        currentPage === totalPages
-          ? "text-gray-500 border-gray-600 cursor-not-allowed"
-          : "text-white border-gray-500 hover:bg-gray-700 cursor-pointer"
-      }`}
-    >
-      Next
-    </button>
-  </div>
-</div>
-  </div>
-</div>
+                  
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                        
+                          <button
+                            disabled={item.statusLoading}
+                            onClick={() =>
+                              handleStatusChange(item.uid, "Active")
+                            }
+                            className={`p-1.5 rounded-md transition hover:bg-gray-100
+                      ${
+                        item.status === "Active"
+                          ? "text-blue-600"
+                          : "text-gray-400"
+                      }
+                    `}
+                          >
+                            <svg
+                              viewBox="0 0 24 24"
+                              className="w-5 h-5"
+                              fill="currentColor"
+                            >
+                              <path d="M7 4v16l13-8L7 4z" />
+                            </svg>
+                          </button>
 
-      {/* Pagination/Summary Section (Unchanged) */}
-      {/* <div className="mt-4 flex justify-between items-center text-sm text-gray-400">
-        <div>
-          {campaigns.length > 0
-            ? `1 to ${campaigns.length} Items of ${totalItems}`
-            : `0 Items of 0`}
-          —{" "}
-          <a href="#" className="text-blue-500 hover:text-blue-400">
-            View all
-          </a>
+                    
+                          <button
+                            disabled={item.statusLoading}
+                            onClick={() =>
+                              handleStatusChange(item.uid, "Allow")
+                            }
+                            className={`p-1.5 rounded-md transition hover:bg-gray-100
+                      ${
+                        item.status === "Allow"
+                          ? "text-yellow-500"
+                          : "text-gray-400"
+                      }
+                    `}
+                          >
+                            <svg
+                              viewBox="0 0 24 24"
+                              className="w-5 h-5"
+                              fill="currentColor"
+                            >
+                              <path d="M13 2L3 14h7v8l10-12h-7z" />
+                            </svg>
+                          </button>
+
+                      
+                          <button
+                            disabled={item.statusLoading}
+                            onClick={() =>
+                              handleStatusChange(item.uid, "Block")
+                            }
+                            className={`p-1.5 rounded-md transition hover:bg-gray-100
+                      ${
+                        item.status === "Block"
+                          ? "text-red-500"
+                          : "text-gray-400"
+                      }
+                    `}
+                          >
+                            <svg
+                              viewBox="0 0 24 24"
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                            >
+                              <circle cx="12" cy="12" r="10" />
+                              <line x1="5" y1="19" x2="19" y2="5" />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+
+                      
+                      <td className="px-4 py-3 text-center">
+                        {item.integration ? (
+                          <div className="relative group flex justify-center">
+                            <svg
+                              className="h-6 w-6 text-green-500"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+
+                            <div className="absolute bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs px-3 py-1 rounded-lg shadow-lg whitespace-nowrap">
+                              {item.integrationUrl || "No URL Found"}
+                            </div>
+                          </div>
+                        ) : (
+                          <svg
+                            className="h-5 w-5 text-red-500 mx-auto"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        )}
+                      </td>
+
+              
+                      <td className="px-4 py-3 text-sm text-gray-700 text-center">
+                        {item?.campclicks?.total_t_clicks || 0}
+                      </td>
+
+            
+                      <td className="px-4 py-3 text-sm text-gray-700 text-right">
+                        {item?.campclicks?.total_s_clicks || 0}
+                      </td>
+
+          
+                      <td className="px-4 py-3 text-sm text-gray-700 text-right">
+                        {item?.campclicks?.total_m_clicks || 0}
+                      </td>
+
+          
+                      <td className="px-4 py-3 text-sm text-gray-500">
+                        {new Date(item.date_time).toLocaleString()}
+                      </td>
+
+        
+                      <td
+                        ref={isDropdownOpen ? dropdownRef : null}
+                        className="px-4 py-3 relative"
+                      >
+                        <button
+                          onClick={(e) => handleActionClick(e, item?.uid)}
+                          className={`w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 transition
+                    ${isDropdownOpen ? "bg-gray-200 text-gray-800" : ""}
+                  `}
+                        >
+                          ⋯
+                        </button>
+
+                        {isDropdownOpen &&
+                          renderActionDropdown(item?.uid, item)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div> */}
+
+          {/* ===== FIXED FOOTER ===== */}
+          <div className="flex-none bg-gray-50 border-t border-gray-200 px-6 py-3 flex items-center justify-between">
+            {/* LEFT */}
+            <span className="text-sm text-gray-600">
+              Page
+              <span className="text-gray-900 font-semibold">
+                {currentPage}
+              </span>{" "}
+              of{" "}
+              <span className="text-gray-900 font-semibold">{totalPages}</span>{" "}
+              Pages
+            </span>
+
+            {/* RIGHT – Numbered Pagination */}
+            <div className="flex items-center gap-1">
+              {/* Prev */}
+              <button
+                disabled={currentPage === 1}
+                onClick={() => handlePageChange(currentPage - 1)}
+                className={`px-3 py-1.5 text-sm rounded-md border transition ${
+                  currentPage === 1
+                    ? "text-gray-400 border-gray-200 bg-white cursor-not-allowed"
+                    : "text-gray-700 border-gray-300 bg-white hover:bg-gray-100"
+                }`}
+              >
+                <span className="text-xl font-bold leading-none">&laquo;</span>
+              </button>
+
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => handlePageChange(currentPage + 1)}
+                className={`px-3 py-1.5 text-sm rounded-md border transition ${
+                  currentPage === totalPages
+                    ? "text-gray-400 border-gray-200 bg-white cursor-not-allowed"
+                    : "text-gray-700 border-gray-300 bg-white hover:bg-gray-100"
+                }`}
+              >
+                <span className="text-xl font-bold leading-none">&raquo;</span>
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="flex space-x-3">
-          <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-medium text-sm transition duration-150">
-            Previous
-          </button>
-          <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-medium text-sm transition duration-150">
-            Next
-          </button>
-        </div>
-      </div> */}
-
-      {/* Fixed Components */}
+      </div>
     </div>
   );
 }

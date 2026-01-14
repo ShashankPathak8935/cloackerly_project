@@ -98,8 +98,7 @@ export default function Pricing() {
   const [loading, setLoading] = useState(false);
   const isConfirmDisabled = !txHash.trim() || loading;
 
-
-    const resetPaymentState = () => {
+  const resetPaymentState = () => {
     setModalStep(0);
     setSelectedPlan(null);
     setPaymentMethod("");
@@ -108,34 +107,27 @@ export default function Pricing() {
     setLoading(false);
   };
 
-
-
   const calculateStartEndDates = (billing) => {
-  const start = new Date(); // now
-  const end = new Date(start);
+    const start = new Date(); // now
+    const end = new Date(start);
 
-  if (billing === "Monthly") {
-    end.setMonth(end.getMonth() + 1);
-  }
+    if (billing === "Monthly") {
+      end.setMonth(end.getMonth() + 1);
+    }
 
-  if (billing === "quarterly") {
-    end.setMonth(end.getMonth() + 3);
-  }
+    if (billing === "quarterly") {
+      end.setMonth(end.getMonth() + 3);
+    }
 
-  if (billing === "Yearly") {
-    end.setFullYear(end.getFullYear() + 1);
-  }
+    if (billing === "Yearly") {
+      end.setFullYear(end.getFullYear() + 1);
+    }
 
-  return {
-    start_date: start.toISOString(), // ✅ UTC
-    end_date: end.toISOString(),     // ✅ UTC
+    return {
+      start_date: start.toISOString(), // ✅ UTC
+      end_date: end.toISOString(), // ✅ UTC
+    };
   };
-};
-
-
-
-
-  
 
   /* ===== PRICE LOGIC (UNCHANGED) ===== */
   const calculateMonthlyPrice = (price) => {
@@ -153,44 +145,44 @@ export default function Pricing() {
 
   const totalAmount = MonthlyPrice * getBillingMultiplier();
 
-
   const makeCryptoPayment = async (payload) => {
     const response = await apiFunction("post", cryptoPayment, null, payload);
     return response;
   };
 
-
   /* ===================== UI ===================== */
 
   return (
-    <div className="min-h-screen bg-[#0b0d14] text-gray-100 px-6 py-14">
+    <div className="min-h-screen bg-gray-50 text-gray-900 px-6 py-16">
       <div className="max-w-7xl mx-auto">
         {/* HEADER */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white">
-            Simple, Transparent Pricing
+        <div className="text-center mb-14">
+          <h1 className="text-4xl font-semibold tracking-tight">
+            Choose Plan accordingly
           </h1>
-          <p className="text-gray-400 mt-3">
+          {/* <p className="text-gray-500 mt-3">
             Choose the plan that fits your business needs
-          </p>
+          </p> */}
         </div>
 
         {/* BILLING TOGGLE */}
-        <div className="flex justify-center mb-14">
-          <div className="bg-[#1E293B] p-1 rounded-xl flex gap-1">
+        <div className="flex justify-center mb-16">
+          <div className="bg-white border border-gray-200 rounded-xl p-1 flex gap-1 shadow-sm">
             {["Monthly", "quarterly", "Yearly"].map((type) => (
               <button
                 key={type}
                 onClick={() => setBilling(type)}
-                className={`px-6 py-2 rounded-lg text-sm font-medium transition cursor-pointer ${
-                  billing === type
-                    ? "bg-blue-600 text-white"
-                    : "text-gray-300 hover:bg-gray-700"
-                }`}
+                className={`px-6 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer
+              ${
+                billing === type
+                  ? "bg-gray-900 text-white shadow"
+                  : "text-gray-600 hover:bg-gray-100"
+              }
+            `}
               >
                 {type}
                 {type !== "Monthly" && (
-                  <span className="ml-2 text-xs text-green-400">
+                  <span className="ml-2 text-xs text-emerald-600 font-medium">
                     {discounts[type]}% OFF
                   </span>
                 )}
@@ -199,55 +191,73 @@ export default function Pricing() {
           </div>
         </div>
 
-        {/* CARDS */}
+        {/* PRICING CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {plans.map((plan, i) => (
             <div
               key={i}
-              className={`relative bg-[#1E293B] border rounded-2xl p-8 ${
-                plan.popular
-                  ? "border-blue-500 ring-1 ring-blue-500"
-                  : "border-gray-700"
-              }`}
+              className={`relative bg-white rounded-2xl p-8 border transition-all
+            ${
+              plan.popular
+                ? "border-blue-500 shadow-[0_25px_60px_rgba(37,99,235,0.15)] scale-[1.02]"
+                : "border-gray-200 shadow-sm hover:shadow-md"
+            }
+          `}
             >
+              {/* Popular Badge */}
               {plan.popular && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs px-4 py-1 rounded-full">
+                <span
+                  className="absolute -top-3 left-1/2 -translate-x-1/2 
+              bg-blue-600 text-white text-xs px-4 py-1 rounded-full shadow"
+                >
                   Most Popular
                 </span>
               )}
 
-              <h3 className="text-xl font-semibold">{plan.name}</h3>
+              {/* Plan Name */}
+              <h3 className="text-xl font-semibold text-gray-900">
+                {plan.name}
+              </h3>
 
-              <div className="mt-4">
-                <span className="text-4xl font-bold">
+              {/* Price */}
+              <div className="mt-5 flex items-end gap-1">
+                <span className="text-4xl font-bold tracking-tight">
                   ${calculateMonthlyPrice(plan.basePrice)}
                 </span>
-                <span className="text-gray-400 ml-2">/ Monthly</span>
+                <span className="text-sm text-gray-500 mb-1">/ month</span>
               </div>
 
-              <p className="mt-3 text-gray-400 text-sm">
+              {/* Sub info */}
+              <p className="mt-3 text-sm text-gray-500">
                 {plan.campaigns} • {plan.clicks}
               </p>
 
-              <ul className="mt-6 space-y-2 text-sm">
+              {/* Divider */}
+              <div className="my-6 h-px bg-gray-200" />
+
+              {/* Features */}
+              <ul className="space-y-3 text-sm text-gray-700">
                 {plan.features.map((f, idx) => (
-                  <li key={idx} className="flex gap-2">
-                    <span className="text-green-400">✔</span>
-                    {f}
+                  <li key={idx} className="flex items-start gap-3">
+                    <span className="mt-[2px] text-emerald-500">✔</span>
+                    <span>{f}</span>
                   </li>
                 ))}
               </ul>
 
+              {/* CTA */}
               <button
                 onClick={() => {
                   setSelectedPlan(plan);
                   setModalStep(1);
                 }}
-                className={`mt-8 w-full py-3 rounded-xl cursor-pointer ${
-                  plan.popular
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-gray-700 hover:bg-gray-600"
-                }`}
+                className={`mt-8 w-full py-3 rounded-xl text-sm font-medium transition cursor-pointer
+              ${
+                plan.popular
+                  ? "bg-blue-600 text-white hover:bg-blue-700 shadow"
+                  : "bg-gray-900 text-white hover:bg-gray-800"
+              }
+            `}
               >
                 Choose Plan
               </button>
@@ -256,247 +266,225 @@ export default function Pricing() {
         </div>
       </div>
 
-      {/* ===================== MODAL ===================== */}
       {modalStep > 0 && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-[#111827] w-full max-w-md rounded-2xl p-6 border border-gray-700 relative">
-            {/* CLOSE */}
-            <button
-              onClick={resetPaymentState}
-              className="absolute top-3 right-4 text-gray-400 hover:text-white cursor-pointer"
-            >
-              ✕
-            </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-md">
+          {/* Glow layer */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500/20 blur-3xl" />
+          </div>
 
-            {/* STEP 1 */}
-            {modalStep === 1 && (
-              <>
-                <h2 className="text-xl font-bold">Confirm Purchase</h2>
-                <p className="text-yellow-400 mt-2">
-                  Are you sure you want to activate <b>{selectedPlan.name}</b>?
-                </p>
+          {/* Modal */}
+          <div className="relative w-full max-w-md rounded-3xl bg-white shadow-[0_40px_120px_rgba(0,0,0,0.35)] border border-gray-200 overflow-hidden">
+            {/* Top subtle gradient bar */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
 
-                <div className="mt-6 space-y-3">
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="radio"
-                      checked={paymentMethod === "USDT"}
-                      onChange={() => setPaymentMethod("USDT")}
-                    />
-                    <span>USDT</span>
-                  </label>
+            <div className="p-8">
+              {/* Close */}
+              <button
+                onClick={resetPaymentState}
+                className="absolute top-5 right-5 h-9 w-9 rounded-full
+                     flex items-center justify-center
+                     bg-gray-100 hover:bg-gray-200
+                     text-gray-500 hover:text-gray-800
+                     transition cursor-pointer"
+              >
+                ✕
+              </button>
 
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="radio"
-                      checked={paymentMethod === "card"}
-                      onChange={() => setPaymentMethod("card")}
-                    />
-                    <span>Card</span>
-                  </label>
-                </div>
+              {/* ================= STEP 1 ================= */}
+              {modalStep === 1 && (
+                <>
+                  <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
+                    Confirm your purchase
+                  </h2>
 
-                <div className="flex justify-between mt-6">
-                  <button
-                    className="cursor-pointer"
-                    onClick={() => setModalStep(0)}
-                  >
-                    Close
-                  </button>
-                  <button
-                    disabled={!paymentMethod}
-                    onClick={() => setModalStep(2)}
-                    className="bg-blue-600 px-4 py-2 rounded cursor-pointer"
-                  >
-                    Continue
-                  </button>
-                </div>
-              </>
-            )}
+                  <p className="mt-2 text-sm text-gray-500">
+                    Activate{" "}
+                    <span className="font-medium text-gray-900">
+                      {selectedPlan.name}
+                    </span>
+                  </p>
 
-            {/* STEP 2 */}
-            {modalStep === 2 && paymentMethod === "USDT" && (
-              <>
-                <h2 className="text-xl font-bold">Select Network</h2>
-
-                <div className="mt-6 space-y-3">
-                  {["ERC20", "TRC20"].map((n) => (
-                    <label key={n} className="flex gap-3 cursor-pointer">
-                      <input
-                        type="radio"
-                        checked={network === n}
-                        onChange={() => setNetwork(n)}
-                      />
-                      {n}
-                    </label>
-                  ))}
-                </div>
-
-                <div className="flex justify-between mt-6">
-                  <button
-                    className="cursor-pointer"
-                    onClick={() => setModalStep(1)}
-                  >
-                    Back
-                  </button>
-                  <button
-                    disabled={!network}
-                    onClick={() => setModalStep(3)}
-                    className="bg-blue-600 px-4 py-2 rounded cursor-pointer"
-                  >
-                    Continue
-                  </button>
-                </div>
-              </>
-            )}
-
-             {modalStep === 2 && paymentMethod === "card" && (
-              <>
-                
-                <div className="mt-12">
-                    <PayPalIntegration />
-                </div>
-
-                <div className="flex justify-between mt-6">
-                  <button
-                    className="cursor-pointer"
-                    onClick={() => setModalStep(1)}
-                  >
-                    Back
-                  </button>
-                  {/* <button
-                    disabled={!network}
-                    onClick={() => setModalStep(3)}
-                    className="bg-blue-600 px-4 py-2 rounded cursor-pointer"
-                  >
-                    Continue
-                  </button> */}
-                </div>
-              </>
-            )}
-
-            {/* STEP 3 */}
-            {/* STEP 3 */}
-            {modalStep === 3 && (
-  <>
-    <h2 className="text-xl font-bold">Confirm Purchase</h2>
-
-    <p className="mt-2 text-sm">
-      You selected <b>USDT</b> on <b>{network}</b> network
-    </p>
-
-    <img
-      src={PAYMENT_DETAILS[network].qr}
-      alt={`${network} QR`}
-      className="mx-auto mt-4 w-36"
-    />
-
-    <div className="mt-4">
-      <label className="text-sm">Amount to Pay</label>
-      <input
-        disabled
-        value={`${totalAmount} USDT`}
-        className="w-full mt-1 p-2 bg-gray-800 rounded"
-      />
-    </div>
-
-    <div className="mt-4">
-      <label className="text-sm">Pay to this address</label>
-      <input
-        disabled
-        value={PAYMENT_DETAILS[network].address}
-        className="w-full mt-1 p-2 bg-gray-800 rounded"
-      />
-    </div>
-
-    <div className="mt-4">
-      <label className="text-sm">Transaction Hash</label>
-      <input
-        placeholder="Enter transaction hash"
-        value={txHash}
-        onChange={(e) => setTxHash(e.target.value)}
-        className="w-full mt-1 p-2 bg-gray-800 rounded"
-      />
-    </div>
-
-    <div className="flex justify-between mt-6">
-      <button
-        className="cursor-pointer"
-        onClick={() => setModalStep(2)}
-        disabled={loading}
-      >
-        Back
-      </button>
-
-      <button
-        disabled={!txHash.trim() || loading}
-        className={`px-4 py-2 rounded cursor-pointer flex items-center gap-2 ${
-          !txHash.trim() || loading
-            ? "bg-gray-600 cursor-not-allowed"
-            : "bg-green-600 hover:bg-green-700"
-        }`}
-        onClick={async () => {
-          if (!txHash.trim() || loading) return;
-
-          setLoading(true);
-
-          const { start_date, end_date } =
-            calculateStartEndDates(billing);
-
-          const payload = {
-            plan_id: selectedPlan.id,
-            plan_name: selectedPlan.name,
-            billing_cycle: billing,
-
-            method:
-              paymentMethod === "USDT"
-                ? "cryptocurrency"
-                : "card",
-
-            amount: totalAmount,
-
-            currency:
-              paymentMethod === "USDT"
-                ? network === "ERC20"
-                  ? "USDT (ERC20)"
-                  : "USDT (TRC20)"
-                : "CARD",
-
-            start_date,
-            end_date,
-
-            payment_id: txHash,
-          };
-
-          try {
-                      const res = await makeCryptoPayment(payload);
-                      console.log(res);
-                      
-                      if (res?.success || res?.status === 201) {
-                        
-                        resetPaymentState();
-                        setModalStep(0 );
-                      }
-                    } catch {
-                      alert("Payment failed");
-                    } finally {
-                      setLoading(false);
+                  <div className="mt-8 space-y-4">
+                    {[
+                      {
+                        id: "USDT",
+                        label: "USDT Crypto",
+                        desc: "Pay using blockchain",
+                      },
+                      {
+                        id: "card",
+                        label: "Card",
+                        desc: "Secure card payment",
+                      },
+                    ].map((opt) => (
+                      <label
+                        key={opt.id}
+                        className={`group flex items-start gap-4 p-4 rounded-xl border cursor-pointer transition
+                    ${
+                      paymentMethod === opt.id
+                        ? "border-blue-500 bg-blue-50 shadow-[0_0_0_4px_rgba(59,130,246,0.12)]"
+                        : "border-gray-200 hover:bg-gray-50"
                     }
-        }}
-      >
-        {loading ? (
-          <>
-            <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
-            Processing...
-          </>
-        ) : (
-          "Confirm Payment"
-        )}
-      </button>
-    </div>
-  </>
-)}
+                  `}
+                      >
+                        <input
+                          type="radio"
+                          checked={paymentMethod === opt.id}
+                          onChange={() => setPaymentMethod(opt.id)}
+                          className="mt-1"
+                        />
+                        <div>
+                          <p className="font-medium text-gray-900">
+                            {opt.label}
+                          </p>
+                          <p className="text-xs text-gray-500">{opt.desc}</p>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
 
+                  <div className="mt-10 flex justify-between items-center">
+                    <button
+                      onClick={() => setModalStep(0)}
+                      className="text-sm text-gray-500 hover:text-gray-800"
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      disabled={!paymentMethod}
+                      onClick={() => setModalStep(2)}
+                      className={`px-6 py-3 rounded-xl text-sm font-medium transition
+                  ${
+                    paymentMethod
+                      ? "bg-gray-900 text-white hover:bg-gray-800 shadow-lg"
+                      : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  }
+                `}
+                    >
+                      Continue →
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {/* ================= STEP 2 (USDT) ================= */}
+              {modalStep === 2 && paymentMethod === "USDT" && (
+                <>
+                  <h2 className="text-2xl font-semibold text-gray-900">
+                    Choose network
+                  </h2>
+
+                  <div className="mt-8 space-y-4">
+                    {["ERC20", "TRC20"].map((n) => (
+                      <label
+                        key={n}
+                        className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition
+                    ${
+                      network === n
+                        ? "border-indigo-500 bg-indigo-50 shadow-[0_0_0_4px_rgba(99,102,241,0.12)]"
+                        : "border-gray-200 hover:bg-gray-50"
+                    }
+                  `}
+                      >
+                        <input
+                          type="radio"
+                          checked={network === n}
+                          onChange={() => setNetwork(n)}
+                        />
+                        <span className="font-medium">{n}</span>
+                      </label>
+                    ))}
+                  </div>
+
+                  <div className="mt-10 flex justify-between">
+                    <button
+                      onClick={() => setModalStep(1)}
+                      className="text-sm text-gray-500 hover:text-gray-800"
+                    >
+                      ← Back
+                    </button>
+
+                    <button
+                      disabled={!network}
+                      onClick={() => setModalStep(3)}
+                      className={`px-6 py-3 rounded-xl text-sm font-medium transition
+                  ${
+                    network
+                      ? "bg-gray-900 text-white hover:bg-gray-800 shadow-lg"
+                      : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  }
+                `}
+                    >
+                      Continue →
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {/* ================= STEP 3 ================= */}
+              {modalStep === 3 && (
+                <>
+                  <h2 className="text-2xl font-semibold text-gray-900">
+                    Complete payment
+                  </h2>
+
+                  <p className="mt-2 text-sm text-gray-500">
+                    USDT on <b>{network}</b> network
+                  </p>
+
+                  <img
+                    src={PAYMENT_DETAILS[network].qr}
+                    className="mx-auto mt-8 w-40 rounded-xl border shadow-sm"
+                  />
+
+                  <div className="mt-6 space-y-4">
+                    <input
+                      disabled
+                      value={`${totalAmount} USDT`}
+                      className="w-full px-4 py-3 rounded-xl border bg-gray-50 text-sm"
+                    />
+
+                    <input
+                      disabled
+                      value={PAYMENT_DETAILS[network].address}
+                      className="w-full px-4 py-3 rounded-xl border bg-gray-50 text-sm"
+                    />
+
+                    <input
+                      placeholder="Transaction hash"
+                      value={txHash}
+                      onChange={(e) => setTxHash(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none"
+                    />
+                  </div>
+
+                  <div className="mt-10 flex justify-between">
+                    <button
+                      onClick={() => setModalStep(2)}
+                      className="text-sm text-gray-500 hover:text-gray-800"
+                    >
+                      ← Back
+                    </button>
+
+                    <button
+                      disabled={!txHash.trim() || loading}
+                      // onClick={/* SAME HANDLER */}
+                      className={`px-7 py-3 rounded-xl text-sm font-medium transition flex items-center gap-2
+                  ${
+                    !txHash.trim() || loading
+                      ? "bg-gray-200 text-gray-400"
+                      : "bg-emerald-600 text-white hover:bg-emerald-700 shadow-xl"
+                  }
+                `}
+                    >
+                      {loading ? "Processing…" : "Confirm Payment"}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}

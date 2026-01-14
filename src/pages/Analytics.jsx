@@ -453,13 +453,16 @@
 
 import React, { useEffect, useCallback, useState } from "react";
 
-import { addUrlCampData, getAllCampaign,getAllAnalyticsCamp, javascriptIntegrationCheckApi } from "../api/Apis";
+import {
+  addUrlCampData,
+  getAllCampaign,
+  getAllAnalyticsCamp,
+  javascriptIntegrationCheckApi,
+} from "../api/Apis";
 import { apiFunction } from "../api/ApiFunction";
 import { useNavigate } from "react-router-dom";
 
-
 import { showErrorToast, showSuccessToast } from "../components/toast/toast";
-
 
 const WebAnalyticsPage = ({
   analyticsData = [],
@@ -561,19 +564,20 @@ const WebAnalyticsPage = ({
   const [urlName, setUrlName] = useState("");
   const [urlValue, setUrlValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
- 
-
 
   const fetchCampaigns = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await apiFunction("get", getAllAnalyticsCamp, null, null);
+      const response = await apiFunction(
+        "get",
+        getAllAnalyticsCamp,
+        null,
+        null
+      );
       console.log(response);
-      
-     
-      
+
       const dataRows = response.data.data || [];
-      
+
       setCampaigns(dataRows);
       setTotalItems(dataRows.length);
     } catch (err) {
@@ -583,80 +587,68 @@ const WebAnalyticsPage = ({
     }
   }, []);
 
-
   const handleDeleteCampaign = async (id) => {
-  if (!id) return;
+    if (!id) return;
 
-  const confirmDelete = window.confirm(
-    "Are you sure you want to delete this campaign?"
-  );
-  if (!confirmDelete) return;
-
-  try {
-    const res = await apiFunction(
-      "delete",
-      getAllAnalyticsCamp,
-    id,   // 👈 ID here
-      null
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this campaign?"
     );
+    if (!confirmDelete) return;
 
-    showSuccessToast("Campaign deleted successfully");
+    try {
+      const res = await apiFunction(
+        "delete",
+        getAllAnalyticsCamp,
+        id, // 👈 ID here
+        null
+      );
 
-    // 🔄 Refresh list after delete
-    fetchCampaigns();
+      showSuccessToast("Campaign deleted successfully");
 
-  } catch (error) {
-   
-    showErrorToast(
-      error?.response?.data?.message || "Failed to delete campaign"
-    );
-  }
-};
-
-
-const addUrlCamp = async () => {
-  // basic validation
-  if (!urlName.trim() || !urlValue.trim()) {
-    showErrorToast("Name and URL are required");
-    return;
-  }
-
-  try {
-    setIsSubmitting(true);
-
-    const payload = {
-      name: urlName,
-      integrationUrl: urlValue,
-    };
-
-    const res = await apiFunction(
-      "post",
-      getAllAnalyticsCamp,
-      null,
-      payload
-    );
-
-    if (res?.data?.success) {
-      // reset fields
-      setUrlName("");
-      setUrlValue("");
-
-      // close modal
-      setOpen1(false);
-
-      // refresh list
+      // 🔄 Refresh list after delete
       fetchCampaigns();
-      showSuccessToast('Campaign Created Successfully..!!')
+    } catch (error) {
+      showErrorToast(
+        error?.response?.data?.message || "Failed to delete campaign"
+      );
     }
-  } catch (error) {
-    
-    showErrorToast("Failed to add URL");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
+  const addUrlCamp = async () => {
+    // basic validation
+    if (!urlName.trim() || !urlValue.trim()) {
+      showErrorToast("Name and URL are required");
+      return;
+    }
 
+    try {
+      setIsSubmitting(true);
+
+      const payload = {
+        name: urlName,
+        integrationUrl: urlValue,
+      };
+
+      const res = await apiFunction("post", getAllAnalyticsCamp, null, payload);
+
+      if (res?.data?.success) {
+        // reset fields
+        setUrlName("");
+        setUrlValue("");
+
+        // close modal
+        setOpen1(false);
+
+        // refresh list
+        fetchCampaigns();
+        showSuccessToast("Campaign Created Successfully..!!");
+      }
+    } catch (error) {
+      showErrorToast("Failed to add URL");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     fetchCampaigns();
@@ -695,31 +687,37 @@ const addUrlCamp = async () => {
   const javascriptIntegration = async (camp) => {
     // console.log("ghfdu", camp?.selectedCdnCode?.item);
     const item = camp?.selectedCdnCode?.item;
-    const url = item?.integrationUrl
+    const url = item?.integrationUrl;
     const data = {
-      url: url,        // client site URL
-      campId: item?.id           // expected camp id
-    }
+      url: url, // client site URL
+      campId: item?.id, // expected camp id
+    };
     const res = await apiFunction(
       "post",
-      javascriptIntegrationCheckApi, null, data
+      javascriptIntegrationCheckApi,
+      null,
+      data
     );
     console.log(res);
-  
+
     if (res.status === 200) {
       const data = {
         integration: true,
-      }
+      };
       try {
         console.log("guhsuhuahu");
-        
-        const integrate = await apiFunction("patch", getAllAnalyticsCamp, item?.id, data)
+
+        const integrate = await apiFunction(
+          "patch",
+          getAllAnalyticsCamp,
+          item?.id,
+          data
+        );
         console.log(integrate);
       } catch (error) {
-        console.log("error",error);
-        
+        console.log("error", error);
       }
-      
+
       showSuccessToast("✅ Integration Successful");
     } else {
       showErrorToast("❌ Integration Failed");
@@ -727,15 +725,15 @@ const addUrlCamp = async () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0d14] text-gray-100 p-8">
+    <div className="min-h-screen bg-white text-gray-800 p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">
           <div>
-            <h1 className="text-3xl font-bold text-white tracking-tight">
+            <h1 className="text-3xl font-bold text-gray-800 tracking-tight">
               Web Analytics
             </h1>
-            <p className="text-sm text-gray-400 mt-2">
+            <p className="text-sm text-gray-600 mt-2">
               Track your URLs and monitor real-time visitor data
             </p>
           </div>
@@ -743,7 +741,7 @@ const addUrlCamp = async () => {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => setOpen1(true)}
-              className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md font-medium text-sm shadow-lg transition duration-150 cursor-pointer"
+              className="flex items-center px-4 py-2 bg-blue-400 hover:bg-blue-700 rounded-xl font-medium text-sm shadow-lg transition duration-150 cursor-pointer"
             >
               <svg
                 className="h-5 w-5 mr-1"
@@ -764,7 +762,7 @@ const addUrlCamp = async () => {
             <button
               onClick={handleRefresh}
               disabled={isLoading} // Disable button while fetching
-              className={`flex items-center cursor-pointer px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md font-medium text-sm shadow-lg transition duration-150 ${
+              className={`flex items-center cursor-pointer px-4 py-2 bg-green-600 hover:bg-green-400 rounded-xl font-medium text-sm shadow-lg transition duration-150 ${
                 isLoading ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
@@ -781,14 +779,26 @@ const addUrlCamp = async () => {
                   d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                 />
               </svg>
-              {isLoading ? "Refreshing..." : "Refresh"}
+              {isLoading ? "Reloading..." : "Reload"}
             </button>
           </div>
         </div>
 
         {/* Table */}
-        <div className="bg-[#1E293B] rounded-2xl shadow-xl overflow-hidden border border-gray-700">
-          <div className="grid grid-cols-8 gap-4 px-6 py-4 bg-[#2B3B58] text-gray-300 text-xs font-semibold uppercase tracking-wider">
+        <div
+          style={{ fontFamily: "Inter, Outfit, system-ui, sans-serif" }}
+          className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.08)] border border-gray-200 overflow-hidden"
+        >
+          {/* TABLE HEADER */}
+          <div
+            className="
+      grid grid-cols-8 gap-4
+      px-8 py-4
+      bg-gray-50
+      border-b border-gray-200
+      text-xs font-medium text-gray-500 uppercase tracking-wide
+    "
+          >
             <div>SN</div>
             <div>Name</div>
             <div>URL</div>
@@ -796,64 +806,93 @@ const addUrlCamp = async () => {
             <div>View</div>
             <div>Code</div>
             <div>Created</div>
-            <div>Actions</div>
+            <div className="text-right">Actions</div>
           </div>
 
+          {/* TABLE BODY */}
           {campaigns?.map((item, index) => (
             <div
               key={item.id}
-              className="grid grid-cols-8 gap-4 px-6 py-3 border-t border-gray-700 text-gray-200 hover:bg-[#25344E]"
+              className="
+        grid grid-cols-8 gap-4
+        px-8 py-5
+        text-sm text-gray-700
+        border-b border-gray-100
+        hover:bg-gray-50 transition
+      "
             >
-              <div>{index + 1}</div>
-              <div>{item?.name || "NA"}</div>
-              <div className="relative group inline-block">
-                {/* Icon/trigger */}
-                <span className="text-blue-400 cursor-pointer">ℹ️</span>
+              {/* SN */}
+              <div className="text-gray-500">{index + 1}</div>
 
-                {/* Tooltip */}
+              {/* Name */}
+              <div className="font-medium text-gray-900 truncate">
+                {item?.name || "NA"}
+              </div>
+
+              {/* URL (tooltip same, just premium look) */}
+              <div className="relative group w-fit">
+                <span className="text-blue-600 cursor-pointer text-sm">ℹ️</span>
+
                 <div
-                  className="absolute hidden group-hover:block bg-gray-900 text-white text-xs 
-    p-2 rounded-md border border-gray-700 shadow-md whitespace-nowrap 
-    -top-10 left-1/2 -translate-x-1/2"
+                  className="
+            absolute z-[9999]
+            top-full mt-2 left-1/2 -translate-x-1/2
+            hidden group-hover:block
+            bg-gray-900 text-white text-xs
+            px-3 py-1.5 rounded-md
+            shadow-xl
+            whitespace-nowrap
+            pointer-events-none
+          "
                 >
                   {item?.integrationUrl || "-"}
                 </div>
               </div>
 
-              <div>{item?.clickCount || "0"}</div>
+              {/* Visitors */}
+              <div className="tabular-nums font-medium">
+                {item?.clickCount || "0"}
+              </div>
 
+              {/* View */}
               <div>
                 <Button
                   variant="icon"
                   icon={ChartBarIcon}
-                  className="cursor-pointer"
-                  onClick={() => navigate(`/Dashboard/real-time-analytics/${item.id}`)}
+                  className="cursor-pointer hover:opacity-80"
+                  onClick={() =>
+                    navigate(`/Dashboard/real-time-analytics/${item.id}`)
+                  }
                 />
               </div>
 
-              {/* Code icon → open modal */}
+              {/* Code */}
               <div>
                 <button
                   onClick={() => {
                     setSelectedCdnCode({
-                      item:item,
+                      item: item,
                       cdn: item?.integrationCode || "",
                       link: item?.integrationUrl || "",
                     });
                     setOpenCodeModal(true);
                   }}
-                  className="text-blue-400 hover:text-blue-300 cursor-pointer"
+                  className="text-blue-600 hover:text-blue-700 cursor-pointer"
                 >
                   <CodeIcon />
                 </button>
               </div>
 
-              <div>{formatDateTime(item?.createdAt)}</div>
+              {/* Created */}
+              <div className="text-xs text-gray-600">
+                {formatDateTime(item?.createdAt)}
+              </div>
 
-              <div>
+              {/* Actions */}
+              <div className="flex justify-end">
                 <Button
                   variant="icon"
-                  className="cursor-pointer"
+                  className="cursor-pointer hover:opacity-80"
                   icon={TrashIcon}
                   onClick={() => handleDeleteCampaign(item.id)}
                 />
@@ -867,77 +906,83 @@ const addUrlCamp = async () => {
 
       {/* CODE MODAL */}
       {openCodeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-[750px] shadow-2xl">
-            <div className="flex justify-between items-center border-b border-slate-700 pb-3 mb-4">
-              <h2 className="text-xl text-white font-semibold ">
-                Analytics Integration Code
-              </h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md">
+          <div className="w-[600px] bg-white rounded-2xl shadow-[0_30px_80px_rgba(0,0,0,0.25)] border border-gray-200">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Analytics Integration
+                </h2>
+                <p className="text-xs text-gray-500">
+                  Add this script to your website
+                </p>
+              </div>
 
               <button
                 onClick={() => setOpenCodeModal(false)}
-                className="text-gray-400 hover:text-white text-xl cursor-pointer"
+                className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-800 transition"
               >
                 ✕
               </button>
             </div>
 
-            <p className="text-gray-300 text-sm mb-3">
-              Paste this script inside {"<head>"} of your website:
-            </p>
+            {/* Body */}
+            <div className="px-6 py-5 space-y-6">
+              {/* Code Section */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Script Code
+                </label>
 
-            {/* Code Box */}
-            <div className="bg-black border border-slate-700 rounded-lg p-3 text-sm text-green-400">
-              <pre className="whitespace-pre-wrap max-h-40 overflow-auto">
-                {selectedCdnCode?.cdn}
-              </pre>
-            </div>
+                <div className="mt-2 relative bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm text-gray-800 font-mono">
+                  <pre className="whitespace-pre-wrap max-h-32 overflow-auto">
+                    {selectedCdnCode?.cdn}
+                  </pre>
+                </div>
 
-            <button
-              onClick={handleCopyCode}
-              className={`mt-3 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg cursor-pointer ${
+                <button
+                  onClick={handleCopyCode}
+                  className={`mt-3 inline-flex cursor-pointer items-center gap-2 px-4 py-2 text-sm rounded-lg transition shadow-sm
+              ${
                 isCopied
-                  ? "bg-green-600 hover:bg-green-700 text-white" // Style when copied
-                  : "bg-blue-600 hover:bg-blue-700 text-white" // Original style
-              }`}
-            >
-              {isCopied ? (
-                <>
-                  <span>✅</span>
-                  <span>Copied!</span>
-                </>
-              ) : (
-                <>
-                  <span>📋</span>
-                  <span>Copy Code</span>
-                </>
-              )}
-            </button>
+                  ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                  : "bg-indigo-600 text-white hover:bg-indigo-700"
+              }
+            `}
+                >
+                  {isCopied ? "Copied successfully" : "Copy script"}
+                </button>
+              </div>
 
-            {/* URL test */}
-            <p className="mt-6 text-gray-300 text-sm mb-3">
-              Enter URL to test integration:
-            </p>
+              {/* URL Test */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Test URL
+                </label>
 
-            <div className="bg-black border border-slate-700 rounded-lg p-3 text-sm text-green-400">
-              <pre className="whitespace-pre-wrap max-h-40 overflow-auto">
-                {selectedCdnCode?.link}
-              </pre>
+                <div className="mt-2 bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm text-gray-800 font-mono">
+                  <pre className="whitespace-pre-wrap max-h-24 overflow-auto">
+                    {selectedCdnCode?.link}
+                  </pre>
+                </div>
+              </div>
             </div>
 
-            <div className="flex justify-end gap-3 mt-6">
+            {/* Footer */}
+            <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-2xl">
               <button
                 onClick={() => setOpenCodeModal(false)}
-                className="border border-red-500 text-red-500 px-4 py-2 rounded-lg hover:bg-red-900/20  cursor-pointer"
+                className="px-4 py-2 text-sm cursor-pointer rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition"
               >
                 Cancel
               </button>
 
-              <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg  cursor-pointer"
-              onClick={()=>{javascriptIntegration({selectedCdnCode})
-              }}
+              <button
+                onClick={() => javascriptIntegration({ selectedCdnCode })}
+                className="px-5 py-2 cursor-pointer text-sm rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm transition"
               >
-                TEST URL
+                Test Integration
               </button>
             </div>
           </div>
@@ -945,60 +990,113 @@ const addUrlCamp = async () => {
       )}
 
       {open1 && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          {/* MODAL BOX */}
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-[650px] shadow-2xl">
-            {/* Title */}
-            <h2 className="text-xl font-semibold text-white mb-6 border-b border-slate-700 pb-3">
-              Add Url
-            </h2>
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-md">
+          {/* SOFT GLOW */}
+          <div className="absolute -top-40 -left-40 h-[420px] w-[420px] rounded-full bg-blue-500/20 blur-3xl"></div>
+          <div className="absolute -bottom-40 -right-40 h-[420px] w-[420px] rounded-full bg-purple-500/20 blur-3xl"></div>
 
-            {/* NAME FIELD */}
-            <div className="mb-5">
-              <label className="text-gray-400 text-xs block mb-2 uppercase  text-left">
-                Name
-              </label>
-              <input
-  value={urlName}
-  onChange={(e) => setUrlName(e.target.value)}
-  placeholder="eg: PPC Offer"
-  className="w-full bg-transparent border border-slate-700 rounded-lg px-4 py-2 text-white outline-none"
-/>
-
+          {/* MODAL */}
+          <div
+            style={{ fontFamily: "Inter, Outfit, system-ui, sans-serif" }}
+            className="
+        relative w-full max-w-xl
+        rounded-3xl bg-white
+        shadow-[0_40px_120px_rgba(0,0,0,0.25)]
+        border border-gray-200
+        p-10
+        text-gray-900
+      "
+          >
+            {/* HEADER */}
+            <div className="mb-10">
+              <h2 className="text-2xl font-semibold tracking-tight">
+                Add Destination URL
+              </h2>
+              <p className="text-sm text-gray-500 mt-2 leading-relaxed">
+                Securely configure and track your campaign destination.
+              </p>
             </div>
 
-            {/* URL FIELD */}
-            <div className="mb-8">
-              <label className="text-gray-400 text-xs block mb-2 uppercase  text-left">
-                Url
-              </label>
-            <input
-  value={urlValue}
-  onChange={(e) => setUrlValue(e.target.value)}
-  placeholder="eg: https://www.google.com/"
-  className="w-full bg-transparent border border-slate-700 rounded-lg px-4 py-2 text-white outline-none"
-/>
+            {/* INPUTS */}
+            <div className="space-y-7">
+              {/* NAME */}
+              <div>
+                <label className="block text-xs uppercase tracking-widest text-gray-500 mb-3">
+                  Campaign Name
+                </label>
+                <input
+                  value={urlName}
+                  onChange={(e) => setUrlName(e.target.value)}
+                  placeholder="PPC Offer Page"
+                  className="
+              w-full px-5 py-4 rounded-xl
+              bg-gray-50
+              border border-gray-300
+              text-sm
+              placeholder-gray-400
+              focus:outline-none
+              focus:ring-2 focus:ring-blue-500/40
+              focus:border-blue-500
+              transition
+            "
+                />
+              </div>
 
+              {/* URL */}
+              <div>
+                <label className="block text-xs uppercase tracking-widest text-gray-500 mb-3">
+                  Destination URL
+                </label>
+                <input
+                  value={urlValue}
+                  onChange={(e) => setUrlValue(e.target.value)}
+                  placeholder="https://example.com"
+                  className="
+              w-full px-5 py-4 rounded-xl
+              bg-gray-50
+              border border-gray-300
+              text-sm
+              placeholder-gray-400
+              focus:outline-none
+              focus:ring-2 focus:ring-blue-500/40
+              focus:border-blue-500
+              transition
+            "
+                />
+              </div>
             </div>
 
-            {/* FOOTER BUTTONS */}
-            <div className="flex justify-end gap-3">
+            {/* FOOTER */}
+            <div className="mt-12 flex items-center justify-end gap-5">
               <button
                 onClick={() => setOpen1(false)}
-                className="border border-red-500 text-red-500 px-4 py-2 rounded-lg hover:bg-red-900/30  cursor-pointer"
+                className="
+            text-sm font-medium text-gray-500
+            hover:text-gray-900
+            transition
+          "
               >
-                ✕ Cancel
+                Cancel
               </button>
 
-             <button
-  onClick={addUrlCamp}
-  disabled={isSubmitting}
-  className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg cursor-pointer
-    ${isSubmitting ? "opacity-60 cursor-not-allowed" : ""}`}
->
-  {isSubmitting ? "Adding..." : "+ Add"}
-</button>
-
+              <button
+                onClick={addUrlCamp}
+                disabled={isSubmitting}
+                className={`
+            px-7 py-4 rounded-xl
+            text-sm font-semibold
+            text-white
+            shadow-[0_16px_40px_rgba(37,99,235,0.35)]
+            transition-all
+            ${
+              isSubmitting
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-600"
+            }
+          `}
+              >
+                {isSubmitting ? "Adding…" : "Add URL"}
+              </button>
             </div>
           </div>
         </div>
