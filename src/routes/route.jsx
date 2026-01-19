@@ -9,6 +9,7 @@ import {
 import { Toaster } from "react-hot-toast";
 import { LoginProtector, RoutesProtector } from "./routesProtector";
 import UpdatePassword from "../auth/updatePassword";
+import DashboardGuard from "./DashboardGuard";
 
 // ✅ Lazy imports
 const LandingPage = lazy(() => import("../pages/home.jsx/landingPage"));
@@ -98,7 +99,9 @@ export default function Routess() {
             path="/Dashboard"
             element={
               <RoutesProtector>
-                <Dashboard />
+                <DashboardGuard>
+                  <Dashboard />
+                </DashboardGuard>
               </RoutesProtector>
             }
           >

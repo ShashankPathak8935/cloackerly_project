@@ -44,4 +44,12 @@ export const blacklistIpApi = `${base_url}/api/v2/blacklisted-ip`;
 export const javascriptIntegrationCheckApi = `${base_url}/api/v2/trafficfilter/check`;
 
 
-export const cryptoPayment = `${base_url}/api/v2/payment`
+export const cryptoPayment = `${base_url}/api/v2/payment`;
+
+
+export const paypalCreateOrder = `${base_url}/api/v2/payment/create-order`;
+export const paypalCaptureOrder = `${base_url}/api/v2/payment/capture-order`;
+export const getPlans = `${base_url}/api/v2/utils/plans`;
+export const verifyOtpApi = `${base_url}/auth/verify-otp`;
+export const resendOtpApi = `${base_url}/auth/resend-otp`;
+export const getSubscription = `${base_url}/api/v2/plan/subscription`;

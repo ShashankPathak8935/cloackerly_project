@@ -1,77 +1,9 @@
-import React, { useState } from "react";
-import { apiFunction } from "../api/ApiFunction";
-import { cryptoPayment } from "../api/Apis";
+import React, { useEffect, useState } from "react";
+import { apiFunction, createApiFunction } from "../api/ApiFunction";
+import { cryptoPayment, getPlans } from "../api/Apis";
 import PayPalIntegration from "./paypalIntegration";
 
-/* ===================== DATA ===================== */
-
-const plans = [
-  {
-    id: 1,
-    name: "Starter",
-    basePrice: 19,
-    campaigns: "1 Campaign",
-    clicks: "1,000 Clicks",
-    features: [
-      "VPN / Proxy Protection",
-      "Bot Protection",
-      "Block Empty Referrer",
-      "Block Blacklist IP's",
-      "Country Targeting",
-      "Device Targeting",
-      "OS Targeting",
-      "Download Report",
-      "Realtime Click Report",
-    ],
-  },
-  {
-    id: 2,
-    name: "Pro",
-    basePrice: 99,
-    campaigns: "5 Campaigns",
-    clicks: "5,000 Clicks",
-    popular: true,
-    features: [
-      "VPN / Proxy Protection",
-      "Bot Protection",
-      "Block Empty Referrer",
-      "Block Blacklist IP's",
-      "Country Targeting",
-      "Device Targeting",
-      "OS Targeting",
-      "Download Report",
-      "Realtime Click Report",
-      "Safe Page",
-      "Money Page",
-    ],
-  },
-  {
-    id: 3,
-    name: "Enterprise",
-    basePrice: 149,
-    campaigns: "20 Campaigns",
-    clicks: "Unlimited Clicks",
-    features: [
-      "VPN / Proxy Protection",
-      "Bot Protection",
-      "Block Empty Referrer",
-      "Block Blacklist IP's",
-      "Country Targeting",
-      "Device Targeting",
-      "OS Targeting",
-      "Download Report",
-      "Realtime Click Report",
-      "Safe Page",
-      "Money Page",
-    ],
-  },
-];
-
-const discounts = {
-  Monthly: 0,
-  quarterly: 10,
-  Yearly: 20,
-};
+/* ===================== PAYMENT DETAILS ===================== */
 
 const PAYMENT_DETAILS = {
   ERC20: {
@@ -88,15 +20,38 @@ const PAYMENT_DETAILS = {
 
 export default function Pricing() {
   const [billing, setBilling] = useState("Monthly");
+  const [plans, setPlans] = useState([]);
+  const [loadingPlans, setLoadingPlans] = useState(true);
 
   // MODAL STATE
-  const [modalStep, setModalStep] = useState(0); // 0=closed
+  const [modalStep, setModalStep] = useState(0);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [network, setNetwork] = useState("");
   const [txHash, setTxHash] = useState("");
   const [loading, setLoading] = useState(false);
-  const isConfirmDisabled = !txHash.trim() || loading;
+  const [payload, setPayload] = useState(null);
+
+  /* ===================== FETCH PLANS ===================== */
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const res = await createApiFunction("get", getPlans, null, null);
+        console.log("PLANS RESPONSE 👉", res);
+
+        if (res?.data?.success && Array.isArray(res.data.Plans)) {
+          setPlans(res.data.Plans);
+        }
+      } finally {
+        setLoadingPlans(false);
+      }
+    };
+
+    fetchPlans();
+  }, []);
+
+  /* ===================== HELPERS ===================== */
 
   const resetPaymentState = () => {
     setModalStep(0);
@@ -105,141 +60,167 @@ export default function Pricing() {
     setNetwork("");
     setTxHash("");
     setLoading(false);
+    setPayload(null);
   };
 
   const calculateStartEndDates = (billing) => {
-    const start = new Date(); // now
+    const start = new Date();
     const end = new Date(start);
 
-    if (billing === "Monthly") {
-      end.setMonth(end.getMonth() + 1);
-    }
-
-    if (billing === "quarterly") {
-      end.setMonth(end.getMonth() + 3);
-    }
-
-    if (billing === "Yearly") {
-      end.setFullYear(end.getFullYear() + 1);
-    }
+    if (billing === "Monthly") end.setMonth(end.getMonth() + 1);
+    if (billing === "quarterly") end.setMonth(end.getMonth() + 3);
+    if (billing === "Yearly") end.setFullYear(end.getFullYear() + 1);
 
     return {
-      start_date: start.toISOString(), // ✅ UTC
-      end_date: end.toISOString(), // ✅ UTC
+      start_date: start.toISOString(),
+      end_date: end.toISOString(),
     };
   };
 
-  /* ===== PRICE LOGIC (UNCHANGED) ===== */
-  const calculateMonthlyPrice = (price) => {
-    const discount = discounts[billing];
-    return Math.round(price - (price * discount) / 100);
+  const parseFeatures = (features) => {
+    try {
+      return JSON.parse(features);
+    } catch {
+      return [];
+    }
   };
-  const getBillingMultiplier = () => {
-    if (billing === "quarterly") return 3;
-    if (billing === "Yearly") return 12;
-    return 1; // Monthly
-  };
-  const MonthlyPrice = selectedPlan
-    ? calculateMonthlyPrice(selectedPlan.basePrice)
-    : 0;
 
-  const totalAmount = MonthlyPrice * getBillingMultiplier();
+  const filteredPlans = plans.filter((plan) => {
+    if (billing === "Monthly") return plan.durationInMonths === 1;
+    if (billing === "quarterly") return plan.durationInMonths === 3;
+    if (billing === "Yearly") return plan.durationInMonths === 12;
+    return false;
+  });
+
+  const totalAmount = selectedPlan ? selectedPlan.price : 0;
 
   const makeCryptoPayment = async (payload) => {
-    const response = await apiFunction("post", cryptoPayment, null, payload);
-    return response;
+    return await apiFunction("post", cryptoPayment, null, payload);
   };
+
+  /* ===================== LOADER ===================== */
+
+  if (loadingPlans) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white text-gray-600">
+        Loading plans...
+      </div>
+    );
+  }
 
   /* ===================== UI ===================== */
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 px-6 py-16">
+    <div className="min-h-screen bg-white text-gray-100 px-6 py-14">
       <div className="max-w-7xl mx-auto">
         {/* HEADER */}
-        <div className="text-center mb-14">
-          <h1 className="text-4xl font-semibold tracking-tight">
-            Choose Plan accordingly
+        <div className="text-center mb-10">
+          <h1 className="text-3xl md:text-[32px] font-semibold text-gray-900 leading-tight">
+            Simple pricing, built for growing teams
           </h1>
-          {/* <p className="text-gray-500 mt-3">
-            Choose the plan that fits your business needs
-          </p> */}
+
+          <p className="mt-3 text-sm text-gray-600 max-w-md mx-auto">
+            Pick a plan that matches your workflow. Upgrade or downgrade
+            anytime.
+          </p>
         </div>
 
         {/* BILLING TOGGLE */}
-        <div className="flex justify-center mb-16">
-          <div className="bg-white border border-gray-200 rounded-xl p-1 flex gap-1 shadow-sm">
-            {["Monthly", "quarterly", "Yearly"].map((type) => (
-              <button
-                key={type}
-                onClick={() => setBilling(type)}
-                className={`px-6 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer
-              ${
-                billing === type
-                  ? "bg-gray-900 text-white shadow"
-                  : "text-gray-600 hover:bg-gray-100"
-              }
-            `}
-              >
-                {type}
-                {type !== "Monthly" && (
-                  <span className="ml-2 text-xs text-emerald-600 font-medium">
-                    {discounts[type]}% OFF
-                  </span>
-                )}
-              </button>
-            ))}
+        <div className="flex justify-center mb-12">
+          <div className="relative flex bg-gray-100 p-1 rounded-full shadow-inner">
+            {["Monthly", "quarterly", "Yearly"].map((type) => {
+              const discount =
+                type === "quarterly"
+                  ? "10% OFF"
+                  : type === "Yearly"
+                    ? "20% OFF"
+                    : null;
+
+              const isActive = billing === type;
+
+              return (
+                <button
+                  key={type}
+                  onClick={() => setBilling(type)}
+                  className={`relative z-10 px-6 py-2 text-sm font-medium rounded-full
+            transition-all duration-300 cursor-pointer
+            ${
+              isActive ? "text-gray-900" : "text-gray-500 hover:text-gray-700"
+            }`}
+                >
+                  {type}
+
+                  {discount && (
+                    <span
+                      className="ml-2 text-[10px] px-2 py-[2px] rounded-full 
+              bg-gray-900 text-white font-semibold"
+                    >
+                      {discount}
+                    </span>
+                  )}
+
+                  {/* ACTIVE PILL */}
+                  {isActive && (
+                    <span
+                      className="absolute inset-0 -z-10 rounded-full 
+                bg-white shadow-sm transition-all duration-300"
+                    />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* PRICING CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {plans.map((plan, i) => (
+        {/* PLANS */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {filteredPlans.map((plan) => (
             <div
-              key={i}
-              className={`relative bg-white rounded-2xl p-8 border transition-all
-            ${
-              plan.popular
-                ? "border-blue-500 shadow-[0_25px_60px_rgba(37,99,235,0.15)] scale-[1.02]"
-                : "border-gray-200 shadow-sm hover:shadow-md"
-            }
-          `}
+              key={plan.id}
+              className={`relative bg-white border rounded-xl p-6
+        transition-all duration-300 ease-out
+        hover:-translate-y-1 hover:shadow-lg
+        ${
+          plan.name.includes("Pro")
+            ? "border-blue-500 shadow-md"
+            : "border-gray-200"
+        }`}
             >
-              {/* Popular Badge */}
-              {plan.popular && (
+              {plan.name.includes("Pro") && (
                 <span
                   className="absolute -top-3 left-1/2 -translate-x-1/2 
-              bg-blue-600 text-white text-xs px-4 py-1 rounded-full shadow"
+          bg-blue-600 text-white text-[11px] px-3 py-1 rounded-full"
                 >
-                  Most Popular
+                  Popular
                 </span>
               )}
 
-              {/* Plan Name */}
-              <h3 className="text-xl font-semibold text-gray-900">
+              {/* TITLE */}
+              <h3 className="text-lg font-semibold text-gray-900">
                 {plan.name}
               </h3>
 
-              {/* Price */}
-              <div className="mt-5 flex items-end gap-1">
-                <span className="text-4xl font-bold tracking-tight">
-                  ${calculateMonthlyPrice(plan.basePrice)}
+              {/* PRICE */}
+              <div className="mt-3 flex items-end gap-1">
+                <span className="text-3xl font-bold text-gray-900">
+                  ${plan.price}
                 </span>
-                <span className="text-sm text-gray-500 mb-1">/ month</span>
+                <span className="text-xs text-gray-500 mb-1">/ {billing}</span>
               </div>
 
-              {/* Sub info */}
-              <p className="mt-3 text-sm text-gray-500">
-                {plan.campaigns} • {plan.clicks}
+              {/* META */}
+              <p className="mt-2 text-xs text-gray-600">
+                {plan.maxCampaigns} Campaigns •{" "}
+                {plan.clicksPerCampaign === -1
+                  ? "Unlimited Clicks"
+                  : `${plan.clicksPerCampaign} Clicks`}
               </p>
 
-              {/* Divider */}
-              <div className="my-6 h-px bg-gray-200" />
-
-              {/* Features */}
-              <ul className="space-y-3 text-sm text-gray-700">
-                {plan.features.map((f, idx) => (
-                  <li key={idx} className="flex items-start gap-3">
-                    <span className="mt-[2px] text-emerald-500">✔</span>
+              {/* FEATURES */}
+              <ul className="mt-5 space-y-2 text-xs text-gray-700">
+                {parseFeatures(plan.features).map((f, idx) => (
+                  <li key={idx} className="flex gap-2">
+                    <span className="text-blue-600">•</span>
                     <span>{f}</span>
                   </li>
                 ))}
@@ -251,13 +232,13 @@ export default function Pricing() {
                   setSelectedPlan(plan);
                   setModalStep(1);
                 }}
-                className={`mt-8 w-full py-3 rounded-xl text-sm font-medium transition cursor-pointer
-              ${
-                plan.popular
-                  ? "bg-blue-600 text-white hover:bg-blue-700 shadow"
-                  : "bg-gray-900 text-white hover:bg-gray-800"
-              }
-            `}
+                className={`mt-6 w-full py-2.5 rounded-lg text-sm font-medium
+          transition cursor-pointer
+          ${
+            plan.name.includes("Pro")
+              ? "bg-blue-600 text-white hover:bg-blue-700"
+              : "bg-gray-900 text-white hover:bg-gray-800"
+          }`}
               >
                 Choose Plan
               </button>
@@ -266,225 +247,352 @@ export default function Pricing() {
         </div>
       </div>
 
+      {/* ===================== MODAL ===================== */}
       {modalStep > 0 && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-md">
-          {/* Glow layer */}
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500/20 blur-3xl" />
-          </div>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-md rounded-2xl p-6 border border-gray-700 relative">
+            <button
+              onClick={resetPaymentState}
+              className="absolute top-3 right-4 text-gray-400 hover:text-white"
+            >
+              ✕
+            </button>
 
-          {/* Modal */}
-          <div className="relative w-full max-w-md rounded-3xl bg-white shadow-[0_40px_120px_rgba(0,0,0,0.35)] border border-gray-200 overflow-hidden">
-            {/* Top subtle gradient bar */}
-            <div className="h-1.5 w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
+            {/* STEP 1 */}
+            {modalStep === 1 && (
+              <>
+                {/* TITLE */}
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Confirm your purchase
+                </h2>
 
-            <div className="p-8">
-              {/* Close */}
-              <button
-                onClick={resetPaymentState}
-                className="absolute top-5 right-5 h-9 w-9 rounded-full
-                     flex items-center justify-center
-                     bg-gray-100 hover:bg-gray-200
-                     text-gray-500 hover:text-gray-800
-                     transition cursor-pointer"
-              >
-                ✕
-              </button>
+                {/* SUMMARY */}
+                <p className="mt-2 text-sm text-gray-600">
+                  You’re about to activate{" "}
+                  <span className="font-medium text-gray-900">
+                    {selectedPlan.name}
+                  </span>{" "}
+                  for{" "}
+                  <span className="font-semibold text-blue-600">
+                    ${totalAmount}
+                  </span>
+                </p>
 
-              {/* ================= STEP 1 ================= */}
-              {modalStep === 1 && (
-                <>
-                  <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
-                    Confirm your purchase
-                  </h2>
-
-                  <p className="mt-2 text-sm text-gray-500">
-                    Activate{" "}
-                    <span className="font-medium text-gray-900">
-                      {selectedPlan.name}
-                    </span>
-                  </p>
-
-                  <div className="mt-8 space-y-4">
-                    {[
-                      {
-                        id: "USDT",
-                        label: "USDT Crypto",
-                        desc: "Pay using blockchain",
-                      },
-                      {
-                        id: "card",
-                        label: "Card",
-                        desc: "Secure card payment",
-                      },
-                    ].map((opt) => (
-                      <label
-                        key={opt.id}
-                        className={`group flex items-start gap-4 p-4 rounded-xl border cursor-pointer transition
-                    ${
-                      paymentMethod === opt.id
-                        ? "border-blue-500 bg-blue-50 shadow-[0_0_0_4px_rgba(59,130,246,0.12)]"
-                        : "border-gray-200 hover:bg-gray-50"
-                    }
-                  `}
-                      >
+                {/* PAYMENT METHODS */}
+                <div className="mt-6 space-y-3">
+                  {["USDT", "card"].map((m) => (
+                    <label
+                      key={m}
+                      className={`flex items-center justify-between border rounded-lg px-4 py-3 cursor-pointer
+            transition
+            ${
+              paymentMethod === m
+                ? "border-blue-600 bg-blue-50"
+                : "border-gray-200 hover:border-gray-300"
+            }`}
+                    >
+                      <div className="flex items-center gap-3">
                         <input
                           type="radio"
-                          checked={paymentMethod === opt.id}
-                          onChange={() => setPaymentMethod(opt.id)}
-                          className="mt-1"
+                          checked={paymentMethod === m}
+                          onChange={() => setPaymentMethod(m)}
+                          className="accent-blue-600"
                         />
-                        <div>
-                          <p className="font-medium text-gray-900">
-                            {opt.label}
-                          </p>
-                          <p className="text-xs text-gray-500">{opt.desc}</p>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
+                        <span className="text-sm font-medium text-gray-800">
+                          {m.toUpperCase()}
+                        </span>
+                      </div>
 
-                  <div className="mt-10 flex justify-between items-center">
-                    <button
-                      onClick={() => setModalStep(0)}
-                      className="text-sm text-gray-500 hover:text-gray-800"
+                      {paymentMethod === m && (
+                        <span className="text-xs font-medium text-blue-600">
+                          Selected
+                        </span>
+                      )}
+                    </label>
+                  ))}
+                </div>
+
+                {/* ACTIONS */}
+                <div className="flex justify-end gap-3 mt-8">
+                  <button
+                    onClick={resetPaymentState}
+                    className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    disabled={!paymentMethod}
+                    onClick={() => setModalStep(2)}
+                    className={`px-5 py-2 text-sm font-medium rounded-lg transition
+          ${
+            paymentMethod
+              ? "bg-blue-600 text-white hover:bg-blue-700"
+              : "bg-gray-200 text-gray-400 cursor-not-allowed"
+          }`}
+                  >
+                    Continue
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* STEP 2 - USDT */}
+            {modalStep === 2 && paymentMethod === "USDT" && (
+              <>
+                {/* TITLE */}
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Select USDT network
+                </h2>
+
+                <p className="mt-2 text-sm text-gray-600">
+                  Choose the blockchain network you want to use for this
+                  payment.
+                </p>
+
+                {/* NETWORK OPTIONS */}
+                <div className="mt-6 space-y-3">
+                  {["ERC20", "TRC20"].map((n) => (
+                    <label
+                      key={n}
+                      className={`flex items-center justify-between border rounded-lg px-4 py-3 cursor-pointer
+            transition
+            ${
+              network === n
+                ? "border-blue-600 bg-blue-50"
+                : "border-gray-200 hover:border-gray-300"
+            }`}
                     >
-                      Cancel
-                    </button>
-
-                    <button
-                      disabled={!paymentMethod}
-                      onClick={() => setModalStep(2)}
-                      className={`px-6 py-3 rounded-xl text-sm font-medium transition
-                  ${
-                    paymentMethod
-                      ? "bg-gray-900 text-white hover:bg-gray-800 shadow-lg"
-                      : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                  }
-                `}
-                    >
-                      Continue →
-                    </button>
-                  </div>
-                </>
-              )}
-
-              {/* ================= STEP 2 (USDT) ================= */}
-              {modalStep === 2 && paymentMethod === "USDT" && (
-                <>
-                  <h2 className="text-2xl font-semibold text-gray-900">
-                    Choose network
-                  </h2>
-
-                  <div className="mt-8 space-y-4">
-                    {["ERC20", "TRC20"].map((n) => (
-                      <label
-                        key={n}
-                        className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition
-                    ${
-                      network === n
-                        ? "border-indigo-500 bg-indigo-50 shadow-[0_0_0_4px_rgba(99,102,241,0.12)]"
-                        : "border-gray-200 hover:bg-gray-50"
-                    }
-                  `}
-                      >
+                      <div className="flex items-center gap-3">
                         <input
                           type="radio"
                           checked={network === n}
                           onChange={() => setNetwork(n)}
+                          className="accent-blue-600"
                         />
-                        <span className="font-medium">{n}</span>
-                      </label>
-                    ))}
-                  </div>
+                        <span className="text-sm font-medium text-gray-800">
+                          {n}
+                        </span>
+                      </div>
 
-                  <div className="mt-10 flex justify-between">
-                    <button
-                      onClick={() => setModalStep(1)}
-                      className="text-sm text-gray-500 hover:text-gray-800"
-                    >
-                      ← Back
-                    </button>
+                      {network === n && (
+                        <span className="text-xs font-medium text-blue-600">
+                          Selected
+                        </span>
+                      )}
+                    </label>
+                  ))}
+                </div>
 
-                    <button
-                      disabled={!network}
-                      onClick={() => setModalStep(3)}
-                      className={`px-6 py-3 rounded-xl text-sm font-medium transition
-                  ${
-                    network
-                      ? "bg-gray-900 text-white hover:bg-gray-800 shadow-lg"
-                      : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                  }
-                `}
-                    >
-                      Continue →
-                    </button>
-                  </div>
-                </>
-              )}
+                {/* ACTIONS */}
+                <div className="flex justify-end gap-3 mt-8">
+                  <button
+                    onClick={() => setModalStep(1)}
+                    className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                  >
+                    Back
+                  </button>
 
-              {/* ================= STEP 3 ================= */}
-              {modalStep === 3 && (
-                <>
-                  <h2 className="text-2xl font-semibold text-gray-900">
-                    Complete payment
-                  </h2>
+                  <button
+                    disabled={!network}
+                    onClick={() => setModalStep(3)}
+                    className={`px-5 py-2 text-sm font-medium rounded-lg transition
+          ${
+            network
+              ? "bg-blue-600 text-white hover:bg-blue-700"
+              : "bg-gray-200 text-gray-400 cursor-not-allowed"
+          }`}
+                  >
+                    Continue
+                  </button>
+                </div>
+              </>
+            )}
 
-                  <p className="mt-2 text-sm text-gray-500">
-                    USDT on <b>{network}</b> network
-                  </p>
+            {/* STEP 2 - CARD */}
+            {modalStep === 2 && paymentMethod === "card" && (
+              <>
+                <PayPalIntegration cart={payload} />
+                <button className="mt-6" onClick={() => setModalStep(1)}>
+                  Back
+                </button>
+              </>
+            )}
 
+            {/* STEP 3 */}
+            {/* STEP 3 */}
+            {modalStep === 3 && (
+              <>
+                {/* TITLE */}
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Complete your payment
+                </h2>
+
+                <p className="mt-2 text-sm text-gray-600">
+                  Send{" "}
+                  <span className="font-medium text-gray-900">
+                    {totalAmount} USDT
+                  </span>{" "}
+                  via{" "}
+                  <span className="font-medium text-gray-900">{network}</span>{" "}
+                  network
+                </p>
+
+                {/* QR */}
+                <div className="flex justify-center mt-5">
                   <img
                     src={PAYMENT_DETAILS[network].qr}
-                    className="mx-auto mt-8 w-40 rounded-xl border shadow-sm"
+                    alt={`${network} QR`}
+                    className="w-32 h-32 rounded-lg border"
                   />
+                </div>
 
-                  <div className="mt-6 space-y-4">
-                    <input
-                      disabled
-                      value={`${totalAmount} USDT`}
-                      className="w-full px-4 py-3 rounded-xl border bg-gray-50 text-sm"
-                    />
+                {/* AMOUNT */}
+                <div className="mt-6">
+                  <label className="text-xs font-medium text-gray-600">
+                    Amount to pay
+                  </label>
+                  <input
+                    disabled
+                    value={`${totalAmount} USDT`}
+                    className="w-full mt-1 px-3 py-2 text-sm rounded-lg border bg-gray-50 text-gray-800"
+                  />
+                </div>
 
-                    <input
-                      disabled
-                      value={PAYMENT_DETAILS[network].address}
-                      className="w-full px-4 py-3 rounded-xl border bg-gray-50 text-sm"
-                    />
+                {/* ADDRESS */}
+                <div className="mt-4">
+                  <label className="text-xs font-medium text-gray-600">
+                    Payment address
+                  </label>
+                  <input
+                    disabled
+                    value={PAYMENT_DETAILS[network].address}
+                    className="w-full mt-1 px-3 py-2 text-sm rounded-lg border bg-gray-50 text-gray-800"
+                  />
+                </div>
 
-                    <input
-                      placeholder="Transaction hash"
-                      value={txHash}
-                      onChange={(e) => setTxHash(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-blue-500 outline-none"
-                    />
+                {/* TX HASH */}
+                <div className="mt-4">
+                  <label className="text-xs font-medium text-gray-600">
+                    Transaction hash
+                  </label>
+                  <input
+                    placeholder="Paste transaction hash here"
+                    value={txHash}
+                    onChange={(e) => setTxHash(e.target.value)}
+                    className="w-full mt-1 px-3 py-2 text-sm rounded-lg border
+             text-gray-900 placeholder-gray-400
+             bg-white
+             focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                {/* ACTIONS */}
+                <div className="flex justify-end gap-3 mt-8">
+                  <button
+                    onClick={() => setModalStep(2)}
+                    disabled={loading}
+                    className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                  >
+                    Back
+                  </button>
+
+                  <button
+                    disabled={!txHash.trim() || loading}
+                    onClick={async () => {
+                      if (!txHash.trim() || loading) return;
+
+                      setLoading(true);
+
+                      const { start_date, end_date } =
+                        calculateStartEndDates(billing);
+
+                      const payloadData = {
+                        plan_id: selectedPlan.id,
+                        plan_name: selectedPlan.name,
+                        billing_cycle: billing,
+                        method: "cryptocurrency",
+                        amount: totalAmount,
+                        currency:
+                          network === "ERC20" ? "USDT (ERC20)" : "USDT (TRC20)",
+                        start_date,
+                        end_date,
+                        payment_id: txHash,
+                      };
+
+                      try {
+                        const res = await makeCryptoPayment(payloadData);
+                        if (res?.success || res?.status === 201) {
+                          setModalStep(4);
+                        }
+                      } catch {
+                        alert("Payment failed");
+                      } finally {
+                        setLoading(false);
+                      }
+                    }}
+                    className={`px-5 py-2 rounded-lg text-sm font-medium flex items-center gap-2
+          transition
+          ${
+            !txHash.trim() || loading
+              ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+              : "bg-green-600 text-white hover:bg-green-700"
+          }`}
+                  >
+                    {loading ? (
+                      <>
+                        <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Processing
+                      </>
+                    ) : (
+                      "Confirm payment"
+                    )}
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* STEP 4 - THANK YOU */}
+            {modalStep === 4 && (
+              <div className="text-center">
+                <div className="flex justify-center">
+                  <div className="h-16 w-16 rounded-full bg-green-600 flex items-center justify-center text-3xl">
+                    ✓
                   </div>
+                </div>
 
-                  <div className="mt-10 flex justify-between">
-                    <button
-                      onClick={() => setModalStep(2)}
-                      className="text-sm text-gray-500 hover:text-gray-800"
-                    >
-                      ← Back
-                    </button>
+                <h2 className="text-2xl font-bold mt-4 text-white">
+                  Thank You for Your Payment!
+                </h2>
 
-                    <button
-                      disabled={!txHash.trim() || loading}
-                      // onClick={/* SAME HANDLER */}
-                      className={`px-7 py-3 rounded-xl text-sm font-medium transition flex items-center gap-2
-                  ${
-                    !txHash.trim() || loading
-                      ? "bg-gray-200 text-gray-400"
-                      : "bg-emerald-600 text-white hover:bg-emerald-700 shadow-xl"
-                  }
-                `}
-                    >
-                      {loading ? "Processing…" : "Confirm Payment"}
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
+                <p className="mt-3 text-gray-300 text-sm leading-relaxed">
+                  We have successfully received your payment.
+                  <br />
+                  Your transaction is currently under review.
+                </p>
+
+                <div className="mt-4 bg-[#1E293B] p-4 rounded-lg text-sm text-gray-300">
+                  ⏳ <b>Review Time:</b> Up to <b>24 hours</b> <br />
+                  After verification, your account will get full access to:
+                  <ul className="mt-2 text-left list-disc list-inside text-gray-400">
+                    <li>Campaign creation</li>
+                    <li>Dashboard analytics</li>
+                    <li>All plan features</li>
+                  </ul>
+                </div>
+
+                <p className="mt-4 text-xs text-gray-400">
+                  You will be notified once your payment is approved.
+                </p>
+
+                <button
+                  onClick={resetPaymentState}
+                  className="mt-6 bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg cursor-pointer"
+                >
+                  OK
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
