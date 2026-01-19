@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
+  BarChart3,
+  PlayCircle,
+  ShieldCheck,
+  ShieldX,
+  Edit3,
+  Copy,
+  Trash2,
+} from "lucide-react";
+import {
   createCampaignApi,
   getAllCampaign,
   ipClicks,
@@ -240,12 +249,53 @@ function AllCampaignsDashboard() {
     setOpenDropdownId(openDropdownId === campaignId ? null : campaignId);
   };
 
+  // const handleActionSelect = async (action, campaignId, row) => {
+  //   setOpenDropdownId(null); // मेनू बंद करें
+  //   switch (action) {
+  //     case "edit":
+  //       showInfoToast(`Editing campaign ID: ${campaignId}`);
+
+  //       navigate("/Dashboard/create-campaign", {
+  //         state: {
+  //           mode: "edit",
+  //           id: row.uid,
+  //           data: row, // campaign data from db
+  //         },
+  //       });
+  //       // TODO: Navigate to Edit screen or open a modal
+  //       break;
+  //     case "duplicate":
+  //       // alert(`Duplicating campaign ID: ${campaignId}`);
+  //       // TODO: Call API to duplicate campaign
+  //       break;
+  //     case "delete":
+  //       if (window.confirm(`Are you sure you want to delete this campaign?`)) {
+  //         const res = await apiFunction(
+  //           "delete",
+  //           createCampaignApi,
+  //           campaignId,
+  //           null
+  //         );
+
+  //         if (res) {
+  //           setCampaigns((prev) =>
+  //             prev.filter((item) => item.uid !== campaignId)
+  //           );
+  //         }
+  //       }
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // };
+
+  // --- Existing Handlers ---
+  
   const handleActionSelect = async (action, campaignId, row) => {
     setOpenDropdownId(null); // मेनू बंद करें
     switch (action) {
       case "edit":
-        showInfoToast(`Editing campaign ID: ${campaignId}`);
-
+        // alert(`Editing campaign ID: ${campaignId}`);
         navigate("/Dashboard/create-campaign", {
           state: {
             mode: "edit",
@@ -255,10 +305,53 @@ function AllCampaignsDashboard() {
         });
         // TODO: Navigate to Edit screen or open a modal
         break;
-      case "duplicate":
-        // alert(`Duplicating campaign ID: ${campaignId}`);
-        // TODO: Call API to duplicate campaign
+      case "duplicate": {
+        try {
+          if (!row) return;
+          console.log(row);
+
+          // 🔁 deep clone campaign
+          const payload = JSON.parse(JSON.stringify(row));
+
+          // ❌ backend generated fields hatao
+          delete payload.uid;
+          delete payload._id;
+          delete payload.createdAt;
+          delete payload.updatedAt;
+          delete payload.date_time;
+
+          // 📝 campaign name modify
+          const data = {
+            ...payload,
+
+            campaignName:
+              (payload.campaign_info?.campaignName || "Campaign") + " (Copy)",
+            trafficSource: payload.campaign_info?.trafficSource,
+          };
+
+          // optional default status
+
+          // 🚀 CREATE API CALL (same API as create)
+          const res = await apiFunction("post", createCampaignApi, null, data);
+
+          if (res?.data?.status || res?.data?.success) {
+            const newCampaign = res.data.data;
+
+            // ✅ UI update (top me add)
+            setCampaigns((prev) => [newCampaign, ...prev]);
+
+            showSuccessToast("Campaign duplicated successfully");
+            await fetchCampaigns();
+            await fetchStats();
+          }
+        } catch (err) {
+          console.error("Duplicate campaign error:", err);
+          showErrorToast("Failed to duplicate campaign");
+        }
+
         break;
+      }
+
       case "delete":
         if (window.confirm(`Are you sure you want to delete this campaign?`)) {
           const res = await apiFunction(
@@ -272,6 +365,7 @@ function AllCampaignsDashboard() {
             setCampaigns((prev) =>
               prev.filter((item) => item.uid !== campaignId)
             );
+            await fetchStats();
           }
         }
         break;
@@ -280,7 +374,6 @@ function AllCampaignsDashboard() {
     }
   };
 
-  // --- Existing Handlers ---
   const handleRefresh = async () => {
     if (isRefreshing) return;
 
@@ -316,38 +409,113 @@ function AllCampaignsDashboard() {
   };
 
   // ⭐ NEW Render Function: Action Dropdown Menu
-  const renderActionDropdown = (campaignId, row) => (
-    // ref को सीधे dropdownRef के बजाय किसी wrapper div को दें ताकि click outside काम करे
-    <div
-      className="fixed right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-gray-700 ring-1 ring-black ring-opacity-5 z-20"
-      style={{
-        zIndex: 9999999, // over ALL elements
-        left: dropdownPos.left,
-        top: dropdownPos.top, // adjust dynamically if needed
-      }}
-    >
-      <div className="py-1">
-        <button
-          onClick={() => handleActionSelect("edit", campaignId, row)}
-          className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600 hover:text-white transition duration-100 cursor-pointer"
+  // const renderActionDropdown = (campaignId, row) => (
+  //   // ref को सीधे dropdownRef के बजाय किसी wrapper div को दें ताकि click outside काम करे
+  //   <div
+  //     className="fixed right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20"
+  //     style={{
+  //       zIndex: 9999999, // over ALL elements
+  //       left: dropdownPos.left,
+  //       top: dropdownPos.top, // adjust dynamically if needed
+  //     }}
+  //   >
+  //     <div className="py-1">
+  //       <button
+  //         onClick={() => handleActionSelect("edit", campaignId, row)}
+  //         className="block w-full text-left px-4 py-2 text-sm text-gray-800 hover:bg-gray-600 hover:text-white transition duration-100 cursor-pointer"
+  //       >
+  //         Edit Campaign
+  //       </button>
+  //       <button
+  //         onClick={() => handleActionSelect("duplicate", campaignId, null)}
+  //         className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600 hover:text-white transition duration-100 cursor-pointer"
+  //       >
+  //         Duplicate Campaign
+  //       </button>
+  //       <button
+  //         onClick={() => handleActionSelect("delete", campaignId, null)}
+  //         className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-600 hover:text-red-300 transition duration-100 cursor-pointer"
+  //       >
+  //         Delete Campaign
+  //       </button>
+  //     </div>
+  //   </div>
+  // );
+
+
+    const ActionItem = ({ icon, label, onClick, danger }) => (
+      <button
+        onClick={onClick}
+        className={`
+        w-full flex items-center gap-3
+        px-4 py-2.5
+        text-sm text-left
+        transition
+        ${
+          danger
+            ? "text-red-500 hover:bg-red-50"
+            : "text-slate-700 hover:bg-slate-100"
+        }
+      `}
+      >
+        <span
+          className={`
+          flex h-8 w-8 items-center justify-center
+          rounded-md
+          ${danger ? "bg-red-100 text-red-500" : "bg-slate-100 text-slate-600"}
+        `}
         >
-          Edit Campaign
-        </button>
-        <button
-          onClick={() => handleActionSelect("duplicate", campaignId, null)}
-          className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600 hover:text-white transition duration-100 cursor-pointer"
-        >
-          Duplicate Campaign
-        </button>
-        <button
-          onClick={() => handleActionSelect("delete", campaignId, null)}
-          className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-600 hover:text-red-300 transition duration-100 cursor-pointer"
-        >
-          Delete Campaign
-        </button>
+          {icon}
+        </span>
+  
+        <span className="font-medium">{label}</span>
+      </button>
+    );
+  
+    const renderActionDropdown = (campaignId, row) => (
+      <div
+        className="
+        fixed
+        w-56
+        rounded-xl
+        bg-white/95 backdrop-blur-md
+        border border-slate-200
+        shadow-[0_12px_32px_rgba(15,23,42,0.15)]
+        z-[9999999]
+      "
+        style={{
+          left: dropdownPos.left,
+          top: dropdownPos.top,
+        }}
+      >
+        <div className="py-1">
+          {/* EDIT */}
+          <ActionItem
+            icon={<Edit3 size={16} />}
+            label="Edit campaign"
+            onClick={() => handleActionSelect("edit", campaignId, row)}
+          />
+  
+          {/* DUPLICATE */}
+          <ActionItem
+            icon={<Copy size={16} />}
+            label="Duplicate campaign"
+            onClick={() => handleActionSelect("duplicate", campaignId, row)}
+          />
+  
+          {/* DIVIDER */}
+          <div className="my-1 h-px bg-slate-100" />
+  
+          {/* DELETE */}
+          <ActionItem
+            danger
+            icon={<Trash2 size={16} />}
+            label="Delete campaign"
+            onClick={() => handleActionSelect("delete", campaignId, null)}
+          />
+        </div>
       </div>
-    </div>
-  );
+    );
 
   const TableColGroup = () => (
     <colgroup>
@@ -821,194 +989,6 @@ function AllCampaignsDashboard() {
               {renderTableContent()}
             </table>
           </div>
-
-          {/* <div className="max-h-[360px] overflow-y-auto overflow-x-auto custom-scrollbar">
-            <table className="min-w-full table-fixed">
-              <TableColGroup />
-
-              <tbody className="divide-y divide-gray-100">
-                {campaigns.map((item, index) => {
-                  const isDropdownOpen = openDropdownId === item?.uid;
-
-                  return (
-                    <tr
-                      key={item.uid}
-                      className="hover:bg-gray-50 transition-colors duration-200"
-                    >
-                  
-                      <td className="px-4 py-3 text-sm text-gray-500">
-                        {index + 1}
-                      </td>
-
-                      
-                      <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                        {item.campaign_info?.campaignName}
-                      </td>
-
-                      
-                      <td className="px-4 py-3 text-sm text-gray-600">
-                        {item.campaign_info?.trafficSource}
-                      </td>
-
-                  
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                        
-                          <button
-                            disabled={item.statusLoading}
-                            onClick={() =>
-                              handleStatusChange(item.uid, "Active")
-                            }
-                            className={`p-1.5 rounded-md transition hover:bg-gray-100
-                      ${
-                        item.status === "Active"
-                          ? "text-blue-600"
-                          : "text-gray-400"
-                      }
-                    `}
-                          >
-                            <svg
-                              viewBox="0 0 24 24"
-                              className="w-5 h-5"
-                              fill="currentColor"
-                            >
-                              <path d="M7 4v16l13-8L7 4z" />
-                            </svg>
-                          </button>
-
-                    
-                          <button
-                            disabled={item.statusLoading}
-                            onClick={() =>
-                              handleStatusChange(item.uid, "Allow")
-                            }
-                            className={`p-1.5 rounded-md transition hover:bg-gray-100
-                      ${
-                        item.status === "Allow"
-                          ? "text-yellow-500"
-                          : "text-gray-400"
-                      }
-                    `}
-                          >
-                            <svg
-                              viewBox="0 0 24 24"
-                              className="w-5 h-5"
-                              fill="currentColor"
-                            >
-                              <path d="M13 2L3 14h7v8l10-12h-7z" />
-                            </svg>
-                          </button>
-
-                      
-                          <button
-                            disabled={item.statusLoading}
-                            onClick={() =>
-                              handleStatusChange(item.uid, "Block")
-                            }
-                            className={`p-1.5 rounded-md transition hover:bg-gray-100
-                      ${
-                        item.status === "Block"
-                          ? "text-red-500"
-                          : "text-gray-400"
-                      }
-                    `}
-                          >
-                            <svg
-                              viewBox="0 0 24 24"
-                              className="w-5 h-5"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                            >
-                              <circle cx="12" cy="12" r="10" />
-                              <line x1="5" y1="19" x2="19" y2="5" />
-                            </svg>
-                          </button>
-                        </div>
-                      </td>
-
-                      
-                      <td className="px-4 py-3 text-center">
-                        {item.integration ? (
-                          <div className="relative group flex justify-center">
-                            <svg
-                              className="h-6 w-6 text-green-500"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-
-                            <div className="absolute bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs px-3 py-1 rounded-lg shadow-lg whitespace-nowrap">
-                              {item.integrationUrl || "No URL Found"}
-                            </div>
-                          </div>
-                        ) : (
-                          <svg
-                            className="h-5 w-5 text-red-500 mx-auto"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M6 18L18 6M6 6l12 12"
-                            />
-                          </svg>
-                        )}
-                      </td>
-
-              
-                      <td className="px-4 py-3 text-sm text-gray-700 text-center">
-                        {item?.campclicks?.total_t_clicks || 0}
-                      </td>
-
-            
-                      <td className="px-4 py-3 text-sm text-gray-700 text-right">
-                        {item?.campclicks?.total_s_clicks || 0}
-                      </td>
-
-          
-                      <td className="px-4 py-3 text-sm text-gray-700 text-right">
-                        {item?.campclicks?.total_m_clicks || 0}
-                      </td>
-
-          
-                      <td className="px-4 py-3 text-sm text-gray-500">
-                        {new Date(item.date_time).toLocaleString()}
-                      </td>
-
-        
-                      <td
-                        ref={isDropdownOpen ? dropdownRef : null}
-                        className="px-4 py-3 relative"
-                      >
-                        <button
-                          onClick={(e) => handleActionClick(e, item?.uid)}
-                          className={`w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 transition
-                    ${isDropdownOpen ? "bg-gray-200 text-gray-800" : ""}
-                  `}
-                        >
-                          ⋯
-                        </button>
-
-                        {isDropdownOpen &&
-                          renderActionDropdown(item?.uid, item)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div> */}
 
           {/* ===== FIXED FOOTER ===== */}
           <div className="flex-none bg-gray-50 border-t border-gray-200 px-6 py-3 flex items-center justify-between">

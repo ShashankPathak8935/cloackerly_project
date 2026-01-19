@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { BarChart3, PlayCircle, ShieldCheck, ShieldX } from "lucide-react";
+import {
+  BarChart3,
+  PlayCircle,
+  ShieldCheck,
+  ShieldX,
+  Edit3,
+  Copy,
+  Trash2,
+} from "lucide-react";
 
 import {
   LineChart,
@@ -195,23 +203,23 @@ const Dashboard = () => {
   };
 
   // ✅ Toggle complete/incomplete
-  const handleToggleComplete = (id) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
+  // const handleToggleComplete = (id) => {
+  //   setTasks((prev) =>
+  //     prev.map((task) =>
+  //       task.id === id ? { ...task, completed: !task.completed } : task
+  //     )
+  //   );
+  // };
 
   // ✅ Delete task
-  const handleDeleteTask = (id) => {
-    setTasks((prev) => prev.filter((task) => task.id !== id));
-  };
+  // const handleDeleteTask = (id) => {
+  //   setTasks((prev) => prev.filter((task) => task.id !== id));
+  // };
 
   // ✅ Filtered tasks by search
-  const filteredTasks = tasks.filter((task) =>
-    task.text.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // const filteredTasks = tasks.filter((task) =>
+  //   task.text.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
 
   const handleActionClick = (e, campaignId) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -223,62 +231,89 @@ const Dashboard = () => {
     setOpenDropdownId(openDropdownId === campaignId ? null : campaignId);
   };
 
-  const handleActionSelect = async (action, campaignId, row) => {
-    setOpenDropdownId(null); // मेनू बंद करें
-    switch (action) {
-      case "edit":
-        // alert(`Editing campaign ID: ${campaignId}`);
-        navigate("/Dashboard/create-campaign", {
-          state: {
-            mode: "edit",
-            id: row.uid,
-            data: row, // campaign data from db
-          },
-        });
-        // TODO: Navigate to Edit screen or open a modal
-        break;
-      case "duplicate":
-        // alert(`Duplicating campaign ID: ${campaignId}`);
-        // TODO: Call API to duplicate campaign
-        break;
-      // case "delete":
-      //   if (
-      //     window.confirm(
-      //       `Are you sure you want to delete campaign ID: ${campaignId}?`
-      //     )
-      //   ) {
-      //     // TODO: Call API to delete campaign and then fetchCampaigns() to refresh
-      //     const res = await apiFunction(
-      //       "delete",
-      //       createCampaignApi,
-      //       campaignId,
-      //       null
-      //     );
-      //     if (res)
-      //       await fetchCampaigns();
-      //        return alert(`Deleting campaign ID: ${campaignId}`);
-      //   }
-
-      case "delete":
-        if (window.confirm(`Are you sure you want to delete this campaign?`)) {
-          const res = await apiFunction(
-            "delete",
-            createCampaignApi,
-            campaignId,
-            null
-          );
-
-          if (res) {
-            setCampaigns((prev) =>
-              prev.filter((item) => item.uid !== campaignId)
-            );
-          }
-        }
-        break;
-      default:
-        break;
-    }
-  };
+ const handleActionSelect = async (action, campaignId, row) => {
+     setOpenDropdownId(null); // मेनू बंद करें
+     switch (action) {
+       case "edit":
+         // alert(`Editing campaign ID: ${campaignId}`);
+         navigate("/Dashboard/create-campaign", {
+           state: {
+             mode: "edit",
+             id: row.uid,
+             data: row, // campaign data from db
+           },
+         });
+         // TODO: Navigate to Edit screen or open a modal
+         break;
+       case "duplicate": {
+         try {
+           if (!row) return;
+           console.log(row);
+ 
+           // 🔁 deep clone campaign
+           const payload = JSON.parse(JSON.stringify(row));
+ 
+           // ❌ backend generated fields hatao
+           delete payload.uid;
+           delete payload._id;
+           delete payload.createdAt;
+           delete payload.updatedAt;
+           delete payload.date_time;
+ 
+           // 📝 campaign name modify
+           const data = {
+             ...payload,
+ 
+             campaignName:
+               (payload.campaign_info?.campaignName || "Campaign") + " (Copy)",
+             trafficSource: payload.campaign_info?.trafficSource,
+           };
+ 
+           // optional default status
+ 
+           // 🚀 CREATE API CALL (same API as create)
+           const res = await apiFunction("post", createCampaignApi, null, data);
+ 
+           if (res?.data?.status || res?.data?.success) {
+             const newCampaign = res.data.data;
+ 
+             // ✅ UI update (top me add)
+             setCampaigns((prev) => [newCampaign, ...prev]);
+ 
+             showSuccessToast("Campaign duplicated successfully");
+             await fetchCampaigns();
+             await fetchStats();
+           }
+         } catch (err) {
+           console.error("Duplicate campaign error:", err);
+           showErrorToast("Failed to duplicate campaign");
+         }
+ 
+         break;
+       }
+ 
+       case "delete":
+         if (window.confirm(`Are you sure you want to delete this campaign?`)) {
+           const res = await apiFunction(
+             "delete",
+             createCampaignApi,
+             campaignId,
+             null
+           );
+ 
+           if (res) {
+             setCampaigns((prev) =>
+               prev.filter((item) => item.uid !== campaignId)
+             );
+             await fetchCampaigns();
+             await fetchStats();
+           }
+         }
+         break;
+       default:
+         break;
+     }
+   };
 
   const handleAddNewCampaign = () => {
     showInfoToast("Redirecting to Creating New Campaign");
@@ -438,35 +473,109 @@ const Dashboard = () => {
     </div>
   );
 
+  // const renderActionDropdown = (campaignId, row) => (
+  //   // ref को सीधे dropdownRef के बजाय किसी wrapper div को दें ताकि click outside काम करे
+  //   <div
+  //     className="fixed right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20"
+  //     style={{
+  //       zIndex: 9999999, // over ALL elements
+  //       left: dropdownPos.left,
+  //       top: dropdownPos.top, // adjust dynamically if needed
+  //     }}
+  //   >
+  //     <div className="py-1">
+  //       <button
+  //         onClick={() => handleActionSelect("edit", campaignId, row)}
+  //         className="block w-full text-left px-4 py-2 text-sm text-gray-800 hover:bg-gray-600 hover:text-white transition duration-100 cursor-pointer"
+  //       >
+  //         Edit Campaign
+  //       </button>
+  //       <button
+  //         onClick={() => handleActionSelect("duplicate", campaignId, null)}
+  //         className="block w-full text-left px-4 py-2 text-sm text-gray-800 hover:bg-gray-600 hover:text-white transition duration-100 cursor-pointer"
+  //       >
+  //         Duplicate Campaign
+  //       </button>
+  //       <button
+  //         onClick={() => handleActionSelect("delete", campaignId, null)}
+  //         className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-600 hover:text-red-300 transition duration-100 cursor-pointer"
+  //       >
+  //         Delete Campaign
+  //       </button>
+  //     </div>
+  //   </div>
+  // );
+
+  const ActionItem = ({ icon, label, onClick, danger }) => (
+    <button
+      onClick={onClick}
+      className={`
+      w-full flex items-center gap-3
+      px-4 py-2.5
+      text-sm text-left
+      transition
+      ${
+        danger
+          ? "text-red-500 hover:bg-red-50"
+          : "text-slate-700 hover:bg-slate-100"
+      }
+    `}
+    >
+      <span
+        className={`
+        flex h-8 w-8 items-center justify-center
+        rounded-md
+        ${danger ? "bg-red-100 text-red-500" : "bg-slate-100 text-slate-600"}
+      `}
+      >
+        {icon}
+      </span>
+
+      <span className="font-medium">{label}</span>
+    </button>
+  );
+
   const renderActionDropdown = (campaignId, row) => (
-    // ref को सीधे dropdownRef के बजाय किसी wrapper div को दें ताकि click outside काम करे
     <div
-      className="fixed right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-gray-700 ring-1 ring-black ring-opacity-5 z-20"
+      className="
+      fixed
+      w-56
+      rounded-xl
+      bg-white/95 backdrop-blur-md
+      border border-slate-200
+      shadow-[0_12px_32px_rgba(15,23,42,0.15)]
+      z-[9999999]
+    "
       style={{
-        zIndex: 9999999, // over ALL elements
         left: dropdownPos.left,
-        top: dropdownPos.top, // adjust dynamically if needed
+        top: dropdownPos.top,
       }}
     >
       <div className="py-1">
-        <button
+        {/* EDIT */}
+        <ActionItem
+          icon={<Edit3 size={16} />}
+          label="Edit campaign"
           onClick={() => handleActionSelect("edit", campaignId, row)}
-          className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600 hover:text-white transition duration-100 cursor-pointer"
-        >
-          Edit Campaign
-        </button>
-        <button
-          onClick={() => handleActionSelect("duplicate", campaignId, null)}
-          className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600 hover:text-white transition duration-100 cursor-pointer"
-        >
-          Duplicate Campaign
-        </button>
-        <button
+        />
+
+        {/* DUPLICATE */}
+        <ActionItem
+          icon={<Copy size={16} />}
+          label="Duplicate campaign"
+          onClick={() => handleActionSelect("duplicate", campaignId, row)}
+        />
+
+        {/* DIVIDER */}
+        <div className="my-1 h-px bg-slate-100" />
+
+        {/* DELETE */}
+        <ActionItem
+          danger
+          icon={<Trash2 size={16} />}
+          label="Delete campaign"
           onClick={() => handleActionSelect("delete", campaignId, null)}
-          className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-600 hover:text-red-300 transition duration-100 cursor-pointer"
-        >
-          Delete Campaign
-        </button>
+        />
       </div>
     </div>
   );
@@ -512,40 +621,44 @@ const Dashboard = () => {
     }
 
     return (
-      <tbody className="bg-white-900 divide-y divide-gray-100">
+      <tbody className="divide-y divide-gray-100">
         {campaigns.map((item, index) => {
-          const campaignId = item.campaign_info?.campaign_id || index;
           const isDropdownOpen = openDropdownId === item?.uid;
+
           return (
-            <>
-              <tr key={item.campaignId}>
-                <td className="px-3 py-3 text-sm  text-left text-gray-800">
-                  {index + 1}
-                </td>
-                <td className="px-3 py-3 text-sm text-left text-blue-800">
-                  {item.campaign_info?.campaignName}
-                </td>
-                <td className="px-3 py-3 text-sm text-left text-gray-800">
-                  {item.campaign_info?.trafficSource}
-                </td>
-                <td className="px-3 py-3 text-left">
+            <tr
+              key={item.uid}
+              className="hover:bg-gray-50 transition-colors duration-200"
+            >
+              {/* SN */}
+              <td className="px-4 py-3 text-sm text-gray-500">{index + 1}</td>
+
+              {/* Campaign Name */}
+              <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                {item.campaign_info?.campaignName}
+              </td>
+
+              {/* Source */}
+              <td className="px-4 py-3 text-sm text-gray-600">
+                {item.campaign_info?.trafficSource}
+              </td>
+
+              {/* STATUS */}
+              <td className="px-4 py-3">
+                <div className="flex items-center gap-2">
+                  {/* Active */}
                   <button
                     disabled={item.statusLoading}
                     onClick={() => handleStatusChange(item.uid, "Active")}
-                    className={`p-1 rounded transition-all duration-300 transform hover:scale-110
-        ${
-          item.statusLoading
-            ? "opacity-30 cursor-not-allowed"
-            : "cursor-pointer"
-        }
-        ${
-          item.status === "Active"
-            ? "text-blue-500 drop-shadow-[0_0_6px_rgba(16,185,129,.8)]"
-            : "text-gray-500 hover:text-gray-300"
-        }`}
+                    className={`p-1.5 rounded-md transition hover:bg-gray-100
+                    ${
+                      item.status === "Active"
+                        ? "text-blue-600"
+                        : "text-gray-400"
+                    }
+                  `}
                   >
                     <svg
-                      xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                       className="w-5 h-5"
                       fill="currentColor"
@@ -554,24 +667,19 @@ const Dashboard = () => {
                     </svg>
                   </button>
 
-                  {/* ⚡ Boost */}
+                  {/* Allow */}
                   <button
                     disabled={item.statusLoading}
                     onClick={() => handleStatusChange(item.uid, "Allow")}
-                    className={`p-1 rounded transition-all duration-300 transform hover:scale-110
-        ${
-          item.statusLoading
-            ? "opacity-30 cursor-not-allowed"
-            : "cursor-pointer"
-        }
-        ${
-          item.status === "Allow"
-            ? "text-yellow-400 drop-shadow-[0_0_6px_rgba(250,204,21,.8)]"
-            : "text-gray-500 hover:text-gray-300"
-        }`}
+                    className={`p-1.5 rounded-md transition hover:bg-gray-100
+                    ${
+                      item.status === "Allow"
+                        ? "text-yellow-500"
+                        : "text-gray-400"
+                    }
+                  `}
                   >
                     <svg
-                      xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                       className="w-5 h-5"
                       fill="currentColor"
@@ -580,24 +688,17 @@ const Dashboard = () => {
                     </svg>
                   </button>
 
-                  {/* 🚫 Block */}
+                  {/* Block */}
                   <button
                     disabled={item.statusLoading}
                     onClick={() => handleStatusChange(item.uid, "Block")}
-                    className={`p-1 rounded transition-all duration-300 transform hover:scale-110
-        ${
-          item.statusLoading
-            ? "opacity-30 cursor-not-allowed"
-            : "cursor-pointer"
-        }
-        ${
-          item.status === "Block"
-            ? "text-red-500 drop-shadow-[0_0_6px_rgba(239,68,68,.8)]"
-            : "text-gray-500 hover:text-gray-300"
-        }`}
+                    className={`p-1.5 rounded-md transition hover:bg-gray-100
+                    ${
+                      item.status === "Block" ? "text-red-500" : "text-gray-400"
+                    }
+                  `}
                   >
                     <svg
-                      xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                       className="w-5 h-5"
                       fill="none"
@@ -608,138 +709,85 @@ const Dashboard = () => {
                       <line x1="5" y1="19" x2="19" y2="5" />
                     </svg>
                   </button>
-                </td>
-                <td className="px-3 py-3 text-left ">
-                  {" "}
-                  {item.integration ? (
-                    <div className="relative group flex justify-center">
-                      <svg
-                        className="h-8 w-11 text-green-500"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                </div>
+              </td>
 
-                      {/* ⭐ Tooltip container */}
-                      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block bg-gray-800 text-gray-200 text-xs px-3 py-1 rounded shadow-lg whitespace-nowrap z-50 ">
-                        {item.integrationUrl || "No URL Found"}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex justify-center items-center w-full">
-                      <svg
-                        className="h-5 w-5 text-red-500"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                </td>
-                <td className="px-3 py-3 text-gray-800 text-center">
-                  {item?.campclicks?.total_t_clicks || 0}
-                </td>
-                <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-right w-16">
-                  <div className="flex items-center gap-1 relative group">
-                    {/* i Icon */}
+              {/* Integration */}
+              <td className="px-4 py-3 text-center">
+                {item.integration ? (
+                  <div className="relative group flex justify-center">
                     <svg
-                      className="h-4 w-4 text-blue-500 cursor-pointer"
+                      className="h-6 w-6 text-green-500"
                       fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
                       viewBox="0 0 24 24"
+                      stroke="currentColor"
                     >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
                       />
                     </svg>
 
-                    {/* Value */}
-                    <span className=" text-gray-800">
-                      {item?.campclicks?.total_s_clicks || 0}
-                    </span>
-
-                    {/* Tooltip */}
-                    <div
-                      className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 
-      hidden group-hover:block bg-gray-800 text-gray-200 text-xs 
-      px-3 py-1 rounded shadow-lg whitespace-nowrap z-50"
-                    >
-                      {item?.safe_page || "No URL Found"}
+                    <div className="absolute bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs px-3 py-1 rounded-lg shadow-lg whitespace-nowrap z-50">
+                      {item.integrationUrl || "No URL Found"}
                     </div>
                   </div>
-                </td>
-
-                <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-300 text-right w-20">
-                  <div className="flex items-center gap-1 relative group">
-                    {/* i Icon */}
-                    <svg
-                      className="h-4 w-4 text-blue-500 cursor-pointer"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"
-                      />
-                    </svg>
-
-                    {/* Value */}
-                    <span className=" text-gray-800">
-                      {item?.campclicks?.total_m_clicks || 0}
-                    </span>
-
-                    {/* Tooltip */}
-                    <div
-                      className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 
-                     hidden group-hover:block bg-gray-800 text-gray-200 text-xs 
-                     px-3 py-1 rounded shadow-lg whitespace-nowrap z-50"
-                    >
-                      {item?.money_page?.[0]?.url || "No URL Found"}
-                    </div>
-                  </div>
-                </td>
-
-                <td className="px-3 py-3 text-gray-800 text-left">
-                  {new Date(item.date_time).toLocaleString()}
-                </td>
-                <td
-                  ref={isDropdownOpen ? dropdownRef : null}
-                  className="px-3 py-3"
-                >
-                  <button
-                    onClick={(e) => handleActionClick(e, item?.uid)}
-                    className={`text-2xl leading-none font-bold p-1 rounded-full cursor-pointer ${
-                      isDropdownOpen
-                        ? "bg-gray-600 text-white"
-                        : "hover:bg-gray-700"
-                    }`}
+                ) : (
+                  <svg
+                    className="h-5 w-5 text-red-500 mx-auto"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                   >
-                    ⋯ {/* Vertical three dots */}
-                  </button>
-                  {isDropdownOpen && renderActionDropdown(item?.uid, item)}
-                </td>
-              </tr>
-            </>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                )}
+              </td>
+
+              {/* Clicks */}
+              <td className="px-4 py-3 text-sm text-gray-700 text-center">
+                {item?.campclicks?.total_t_clicks || 0}
+              </td>
+
+              {/* Safe */}
+              <td className="px-4 py-3 text-sm text-gray-700 text-right">
+                {item?.campclicks?.total_s_clicks || 0}
+              </td>
+
+              {/* Money */}
+              <td className="px-4 py-3 text-sm text-gray-700 text-right">
+                {item?.campclicks?.total_m_clicks || 0}
+              </td>
+
+              {/* Created */}
+              <td className="px-4 py-3 text-sm text-gray-500">
+                {new Date(item.date_time).toLocaleString()}
+              </td>
+
+              {/* ACTION */}
+              <td
+                ref={isDropdownOpen ? dropdownRef : null}
+                className="px-4 py-3 relative"
+              >
+                <button
+                  onClick={(e) => handleActionClick(e, item?.uid)}
+                  className={`w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 transition
+                  ${isDropdownOpen ? "bg-gray-200 text-gray-800" : ""}
+                `}
+                >
+                  ⋯
+                </button>
+
+                {isDropdownOpen && renderActionDropdown(item?.uid, item)}
+              </td>
+            </tr>
           );
         })}
       </tbody>
@@ -986,14 +1034,14 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="mt-4 border-t border-b border-gray-200 bg-white shadow-sm overflow-hidden">
+      <div className="mt-6 rounded-2xl border border-gray-200 bg-white shadow-[0_12px_35px_rgba(0,0,0,0.08)] overflow-hidden">
         <div className="flex flex-col  bg-white overflow-hidden">
           {/* ===== FIXED HEADER ===== */}
-          <div className="flex-none overflow-x-auto bg-blue-600">
+          <div className="overflow-x-auto">
             <table className="min-w-full table-fixed">
               <TableColGroup />
 
-              <thead className="bg-blue-400 border-b border-gray-800">
+              <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
                   {[
                     "Sn",
@@ -1009,7 +1057,7 @@ const Dashboard = () => {
                   ].map((head) => (
                     <th
                       key={head}
-                      className="px-4 py-3 text-left text-[11px] font-semibold tracking-wide text-white uppercase"
+                      className="px-4 py-3 text-left text-[11px] font-semibold tracking-wider text-gray-600 uppercase"
                     >
                       {head}
                     </th>
@@ -1040,8 +1088,9 @@ const Dashboard = () => {
               Pages
             </span>
 
-            {/* RIGHT – Pagination */}
+            {/* RIGHT – Numbered Pagination */}
             <div className="flex items-center gap-1">
+              {/* Prev */}
               <button
                 disabled={currentPage === 1}
                 onClick={() => handlePageChange(currentPage - 1)}
@@ -1053,22 +1102,6 @@ const Dashboard = () => {
               >
                 <span className="text-xl font-bold leading-none">&laquo;</span>
               </button>
-
-              {/* {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (page) => (
-                  <button
-                    key={page}
-                    onClick={() => handlePageChange(page)}
-                    className={`px-3 py-1.5 text-sm rounded-md border transition ${
-                      page === currentPage
-                        ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                        : "text-gray-700 border-gray-300 bg-white hover:bg-gray-100"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                )
-              )} */}
 
               <button
                 disabled={currentPage === totalPages}

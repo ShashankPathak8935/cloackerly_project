@@ -5,6 +5,11 @@ import {
   FaHome,
   FaClipboardList,
   FaHeadset,
+  FaRegChartBar,
+  FaBox,
+  FaRegCreditCard,
+  FaRegUser,
+  FaLifeRing,
 } from "react-icons/fa";
 
 import { AccountDetailsForm } from "../components/ui/MyProfile/AccountDetailsForm";
@@ -19,15 +24,15 @@ import { signOutApi } from "../api/Apis";
 const MyProfile = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("account");
-  const [user,setUser] = useState(null);
+  const [user, setUser] = useState(null);
 
-   // Load user AFTER component mounts
-    useEffect(() => {
-      const stored = localStorage.getItem("user");
-      if (stored) {
-        setUser(JSON.parse(stored)); // ⬅️ FIX
-      }
-    }, []);
+  // Load user AFTER component mounts
+  useEffect(() => {
+    const stored = localStorage.getItem("user");
+    if (stored) {
+      setUser(JSON.parse(stored)); // ⬅️ FIX
+    }
+  }, []);
 
   const views = {
     orders: <OrdersView />,
@@ -37,11 +42,11 @@ const MyProfile = () => {
   };
 
   const breadcrumbNames = {
-  account: "Account Details",
-  orders: "My Orders",
-  subscription: "My Subscription",
-  ticket: "Support Tickets",
-};
+    account: "Account Details",
+    orders: "My Orders",
+    subscription: "My Subscription",
+    ticket: "Support Tickets",
+  };
 
   const handleLogout = async () => {
     try {
@@ -51,76 +56,93 @@ const MyProfile = () => {
         navigate("/");
       }
     } catch (error) {
- console.log(error);
- 
+      console.log(error);
     }
   };
 
   return (
-    <div className="w-full min-h-screen bg-slate-900 text-white px-6 py-10">
-
+    <div className="w-full min-h-screen bg-slate-50 text-gray-800 px-8 py-10">
       {/* PAGE TITLE */}
-      <h1 className="text-3xl font-semibold mb-2">My Profile</h1>
-      <p className="text-slate-400 mb-8">Account &gt; <span className="text-orange-500 font-sm">{breadcrumbNames[activeTab]}</span></p>
+      {/* <div className="mb-8">
+        <h1 className="text-2xl font-semibold tracking-tight">Account</h1>
+        <p className="text-sm text-slate-400 mt-1">
+          Home /{" "}
+          <span className="text-blue-500">{breadcrumbNames[activeTab]}</span>
+        </p>
+      </div> */}
 
-      {/* GRID LAYOUT */}
+      {/* GRID */}
       <div className="grid grid-cols-12 gap-8">
+        {/* SIDEBAR */}
+        <aside className="col-span-3">
+          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-6 shadow-sm">
+            {/* USER */}
+            <div className="flex items-center gap-3">
+              <div
+                className="h-10 w-10 rounded-full bg-blue-400 text-white
+            flex items-center justify-center font-semibold text-sm"
+              >
+                {user?.name?.[0]?.toUpperCase()}
+              </div>
+              <div>
+                <p className="text-sm font-medium">{user?.name}</p>
+                <p className="text-xs text-slate-400">Member</p>
+              </div>
+            </div>
 
-        {/* LEFT SIDEBAR */}
-        <div className="col-span-3 bg-slate-800 border border-slate-700 rounded-xl p-6 space-y-6 max-h-fit ">
-          <div className="text-xl font-bold">{user?.name?.split(" ")[0]?.toUpperCase()}</div>
+            {/* NAV */}
+            <div className="border-t border-slate-200 pt-4 space-y-1">
+              <SidebarItem
+                title="Overview"
+                icon={<FaRegChartBar />}
+                onClick={() => navigate("/Dashboard/allStats")}
+              />
 
-          <button
-            onClick={handleLogout}
-            className="text-slate-400 hover:text-red-400 flex items-center gap-2 cursor-pointer"
-          >
-            <FaSignOutAlt /> Logout
-          </button>
+              <SidebarItem
+                title="Orders"
+                icon={<FaBox />}
+                active={activeTab === "orders"}
+                onClick={() => setActiveTab("orders")}
+              />
 
-          <div className="border-t border-slate-700 pt-4 space-y-4 text-[15px] ">
+              <SidebarItem
+                title="Plan & Billing"
+                icon={<FaRegCreditCard />}
+                active={activeTab === "subscription"}
+                onClick={() => setActiveTab("subscription")}
+              />
 
-            {/* DASHBOARD (ROUTES TO DIFFERENT PAGE) */}
-            <SidebarItem
-              title="Dashboard"
-              icon={<FaHome />}
-              onClick={() => navigate("/Dashboard/allStats")}
-            />
+              <SidebarItem
+                title="Profile Settings"
+                icon={<FaRegUser />}
+                active={activeTab === "account"}
+                onClick={() => setActiveTab("account")}
+              />
 
-            {/* PAGE SWITCHING ON SAME SCREEN */}
-            <SidebarItem
-              title="Orders"
-              icon={<FaClipboardList />}
-               active={activeTab === "orders"}
-              onClick={() => setActiveTab("orders")}
-            />
+              <SidebarItem
+                title="Help Center"
+                icon={<FaLifeRing />}
+                active={activeTab === "ticket"}
+                onClick={() => setActiveTab("ticket")}
+              />
+            </div>
 
-            <SidebarItem
-              title="My Subscription"
-              icon={<FaClipboardList />}
-               active={activeTab === "subscription"}
-              onClick={() => setActiveTab("subscription")}
-            />
-
-            <SidebarItem
-              title="Account Details"
-              icon={<FaUser />}
-              active={activeTab === "account"}
-              onClick={() => setActiveTab("account")}
-            />
-
-            <SidebarItem
-              title="Support Tickets"
-              icon={<FaHeadset />}
-               active={activeTab === "ticket"}
-              onClick={() => setActiveTab("ticket")}
-            />
+            {/* LOGOUT */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-sm text-slate-400 hover:text-red-500 transition pt-3 border-t border-slate-200"
+            >
+              <FaSignOutAlt /> Sign out
+            </button>
           </div>
-        </div>
+        </aside>
 
-        {/* RIGHT CONTENT */}
-        <div className="col-span-9   rounded-xl">
-          {views[activeTab]}
-        </div>
+        {/* CONTENT */}
+        <main className="col-span-9">
+          <div className="bg-white border border-slate-200 rounded-xl p-8 shadow-sm min-h-[400px]">
+            {views[activeTab]}
+          </div>
+        </main>
       </div>
     </div>
   );
@@ -129,11 +151,15 @@ const MyProfile = () => {
 const SidebarItem = ({ title, icon, onClick, active }) => (
   <div
     onClick={onClick}
-    className={`flex items-center gap-2 cursor-pointer hover:text-white transition ${
-      active ? "text-orange-500 font-semibold" : "text-slate-400"
-    }`}
+    className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer text-sm transition
+      ${
+        active
+          ? "bg-blue-50 text-blue-600 font-medium"
+          : "text-slate-500 hover:bg-slate-100"
+      }`}
   >
-    {icon} {title}
+    <span className="text-[15px]">{icon}</span>
+    <span>{title}</span>
   </div>
 );
 

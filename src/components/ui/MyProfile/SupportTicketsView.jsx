@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 export function SupportTicketsView() {
-  // Dummy data – replace later with API response
-  const [tickets, setTickets] = useState([
+  const [tickets] = useState([
     {
       id: "TCK-5231",
       subject: "Payment not reflecting",
@@ -33,126 +32,133 @@ export function SupportTicketsView() {
   );
 
   return (
-    <div className="p-6 bg-slate-900 min-h-screen text-white">
+    <div className="min-h-screen bg-slate-100 flex justify-center p-6">
+      {/* MAIN CARD */}
+      <div className="w-full max-w-6xl bg-white rounded-2xl shadow-xl border border-slate-200 p-6">
+        {/* HEADER */}
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h1 className="text-xl font-semibold text-slate-800">
+              Support Tickets
+            </h1>
+            <p className="text-sm text-slate-500">Manage customer issues</p>
+          </div>
 
-      {/* HEADER */}
-      <div className="flex items-center justify-between mb-8">
-        {/* <div>
-          <h1 className="text-3xl font-semibold">Support Tickets</h1>
-          <p className="text-slate-400">Dashboard &gt; Support</p>
-        </div> */}
+          <button className="bg-green-500 text-white px-4 py-2 text-sm rounded-lg hover:bg-green-800 transition">
+            + Create Ticket
+          </button>
+        </div>
 
-        <button className="bg-orange-600 px-4 py-2 rounded-lg font-medium hover:bg-orange-700 transition cursor-pointer">
-          + Create Ticket
-        </button>
-      </div>
+        {/* SEARCH */}
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search tickets..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
 
-      {/* SEARCH BAR */}
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="Search tickets..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="bg-slate-800 w-full border border-slate-700 rounded-lg px-4 py-2 focus:outline-none"
-        />
-      </div>
-
-      {/* TABLE */}
-      <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-slate-700 text-left">
-              <th className="p-4">Ticket ID</th>
-              <th>Subject</th>
-              <th>Status</th>
-              <th>Priority</th>
-              <th>Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {filtered.length === 0 ? (
+        {/* TABLE */}
+        <div className="overflow-hidden rounded-xl border border-slate-200">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 text-slate-600">
               <tr>
-                <td
-                  colSpan={6}
-                  className="p-6 text-center text-slate-400"
-                >
-                  No tickets found
-                </td>
+                <th className="p-3 text-left">Ticket</th>
+                <th className="text-left">Subject</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Date</th>
+                <th></th>
               </tr>
-            ) : (
-              filtered.map((ticket) => (
-                <tr
-                  key={ticket.id}
-                  className="border-t border-slate-700 hover:bg-slate-750"
-                >
-                  <td className="p-4">{ticket.id}</td>
-                  <td>{ticket.subject}</td>
-                  <td>
-                    <span
-                      className={
-                        `px-3 py-1 rounded-full text-sm ` +
-                        (ticket.status === "Open"
-                          ? "bg-red-500/30 text-red-400"
-                          : ticket.status === "In Progress"
-                          ? "bg-yellow-500/30 text-yellow-400"
-                          : "bg-green-500/30 text-green-400")
-                      }
-                    >
-                      {ticket.status}
-                    </span>
-                  </td>
+            </thead>
 
-                  <td>
-                    <span
-                      className={
-                        `px-3 py-1 rounded-full text-sm ` +
-                        (ticket.priority === "High"
-                          ? "bg-red-600/30 text-red-400"
-                          : ticket.priority === "Medium"
-                          ? "bg-yellow-600/30 text-yellow-400"
-                          : "bg-blue-600/30 text-blue-400")
-                      }
-                    >
-                      {ticket.priority}
-                    </span>
-                  </td>
-
-                  <td>{ticket.createdAt}</td>
-
-                  <td>
-                    <button className="text-orange-500 hover:text-orange-400 font-medium cursor-pointer">
-                      View
-                    </button>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="p-6 text-center text-slate-400">
+                    No tickets found
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ) : (
+                filtered.map((ticket) => (
+                  <tr
+                    key={ticket.id}
+                    className="border-t hover:bg-slate-50 transition"
+                  >
+                    <td className="p-3 font-medium text-slate-700">
+                      {ticket.id}
+                    </td>
+                    <td className="text-slate-600">{ticket.subject}</td>
 
-      {/* FOOTER – Stats */}
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="p-4 rounded-xl bg-slate-800 border border-slate-700">
-          <p className="text-slate-400">Total Tickets</p>
-          <h2 className="text-2xl font-bold">{tickets.length}</h2>
+                    <td>
+                      <span
+                        className={
+                          "px-2 py-1 rounded-full text-xs font-medium " +
+                          (ticket.status === "Open"
+                            ? "bg-green-100 text-green-600"
+                            : ticket.status === "In Progress"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-red-100 text-red-600")
+                        }
+                      >
+                        {ticket.status}
+                      </span>
+                    </td>
+
+                    <td>
+                      <span
+                        className={
+                          "px-2 py-1 rounded-full text-xs font-medium " +
+                          (ticket.priority === "High"
+                            ? "bg-red-100 text-red-600"
+                            : ticket.priority === "Medium"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-blue-100 text-blue-600")
+                        }
+                      >
+                        {ticket.priority}
+                      </span>
+                    </td>
+
+                    <td className="text-slate-500">{ticket.createdAt}</td>
+
+                    <td>
+                      <button className="text-orange-500 hover:underline font-medium">
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-800 border border-slate-700">
-          <p className="text-slate-400">Open</p>
-          <h2 className="text-2xl font-bold">
-            {tickets.filter((t) => t.status === "Open").length}
-          </h2>
-        </div>
-
-        <div className="p-4 rounded-xl bg-slate-800 border border-slate-700">
-          <p className="text-slate-400">Closed</p>
-          <h2 className="text-2xl font-bold">
-            {tickets.filter((t) => t.status === "Closed").length}
-          </h2>
+        {/* FOOTER STATS */}
+        <div className="mt-6 grid grid-cols-3 gap-4">
+          {[
+            { label: "Total", value: tickets.length },
+            {
+              label: "Open",
+              value: tickets.filter((t) => t.status === "Open").length,
+            },
+            {
+              label: "Closed",
+              value: tickets.filter((t) => t.status === "Closed").length,
+            },
+          ].map((item) => (
+            <div
+              key={item.label}
+              className="border rounded-xl p-4 text-center bg-slate-50"
+            >
+              <p className="text-xs text-slate-500">{item.label}</p>
+              <h2 className="text-xl font-semibold text-slate-800">
+                {item.value}
+              </h2>
+            </div>
+          ))}
         </div>
       </div>
     </div>
