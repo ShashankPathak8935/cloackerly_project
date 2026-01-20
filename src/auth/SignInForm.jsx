@@ -2,9 +2,15 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createApiFunction } from "../api/ApiFunction";
 import { logInApi } from "../api/Apis";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+import {
+  EyeIcon,
+  EyeSlashIcon,
+  EnvelopeIcon,
+  LockClosedIcon,
+} from "@heroicons/react/24/solid";
+import { motion } from "framer-motion";
 
-import {showErrorToast, showSuccessToast} from "../components/toast/toast";
+import { showErrorToast, showSuccessToast } from "../components/toast/toast";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -37,9 +43,12 @@ export default function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await createApiFunction("post", logInApi, null, formData);
-     
-      
+      const response = await createApiFunction(
+        "post",
+        logInApi,
+        null,
+        formData,
+      );
 
       if (response && response.data?.token) {
         localStorage.removeItem("user");
@@ -68,18 +77,106 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen w-screen flex flex-col md:flex-row overflow-hidden">
       {/* LEFT PANEL */}
-       <div className="w-full xl:w-1/2 bg-white flex flex-col justify-center px-8 md:px-20 py-12">
+      <div
+        className="hidden xl:flex w-1/2 relative overflow-hidden 
+        bg-[radial-gradient(circle_at_top,#1b1f4a_0%,#0b0e2a_55%,#050714_100%)] 
+      text-white items-center justify-center"
+      >
+        {/* animated grid */}
+        <motion.div
+          animate={{ backgroundPosition: ["0% 0%", "100% 100%"] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 opacity-20 
+         bg-[radial-gradient(circle,_rgba(255,255,255,0.06)_1px,_transparent_1px)] 
+         bg-[length:40px_40px]"
+        />
+
+        {/* floating glow */}
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }}
+          transition={{ duration: 6, repeat: Infinity }}
+          className="absolute w-[420px] h-[420px] rounded-full 
+    bg-indigo-600/40 blur-[140px]"
+        />
+
+        {/* main content */}
+        <motion.div
+          initial={{ opacity: 50, y: 90 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: "easeOut" }}
+          className="relative z-10 text-center px-12 max-w-xl"
+        >
+          {/* logo */}
+          <motion.div
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 4, repeat: Infinity }}
+            className="flex items-center justify-center mb-6"
+          >
+            <div
+              className="bg-indigo-500/20 backdrop-blur p-4 rounded-xl 
+        shadow-[0_0_40px_rgba(99,102,241,0.6)]"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="white"
+                className="w-7 h-7"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 6h16M4 12h16m-7 6h7"
+                />
+              </svg>
+            </div>
+          </motion.div>
+
+          {/* heading */}
+          <h2 className="text-3xl font-bold tracking-tight">
+            Welcome to <span className="text-indigo-400">Clockerly</span>
+          </h2>
+
+          <p className="mt-4 text-gray-300 leading-relaxed">
+            Secure access to your dashboard. Protect campaigns, block bad
+            traffic, and maximize ROI — automatically.
+          </p>
+
+          {/* animated feature pills */}
+          <div className="mt-10 flex justify-center gap-4 flex-wrap">
+            {["Bot Protection", "Smart Cloaking", "Real-time Analytics"].map(
+              (item, i) => (
+                <motion.div
+                  key={item}
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 3 + i, repeat: Infinity }}
+                  className="px-4 py-2 rounded-full text-sm 
+            bg-white/10 backdrop-blur border border-white/20"
+                >
+                  {item}
+                </motion.div>
+              ),
+            )}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* RIGHT PANEL */}
+      {/* <div className="w-full xl:w-1/2 bg-white flex flex-col justify-center px-8 md:px-20 py-12">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Sign In</h1>
         <p className="text-gray-500 mb-8">
           Enter your email and password to access your dashboard.
         </p>
 
-        {/* Google Sign-in */}
+        
         <div className="flex justify-center items-center gap-4 mb-6">
           <button
             type="button"
             className="flex items-center justify-center w-1/2 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition cursor-pointer"
-            onClick={() => showErrorToast("Google login is not yet implemented.")}
+            onClick={() =>
+              showErrorToast("Google login is not yet implemented.")
+            }
           >
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"
@@ -98,12 +195,12 @@ export default function LoginPage() {
           <hr className="flex-grow border-gray-200" />
         </div>
 
-        {/* LOGIN FORM */}
+        
         <form
           onSubmit={onSubmit}
           onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
         >
-          {/* Email */}
+        
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email <span className="text-red-500">*</span>
@@ -119,7 +216,7 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* Password */}
+      
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Password <span className="text-red-500">*</span>
@@ -140,16 +237,16 @@ export default function LoginPage() {
                 role="button"
                 tabIndex={0}
               >
-               {showPassword ? (
-    <EyeIcon className="h-5 w-5" />
-  ) : (
-    <EyeSlashIcon className="h-5 w-5" />
-  )}
+                {showPassword ? (
+                  <EyeIcon className="h-5 w-5" />
+                ) : (
+                  <EyeSlashIcon className="h-5 w-5" />
+                )}
               </span>
             </div>
           </div>
 
-          {/* Keep me logged in */}
+        
           <div className="flex items-center justify-between mb-6">
             <label className="flex items-center text-sm text-gray-600">
               <input
@@ -168,7 +265,7 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          {/* Submit */}
+        
           <button
             disabled={isSubmitting}
             onClick={!isSubmitting ? onSubmit : undefined}
@@ -208,7 +305,7 @@ export default function LoginPage() {
             )}
           </button>
 
-          {/* Signup link */}
+          
           <p className="text-sm text-gray-600 mt-6 text-center">
             Don’t have an account?{" "}
             <Link to="/signup" className="text-indigo-600 hover:underline">
@@ -216,38 +313,152 @@ export default function LoginPage() {
             </Link>
           </p>
         </form>
-      </div>
-
-      {/* RIGHT PANEL */}
-     <div className="hidden xl:flex w-1/2 bg-[#0B0E2A] text-white items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.05)_1px,_transparent_1px)] bg-[length:40px_40px]" />
-        <div className="relative text-center px-10">
-          <div className="flex items-center justify-center mb-4">
-            <div className="bg-indigo-500 p-3 rounded-lg">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="white"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4 6h16M4 12h16m-7 6h7"
-                />
-              </svg>
-            </div>
-            <h2 className="ml-3 text-2xl font-semibold">CloakShield</h2>
-          </div>
-          <p className="text-gray-300 text-sm max-w-sm mx-auto">
-            Shield your campaigns. Boost your performance. Experience smart
-            traffic cloaking — secure, optimized, and effortless.
+      </div> */}
+      <div className="w-full xl:w-1/2 flex items-center justify-center px-6 py-12 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+        <div className="w-full max-w-md bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl px-8 py-10">
+          {/* Heading */}
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Welcome Back 👋
+          </h1>
+          <p className="text-sm text-gray-500 mt-1 mb-8">
+            Please enter your details to sign in
           </p>
+
+          {/* FORM */}
+          <form
+            onSubmit={onSubmit}
+            onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
+            className="space-y-5"
+          >
+            {/* Email */}
+            <div>
+              <label className="text-xs font-medium text-gray-600">
+                Email address
+              </label>
+
+              <div className="relative mt-1">
+                <EnvelopeIcon className="h-4 w-4 text-gray-600 absolute left-4 top-1/2 -translate-y-1/2" />
+
+                <input
+                  type="email"
+                  name="email"
+                  autoComplete="off"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full rounded-full border border-gray-300
+            pl-11 pr-4 py-3 text-sm text-gray-800
+            focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200
+            outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="text-xs font-medium text-gray-600">
+                Password
+              </label>
+
+              <div className="relative mt-1">
+                <LockClosedIcon className="h-4 w-4 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
+
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="••••••••"
+                  autoComplete="new-password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full rounded-full border border-gray-300
+            pl-11 pr-11 py-3 text-sm text-gray-800
+            focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200
+            outline-none"
+                />
+
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2
+            text-gray-400 cursor-pointer"
+                >
+                  {showPassword ? (
+                    <EyeIcon className="h-4 w-4" />
+                  ) : (
+                    <EyeSlashIcon className="h-4 w-4" />
+                  )}
+                </span>
+              </div>
+            </div>
+
+            {/* Options */}
+            <div className="flex items-center justify-between text-xs">
+              <label className="flex items-center gap-2 text-gray-600">
+                <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={(e) => setIsChecked(e.target.checked)}
+                  className="rounded border-gray-300 text-indigo-600"
+                />
+                Remember me
+              </label>
+
+              <Link
+                to="/reset-password"
+                className="text-indigo-600 hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            {/* Button */}
+            <button
+              disabled={isSubmitting}
+              onClick={!isSubmitting ? onSubmit : undefined}
+              className={`w-full rounded-full py-3 text-sm font-semibold
+        transition flex justify-center items-center gap-2
+        ${
+          isSubmitting
+            ? "bg-indigo-300 text-white"
+            : "bg-blue-800 from-indigo-600 to-purple-600 text-white hover:opacity-90"
+        }`}
+            >
+              {isSubmitting ? "Signing in..." : "Sign In"}
+            </button>
+
+            {/* Divider */}
+            <div className="flex items-center gap-4 text-xs text-gray-800">
+              <div className="flex-1 h-px bg-gray-200" />
+              OR
+              <div className="flex-1 h-px bg-gray-200" />
+            </div>
+
+            {/* Google */}
+            <button
+              type="button"
+              onClick={() =>
+                showErrorToast("Google login is not yet implemented.")
+              }
+              className="w-full flex items-center justify-center gap-3
+        border border-gray-300 rounded-full py-3 text-sm text-gray-800
+        hover:bg-gray-50 transition"
+            >
+              <img
+                src="https://www.svgrepo.com/show/475656/google-color.svg"
+                className="w-4 h-4"
+              />
+              Continue with Google
+            </button>
+
+            {/* Footer */}
+            <p className="text-xs text-center text-gray-500">
+              Don’t have an account?{" "}
+              <Link to="/signup" className="text-indigo-600 font-medium">
+                Sign up
+              </Link>
+            </p>
+          </form>
         </div>
       </div>
     </div>
   );
 }
-

@@ -18,146 +18,172 @@ export default function LandingActions() {
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* ================= LEFT PANEL ================= */}
-      <div className="flex-1 bg-white flex items-center justify-center px-4">
-        <div className="w-full max-w-[420px]">
-          <h1 className="text-[28px] font-bold text-slate-900 mb-1">
-            {user ? "Welcome back" : "Sign In"}
-          </h1>
+    <div className="min-h-screen flex bg-[#050814] text-white">
+      {/* ================= LEFT : ANIMATED PREMIUM PANEL ================= */}
+      <div className="hidden lg:flex flex-1 relative overflow-hidden items-center px-20">
+        {/* Grid background */}
+        <div
+          className="absolute inset-0 opacity-20 
+          bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.08)_1px,_transparent_1px)] 
+          bg-[length:36px_36px]"
+        />
 
-          <p className="text-slate-500 text-sm mb-6">
-            {user
-              ? "Continue to your dashboard"
-              : "Enter your email and password to access your dashboard."}
-          </p>
+        {/* Floating glow */}
+        <motion.div
+          animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.7, 0.4] }}
+          transition={{ duration: 6, repeat: Infinity }}
+          className="absolute -top-20 -left-20 w-[420px] h-[420px] rounded-full 
+          bg-indigo-600 blur-[120px]"
+        />
 
-          {!user && (
-            <>
-                <div className="flex justify-center items-center gap-4 mb-6">
-                        <button
-                          type="button"
-                          className="flex items-center justify-center w-1/2 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition cursor-pointer"
-                          onClick={() => showErrorToast("Google login is not yet implemented.")}
-                        >
-                          <img
-                            src="https://www.svgrepo.com/show/475656/google-color.svg"
-                            alt="Google"
-                            className="w-5 h-5 mr-2"
-                          />
-                          <span className="text-sm text-gray-700 font-medium">
-                            Sign in with Google
-                          </span>
-                        </button>
-                      </div> 
+        {/* Content */}
+        <div className="relative z-10 max-w-xl">
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="text-4xl font-bold leading-tight"
+          >
+            Protect Your Traffic.
+            <span className="text-indigo-400"> Maximize Conversions.</span>
+          </motion.h1>
 
-              <div className="flex items-center gap-3 my-6">
-                <div className="flex-1 h-px bg-slate-200" />
-                <span className="text-xs text-slate-400">OR</span>
-                <div className="flex-1 h-px bg-slate-200" />
-              </div>
-            </>
-          )}
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9 }}
+            className="text-gray-300 mt-4 text-lg"
+          >
+            CloakShield intelligently filters bad traffic, protects campaigns,
+            and boosts ROI — all automatically.
+          </motion.p>
 
-          {user ? (
-            <>
-              <PrimaryButton
-                label="Go to Dashboard"
-                onClick={() => navigate("/dashboard/allStats")}
-              />
-
-              <button
-                onClick={handleLogout}
-                className="w-full mt-4 py-3 rounded-lg border border-red-500 text-red-500 font-medium hover:bg-red-50 transition cursor-pointer"
+          {/* Animated stats */}
+          <div className="mt-10 grid grid-cols-3 gap-6">
+            {[
+              { label: "Blocked Bots", value: "98%" },
+              { label: "Faster ROI", value: "2.4x" },
+              { label: "Uptime", value: "99.99%" },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 4 + i, repeat: Infinity }}
+                className="bg-white/5 backdrop-blur rounded-xl p-5 text-center"
               >
-                Sign Out
-              </button>
-            </>
-          ) : (
-            <>
-              <PrimaryButton
-                label="Sign In"
-                onClick={() => navigate("/signin")}
-              />
-
-              <p className="text-center text-sm text-slate-600 mt-4">
-                Don’t have an account?{" "}
-                <span
-                  onClick={() => navigate("/signup")}
-                  className="text-indigo-600 font-semibold cursor-pointer hover:underline"
-                >
-                  Sign Up
-                </span>
-              </p>
-            </>
-          )}
+                <p className="text-2xl font-bold text-indigo-400">
+                  {item.value}
+                </p>
+                <p className="text-sm text-gray-400 mt-1">{item.label}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* ================= RIGHT PANEL ================= */}
-      {/* <div className="hidden md:flex flex-1 items-center justify-center relative overflow-hidden bg-[radial-gradient(circle_at_top,#3a1c71_0%,#0b1024_65%,#050814_100%)]">
-     
-        <motion.div
-          animate={{ scale: [1, 1.15, 1] }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="absolute w-[380px] h-[380px] rounded-full blur-xl bg-[radial-gradient(circle,rgba(99,102,241,0.45),transparent_65%)]"
-        />
-
-       
-        <motion.div
-          animate={{ y: [0, -18, 0] }}
-          transition={{ duration: 5, repeat: Infinity }}
-          className="w-[84px] h-[84px] rounded-2xl bg-gradient-to-br from-[#1b1f3b] to-[#0f1226] flex items-center justify-center shadow-[0_0_35px_rgba(99,102,241,0.8)] z-10"
+      {/* ================= RIGHT : YOUR EXISTING UI ================= */}
+      <div className="flex-1 bg-white flex items-center justify-center px-6">
+        {/* ⬇️ PUT YOUR CURRENT LEFT PANEL CODE HERE ⬇️ */}
+        <div
+          className="flex-1 flex items-center justify-center px-6 
+  bg-[radial-gradient(circle_at_top,#f1f5ff_0%,#ffffff_45%,#f8fafc_100%)]"
         >
-          <svg width="24" height="26">
-            <path
-              fill="white"
-              d="M10.55 15.91H.442L14.153.826 12.856 9.91h10.107L9.253 24.991l1.297-9.082Z"
+          <div className="relative w-full max-w-[420px]">
+            {/* background glow */}
+            <div
+              className="absolute -inset-6 rounded-3xl 
+      bg-gradient-to-br from-indigo-200/40 via-purple-200/30 to-transparent blur-2xl"
             />
-          </svg>
-        </motion.div>
 
-       
-        <div className="absolute bottom-[28%] text-center px-4">
-          <h2 className="text-white text-[22px] font-bold mb-1">
-            Click Stopper
-          </h2>
+            {/* main glass card */}
+            <div
+              className="relative rounded-3xl p-8 
+      bg-white/70 backdrop-blur-xl 
+      border border-white/60 
+      shadow-[0_40px_90px_rgba(79,70,229,0.15)]"
+            >
+              <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-1">
+                {user ? "Welcome back" : "Sign in to your account"}
+              </h1>
 
-          <p className="text-white/75 text-sm max-w-[320px] mx-auto leading-relaxed">
-            Shield your campaigns. Boost performance.
-            <br />
-            Smart ad cloaking & traffic protection.
-          </p>
-        </div>
-      </div> */}
+              <p className="text-slate-500 text-sm mb-7">
+                {user
+                  ? "Continue managing your campaigns"
+                  : "Securely access your dashboard and performance insights."}
+              </p>
 
-       <div className="hidden xl:flex w-1/2 bg-[#0B0E2A] text-white items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.05)_1px,_transparent_1px)] bg-[length:40px_40px]" />
-        <div className="relative text-center px-10">
-          <div className="flex items-center justify-center mb-4">
-            <div className="bg-indigo-500 p-3 rounded-lg">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="white"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4 6h16M4 12h16m-7 6h7"
-                />
-              </svg>
+              {!user && (
+                <>
+                  {/* Google */}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      showErrorToast("Google login is not yet implemented.")
+                    }
+                    className="w-full flex items-center justify-center gap-3 py-3 
+            rounded-xl border border-slate-200 
+            bg-white hover:bg-slate-50 
+            shadow-sm transition cursor-pointer"
+                  >
+                    <img
+                      src="https://www.svgrepo.com/show/475656/google-color.svg"
+                      className="w-5 h-5"
+                    />
+                    <span className="text-sm font-medium text-slate-700">
+                      Continue with Google
+                    </span>
+                  </button>
+
+                  {/* divider */}
+                  <div className="flex items-center gap-3 my-7">
+                    <div className="flex-1 h-px bg-slate-200" />
+                    <span className="text-xs text-slate-400 font-medium">
+                      OR
+                    </span>
+                    <div className="flex-1 h-px bg-slate-200" />
+                  </div>
+                </>
+              )}
+
+              {user ? (
+                <>
+                  <PrimaryButton
+                    label="Go to Dashboard"
+                    onClick={() => navigate("/dashboard/allStats")}
+                  />
+
+                  <button
+                    onClick={handleLogout}
+                    className="w-full mt-4 py-3 rounded-xl 
+            border border-red-500/40 text-red-500 
+            hover:bg-red-50 transition cursor-pointer"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <PrimaryButton
+                    label="Sign In"
+                    onClick={() => navigate("/signin")}
+                  />
+
+                  <p className="text-center text-sm text-slate-600 mt-6">
+                    Don’t have an account?{" "}
+                    <span
+                      onClick={() => navigate("/signup")}
+                      className="text-indigo-600 font-semibold cursor-pointer hover:underline"
+                    >
+                      Sign Up
+                    </span>
+                  </p>
+                </>
+              )}
             </div>
-            <h2 className="ml-3 text-2xl font-semibold">CloakShield</h2>
           </div>
-          <p className="text-gray-300 text-sm max-w-sm mx-auto">
-            Shield your campaigns. Boost your performance. Experience smart
-            traffic cloaking — secure, optimized, and effortless.
-          </p>
         </div>
+
+        {/* NOTHING ELSE CHANGED */}
       </div>
     </div>
   );

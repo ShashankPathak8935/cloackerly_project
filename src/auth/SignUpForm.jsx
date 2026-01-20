@@ -7,6 +7,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { showErrorToast, showSuccessToast } from "../components/toast/toast";
 import { createApiFunction } from "../api/ApiFunction";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+import { motion } from "framer-motion";
 
 import { signupApi } from "../api/Apis";
 
@@ -29,7 +30,10 @@ const validationSchema = Yup.object().shape({
   confirmPassword: Yup.string()
     .required("Confirm Password is required")
     .oneOf([Yup.ref("password"), null], "Passwords must match"),
-  terms: Yup.boolean().oneOf([true], "You must accept the terms and conditions"),
+  terms: Yup.boolean().oneOf(
+    [true],
+    "You must accept the terms and conditions",
+  ),
 });
 
 export default function SignupPage() {
@@ -59,14 +63,21 @@ export default function SignupPage() {
     };
 
     try {
-      const response = await createApiFunction("post", signupApi, null, payload);
+      const response = await createApiFunction(
+        "post",
+        signupApi,
+        null,
+        payload,
+      );
 
       if (response?.status === 201 || response?.success) {
         showSuccessToast("Account created successfully!");
         reset();
         navigate("/signin");
       } else {
-        showErrorToast(response?.message || "Something went wrong. Please try again.");
+        showErrorToast(
+          response?.message || "Something went wrong. Please try again.",
+        );
       }
     } catch (err) {
       const message =
@@ -82,8 +93,101 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen w-screen flex flex-col md:flex-row overflow-hidden">
       {/* LEFT PANEL */}
+      <div className="hidden xl:flex w-1/2 relative overflow-hidden bg-[#0B0E2A] text-white items-center justify-center">
+        {/* Subtle grid background */}
+        <div
+          className="absolute inset-0 opacity-[0.15]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
+        />
+
+        {/* Floating gradient blobs */}
+        <motion.div
+          animate={{ y: [0, -30, 0], x: [0, 20, 0] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -top-20 -left-20 w-96 h-96 rounded-full
+    bg-indigo-600/30 blur-[120px]"
+        />
+
+        <motion.div
+          animate={{ y: [0, 25, 0], x: [0, -15, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-[-100px] right-[-100px] w-96 h-96 rounded-full
+    bg-purple-600/30 blur-[140px]"
+        />
+
+        {/* Main content */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: "easeOut" }}
+          className="relative z-10 text-center px-14"
+        >
+          {/* Logo */}
+          <div className="flex items-center justify-center mb-6">
+            <div className="bg-indigo-500/90 p-4 rounded-xl shadow-xl">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-7 h-7"
+              >
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+              </svg>
+            </div>
+            <h2 className="ml-4 text-3xl font-semibold tracking-wide">
+              Click Stopper
+            </h2>
+          </div>
+
+          {/* Heading */}
+          <h3 className="text-2xl font-bold mb-3 leading-snug">
+            Create your account
+            <br />
+            and protect your traffic
+          </h3>
+
+          {/* Description */}
+          <p className="text-gray-300 text-sm max-w-md mx-auto leading-relaxed">
+            Stop fake clicks, secure your ad spend, and gain full control with
+            intelligent traffic cloaking built for modern teams.
+          </p>
+
+          {/* Animated stats */}
+          <div className="mt-10 grid grid-cols-3 gap-6 text-center">
+            {[
+              { label: "Blocked Bots", value: "99%" },
+              { label: "Response Time", value: "<50ms" },
+              { label: "Uptime", value: "99.9%" },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 + i * 0.2 }}
+              >
+                <p className="text-2xl font-bold text-white">{item.value}</p>
+                <p className="text-xs text-gray-400 mt-1">{item.label}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* RIGHT PANEL */}
       <div className="w-full xl:w-1/2 bg-white flex flex-col justify-center px-8 md:px-20 py-12">
-        <h1 className="text-3xl font-semibold text-gray-900 mb-2">Sign Up</h1>
+        <h1 className="text-3xl font-semibold text-gray-900 mb-2">
+          Create your Account
+        </h1>
         <p className="text-gray-500 mb-8">Create an account to get started!</p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -104,7 +208,9 @@ export default function SignupPage() {
                 }`}
               />
               {errors.firstName && (
-                <p className="mt-1 text-xs text-red-500">{errors.firstName.message}</p>
+                <p className="mt-1 text-xs text-red-500">
+                  {errors.firstName.message}
+                </p>
               )}
             </div>
 
@@ -123,7 +229,9 @@ export default function SignupPage() {
                 }`}
               />
               {errors.lastName && (
-                <p className="mt-1 text-xs text-red-500">{errors.lastName.message}</p>
+                <p className="mt-1 text-xs text-red-500">
+                  {errors.lastName.message}
+                </p>
               )}
             </div>
           </div>
@@ -145,7 +253,9 @@ export default function SignupPage() {
               }`}
             />
             {errors.email && (
-              <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
+              <p className="mt-1 text-xs text-red-500">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
@@ -159,7 +269,7 @@ export default function SignupPage() {
                 {...register("password")}
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
-                 autoComplete="new-password"
+                autoComplete="new-password"
                 className={`h-11 w-full rounded-lg border px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none transition ${
                   errors.password
                     ? "border-red-500"
@@ -169,18 +279,20 @@ export default function SignupPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
-                 autoComplete="new-password"
+                autoComplete="new-password"
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
               >
                 {showPassword ? (
-    <EyeIcon className="h-5 w-5" />
-  ) : (
-    <EyeSlashIcon className="h-5 w-5" />
-  )}
+                  <EyeIcon className="h-5 w-5" />
+                ) : (
+                  <EyeSlashIcon className="h-5 w-5" />
+                )}
               </button>
             </div>
             {errors.password && (
-              <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
+              <p className="mt-1 text-xs text-red-500">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
@@ -206,10 +318,10 @@ export default function SignupPage() {
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
               >
                 {showConfirm ? (
-    <EyeIcon className="h-5 w-5" />
-  ) : (
-    <EyeSlashIcon className="h-5 w-5" />
-  )}
+                  <EyeIcon className="h-5 w-5" />
+                ) : (
+                  <EyeSlashIcon className="h-5 w-5" />
+                )}
               </button>
             </div>
             {errors.confirmPassword && (
@@ -235,9 +347,12 @@ export default function SignupPage() {
               and{" "}
               <a href="#" className="text-indigo-600 hover:underline">
                 Privacy Policy
-              </a>.
+              </a>
+              .
               {errors.terms && (
-                <div className="text-xs text-red-500 mt-1">{errors.terms.message}</div>
+                <div className="text-xs text-red-500 mt-1">
+                  {errors.terms.message}
+                </div>
               )}
             </label>
           </div>
@@ -289,46 +404,6 @@ export default function SignupPage() {
           </p>
         </form>
       </div>
-
-      {/* RIGHT PANEL */}
-      <div className="hidden xl:flex w-1/2 bg-[#0B0E2A] text-white items-center justify-center relative overflow-hidden">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-            opacity: 0.15,
-          }}
-        />
-        <div className="relative text-center px-10">
-          <div className="flex items-center justify-center mb-4">
-            <div className="bg-indigo-500 p-3 rounded-lg">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-6 h-6"
-              >
-                <rect x="3" y="3" width="7" height="7" rx="1" />
-                <rect x="14" y="3" width="7" height="7" rx="1" />
-                <rect x="14" y="14" width="7" height="7" rx="1" />
-              </svg>
-            </div>
-            <h2 className="ml-3 text-2xl font-semibold">Click Stopper</h2>
-          </div>
-          <p className="text-gray-300 text-sm max-w-md mx-auto">
-            Shield your campaigns. Boost your performance. Experience smart traffic cloaking — secure, optimized, effortless.
-          </p>
-        </div>
-      </div>
     </div>
   );
 }
-
