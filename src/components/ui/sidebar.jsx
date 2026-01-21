@@ -74,7 +74,7 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
   };
 
   const isDatabaseActive = databaseSubItems.some(
-    (sub) => location.pathname === sub.route
+    (sub) => location.pathname === sub.route,
   );
 
   return (
@@ -83,7 +83,7 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
     h-full flex flex-col py-4 px-2
     bg-transparent
     ${isCollapsed ? "w-16" : "w-60"}
-    transition-all duration-500 ease-in-out
+    transition-all duration-500 ease-in-out mt-4
   `}
     >
       {/* Logo & Avatar */}
@@ -238,7 +238,7 @@ const Sidebar = ({ collapsed, mobileVisible, onCloseMobile }) => {
       ease-[cubic-bezier(.22,.61,.36,1)]
     `}
         >
-          <div className="h-full flex mt-[8vh] flex-col justify-end">
+          <div className="h-full flex mt-[10vh] flex-col justify-end">
             <SidebarContent
               isCollapsed={collapsed && !hovered}
               mobileVisible={mobileVisible}

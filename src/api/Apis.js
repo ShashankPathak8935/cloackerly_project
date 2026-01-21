@@ -53,3 +53,4 @@ export const getPlans = `${base_url}/api/v2/utils/plans`;
 export const verifyOtpApi = `${base_url}/auth/verify-otp`;
 export const resendOtpApi = `${base_url}/auth/resend-otp`;
 export const getSubscription = `${base_url}/api/v2/plan/subscription`;
+export const googleLoginApi = `${base_url}/auth/authgoogle`;

@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import { googleLoginApi } from "../../api/Apis.js";
+import { createApiFunction } from "../../api/ApiFunction.js";
+import {showErrorToast, showSuccessToast} from "../../components/toast/toast.jsx";
 
 export default function LandingActions() {
   const navigate = useNavigate();
@@ -15,6 +19,39 @@ export default function LandingActions() {
     localStorage.clear();
     setUser(null);
     navigate("/signin");
+  };
+
+  // Google Login
+  const loginWithGoogle = async (googleToken) => {
+
+    try {
+      const response = await createApiFunction("post", googleLoginApi, null, {
+        token: googleToken,
+      });
+
+      if (response && response.data?.token) {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        localStorage.removeItem("plan");
+
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("plan", JSON.stringify(response.data.plan));
+        showSuccessToast("Signin successful!");
+
+        await new Promise((res) => setTimeout(res, 400));
+        navigate("/Dashboard/allStats");
+      } else {
+        showErrorToast("Unexpected response from server. Please try again.");
+      }
+    } catch (err) {
+      console.error("❌ Google login error:", err);
+      const msg =
+        err.response?.data?.message || "Google login failed. Please try again.";
+      showErrorToast(msg);
+    } finally {
+    
+    }
   };
 
   return (
@@ -115,7 +152,8 @@ export default function LandingActions() {
               {!user && (
                 <>
                   {/* Google */}
-                  <button
+
+                  {/* <button
                     type="button"
                     onClick={() =>
                       showErrorToast("Google login is not yet implemented.")
@@ -132,7 +170,17 @@ export default function LandingActions() {
                     <span className="text-sm font-medium text-slate-700">
                       Continue with Google
                     </span>
-                  </button>
+                  </button> */}
+                  <GoogleOAuthProvider clientId="841461646285-9dimu89k2vjo4cbdj69ound7s0j7jm2s.apps.googleusercontent.com">
+                    <GoogleLogin
+                      onSuccess={(credentialResponse) => {
+                        // Send token to backend
+
+                        loginWithGoogle(credentialResponse.credential);
+                      }}
+                      onError={() => console.log("Login Failed")}
+                    />
+                  </GoogleOAuthProvider>
 
                   {/* divider */}
                   <div className="flex items-center gap-3 my-7">
@@ -182,8 +230,6 @@ export default function LandingActions() {
             </div>
           </div>
         </div>
-
-        {/* NOTHING ELSE CHANGED */}
       </div>
     </div>
   );

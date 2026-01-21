@@ -473,39 +473,6 @@ const Dashboard = () => {
     </div>
   );
 
-  // const renderActionDropdown = (campaignId, row) => (
-  //   // ref को सीधे dropdownRef के बजाय किसी wrapper div को दें ताकि click outside काम करे
-  //   <div
-  //     className="fixed right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20"
-  //     style={{
-  //       zIndex: 9999999, // over ALL elements
-  //       left: dropdownPos.left,
-  //       top: dropdownPos.top, // adjust dynamically if needed
-  //     }}
-  //   >
-  //     <div className="py-1">
-  //       <button
-  //         onClick={() => handleActionSelect("edit", campaignId, row)}
-  //         className="block w-full text-left px-4 py-2 text-sm text-gray-800 hover:bg-gray-600 hover:text-white transition duration-100 cursor-pointer"
-  //       >
-  //         Edit Campaign
-  //       </button>
-  //       <button
-  //         onClick={() => handleActionSelect("duplicate", campaignId, null)}
-  //         className="block w-full text-left px-4 py-2 text-sm text-gray-800 hover:bg-gray-600 hover:text-white transition duration-100 cursor-pointer"
-  //       >
-  //         Duplicate Campaign
-  //       </button>
-  //       <button
-  //         onClick={() => handleActionSelect("delete", campaignId, null)}
-  //         className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-600 hover:text-red-300 transition duration-100 cursor-pointer"
-  //       >
-  //         Delete Campaign
-  //       </button>
-  //     </div>
-  //   </div>
-  // );
-
   const ActionItem = ({ icon, label, onClick, danger }) => (
     <button
       onClick={onClick}
@@ -855,7 +822,7 @@ const Dashboard = () => {
       </div>
 
       {/* Top Stats */}
-      <div className="mb-6 flex gap-0 flex-wrap">
+      {/* <div className="mb-6 flex gap-0 flex-wrap">
         <StatCard
           icon={<BarChart3 size={22} />}
           value={stats.total_campaigns}
@@ -880,6 +847,51 @@ const Dashboard = () => {
           title="Blocked Traffic"
           subtitle="Security insights"
         />
+      </div> */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+        {/* TOTAL */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+          <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+            Total Campaigns
+          </p>
+          <p className="mt-2 text-3xl font-semibold text-gray-900">
+            {stats.total_campaigns || 0}
+          </p>
+          <div className="mt-3 h-1 w-10 rounded-full bg-blue-600" />
+        </div>
+
+        {/* ACTIVE */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+          <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+            Live Campaigns
+          </p>
+          <p className="mt-2 text-3xl font-semibold text-emerald-600">
+            {stats.active_campaigns || 0}
+          </p>
+          <div className="mt-3 h-1 w-10 rounded-full bg-emerald-500" />
+        </div>
+
+        {/* ALLOWED */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+          <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+            Allowed Traffic
+          </p>
+          <p className="mt-2 text-3xl font-semibold text-amber-500">
+            {stats.allowed_campaigns || 0}
+          </p>
+          <div className="mt-3 h-1 w-10 rounded-full bg-amber-400" />
+        </div>
+
+        {/* BLOCKED */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+          <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+            Blocked Traffic
+          </p>
+          <p className="mt-2 text-3xl font-semibold text-red-500">
+            {stats.blocked_campaigns || 0}
+          </p>
+          <div className="mt-3 h-1 w-10 rounded-full bg-red-500" />
+        </div>
       </div>
 
       <div className="bg-gray-100/40 p-6">

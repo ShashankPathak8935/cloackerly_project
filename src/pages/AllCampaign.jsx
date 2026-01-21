@@ -408,40 +408,6 @@ function AllCampaignsDashboard() {
     navigate("/Dashboard/create-campaign");
   };
 
-  // ⭐ NEW Render Function: Action Dropdown Menu
-  // const renderActionDropdown = (campaignId, row) => (
-  //   // ref को सीधे dropdownRef के बजाय किसी wrapper div को दें ताकि click outside काम करे
-  //   <div
-  //     className="fixed right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20"
-  //     style={{
-  //       zIndex: 9999999, // over ALL elements
-  //       left: dropdownPos.left,
-  //       top: dropdownPos.top, // adjust dynamically if needed
-  //     }}
-  //   >
-  //     <div className="py-1">
-  //       <button
-  //         onClick={() => handleActionSelect("edit", campaignId, row)}
-  //         className="block w-full text-left px-4 py-2 text-sm text-gray-800 hover:bg-gray-600 hover:text-white transition duration-100 cursor-pointer"
-  //       >
-  //         Edit Campaign
-  //       </button>
-  //       <button
-  //         onClick={() => handleActionSelect("duplicate", campaignId, null)}
-  //         className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-600 hover:text-white transition duration-100 cursor-pointer"
-  //       >
-  //         Duplicate Campaign
-  //       </button>
-  //       <button
-  //         onClick={() => handleActionSelect("delete", campaignId, null)}
-  //         className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-600 hover:text-red-300 transition duration-100 cursor-pointer"
-  //       >
-  //         Delete Campaign
-  //       </button>
-  //     </div>
-  //   </div>
-  // );
-
 
     const ActionItem = ({ icon, label, onClick, danger }) => (
       <button
