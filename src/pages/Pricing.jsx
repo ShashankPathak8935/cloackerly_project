@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { apiFunction, createApiFunction } from "../api/ApiFunction";
 import { cryptoPayment, getPlans } from "../api/Apis";
 import PayPalIntegration from "./paypalIntegration";
+import { CreditCard, Wallet } from "lucide-react";
 
 /* ===================== PAYMENT DETAILS ===================== */
 
@@ -263,7 +264,7 @@ export default function Pricing() {
               <>
                 {/* TITLE */}
                 <h2 className="text-lg font-semibold text-gray-900">
-                  Confirm your purchase
+                  Choose Your Payment Method
                 </h2>
 
                 {/* SUMMARY */}
@@ -279,59 +280,81 @@ export default function Pricing() {
                 </p>
 
                 {/* PAYMENT METHODS */}
-                <div className="mt-6 space-y-3">
+                <div className="mt-6 space-y-4">
                   {["USDT", "card"].map((m) => (
                     <label
                       key={m}
-                      className={`flex items-center justify-between border rounded-lg px-4 py-3 cursor-pointer
-            transition
-            ${
-              paymentMethod === m
-                ? "border-blue-600 bg-blue-50"
-                : "border-gray-200 hover:border-gray-300"
-            }`}
+                      className={`flex items-center justify-between rounded-xl border px-4 py-4 cursor-pointer transition-all
+          ${
+            paymentMethod === m
+              ? "border-blue-600 bg-blue-50 shadow-sm"
+              : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+          }`}
                     >
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="radio"
-                          checked={paymentMethod === m}
-                          onChange={() => setPaymentMethod(m)}
-                          className="accent-blue-600"
-                        />
-                        <span className="text-sm font-medium text-gray-800">
-                          {m.toUpperCase()}
-                        </span>
+                      <div className="flex items-center gap-4">
+                        {/* HD ICON */}
+                        <div className="h-10 w-10 flex items-center justify-center">
+                          {m === "USDT" ? (
+                            <img
+                              src="https://cryptologos.cc/logos/tether-usdt-logo.png?v=029"
+                              alt="USDT"
+                              className="h-9 w-9 object-contain"
+                            />
+                          ) : (
+                            <img
+                              src="https://cdn-icons-png.flaticon.com/512/633/633611.png"
+                              alt="Card"
+                              className="h-9 w-auto object-contain"
+                            />
+                          )}
+                        </div>
+
+                        {/* TEXT */}
+                        <div>
+                          <p className="text-sm font-medium text-gray-800">
+                            {m.toUpperCase()}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {m === "USDT"
+                              ? "Crypto wallet payment"
+                              : "Credit / Debit Card"}
+                          </p>
+                        </div>
                       </div>
 
-                      {paymentMethod === m && (
-                        <span className="text-xs font-medium text-blue-600">
-                          Selected
-                        </span>
-                      )}
+                      {/* RADIO */}
+                      <input
+                        type="radio"
+                        checked={paymentMethod === m}
+                        onChange={() => setPaymentMethod(m)}
+                        className="accent-blue-600"
+                      />
                     </label>
                   ))}
                 </div>
 
                 {/* ACTIONS */}
-                <div className="flex justify-end gap-3 mt-8">
-                  <button
-                    onClick={resetPaymentState}
-                    className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
-                  >
-                    Cancel
-                  </button>
-
+                <div className="flex flex-col gap-4 mt-8">
+                  {/* PROCEED */}
                   <button
                     disabled={!paymentMethod}
                     onClick={() => setModalStep(2)}
-                    className={`px-5 py-2 text-sm font-medium rounded-lg transition
-          ${
-            paymentMethod
-              ? "bg-blue-600 text-white hover:bg-blue-700"
-              : "bg-gray-200 text-gray-400 cursor-not-allowed"
-          }`}
+                    className={`w-full py-3 text-base font-semibold rounded-xl transition
+                   ${
+                     paymentMethod
+                       ? "bg-blue-600 text-white hover:bg-blue-700"
+                       : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                   }`}
                   >
-                    Continue
+                    Proceed
+                  </button>
+
+                  {/* BACK */}
+                  <button
+                    onClick={resetPaymentState}
+                    className="w-full py-3 text-base font-medium rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 transition"
+                  >
+                    Back
                   </button>
                 </div>
               </>
@@ -341,69 +364,112 @@ export default function Pricing() {
             {modalStep === 2 && paymentMethod === "USDT" && (
               <>
                 {/* TITLE */}
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Select USDT network
-                </h2>
-
-                <p className="mt-2 text-sm text-gray-600">
-                  Choose the blockchain network you want to use for this
-                  payment.
-                </p>
+                <div className="flex items-start gap-3">
+                  <div className="h-10 w-1 rounded-full bg-green-500 mt-1" />
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      Select Payment Currency
+                    </h2>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Pick a blockchain network to continue your payment.
+                    </p>
+                  </div>
+                </div>
 
                 {/* NETWORK OPTIONS */}
-                <div className="mt-6 space-y-3">
-                  {["ERC20", "TRC20"].map((n) => (
+                <div className="mt-2 max-h-[200px] overflow-y-auto pr-2 space-y-1">
+                  {[
+                    "ERC20",
+                    "TRC20",
+                    "Bitcoin(BTC)",
+                    "Ethereum(ETH)",
+                    "USDT(BEP20)",
+                  ].map((n) => (
                     <label
                       key={n}
-                      className={`flex items-center justify-between border rounded-lg px-4 py-3 cursor-pointer
-            transition
-            ${
-              network === n
-                ? "border-blue-600 bg-blue-50"
-                : "border-gray-200 hover:border-gray-300"
-            }`}
+                      className={`flex items-center justify-between rounded-xl border px-4 py-2 cursor-pointer transition-all
+          ${
+            network === n
+              ? "border-blue-600 bg-green-50 shadow-sm"
+              : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+          }`}
                     >
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="radio"
-                          checked={network === n}
-                          onChange={() => setNetwork(n)}
-                          className="accent-blue-600"
-                        />
-                        <span className="text-sm font-medium text-gray-800">
-                          {n}
-                        </span>
+                      <div className="flex items-center gap-4">
+                        {/* NETWORK IMAGE */}
+                        <div className="h-10 w-10 flex items-center justify-center">
+                          {n === "ERC20" || n === "Ethereum(ETH)" ? (
+                            <img
+                              src="https://cryptologos.cc/logos/ethereum-eth-logo.png?v=029"
+                              alt="Ethereum"
+                              className="h-9 w-9 object-contain"
+                            />
+                          ) : n === "TRC20" ? (
+                            <img
+                              src="https://cryptologos.cc/logos/tron-trx-logo.png?v=029"
+                              alt="TRON"
+                              className="h-9 w-9 object-contain"
+                            />
+                          ) : n === "Bitcoin(BTC)" ? (
+                            <img
+                              src="https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=029"
+                              alt="Bitcoin"
+                              className="h-9 w-9 object-contain"
+                            />
+                          ) : (
+                            <img
+                              src="https://cryptologos.cc/logos/bnb-bnb-logo.png?v=029"
+                              alt="BEP20"
+                              className="h-9 w-9 object-contain"
+                            />
+                          )}
+                        </div>
+
+                        {/* TEXT */}
+                        <div>
+                          <p className="text-sm font-medium text-gray-800">
+                            {n}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {n === "ERC20" && "Ethereum Network"}
+                            {n === "TRC20" && "TRON Network (Low fees)"}
+                            {n === "Bitcoin(BTC)" && "Bitcoin Blockchain"}
+                            {n === "Ethereum(ETH)" && "Native ETH transfer"}
+                            {n === "USDT(BEP20)" && "Binance Smart Chain"}
+                          </p>
+                        </div>
                       </div>
 
-                      {network === n && (
-                        <span className="text-xs font-medium text-blue-600">
-                          Selected
-                        </span>
-                      )}
+                      {/* RADIO (LOGIC SAME) */}
+                      <input
+                        type="radio"
+                        checked={network === n}
+                        onChange={() => setNetwork(n)}
+                        className="accent-blue-600"
+                      />
                     </label>
                   ))}
                 </div>
 
                 {/* ACTIONS */}
-                <div className="flex justify-end gap-3 mt-8">
-                  <button
-                    onClick={() => setModalStep(1)}
-                    className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
-                  >
-                    Back
-                  </button>
-
+                <div className="flex flex-col gap-4 mt-8">
                   <button
                     disabled={!network}
                     onClick={() => setModalStep(3)}
-                    className={`px-5 py-2 text-sm font-medium rounded-lg transition
-          ${
-            network
-              ? "bg-blue-600 text-white hover:bg-blue-700"
-              : "bg-gray-200 text-gray-400 cursor-not-allowed"
-          }`}
+                    className={`w-full px-6 py-3 text-base font-medium rounded-lg transition
+        ${
+          network
+            ? "bg-blue-600 text-white hover:bg-blue-700"
+            : "bg-gray-200 text-gray-400 cursor-not-allowed"
+        }`}
                   >
-                    Continue
+                    Proceed
+                  </button>
+
+                  <button
+                    onClick={() => setModalStep(1)}
+                    className="w-full px-6 py-3 text-base font-medium rounded-lg border border-gray-300 text-gray-800 hover:bg-gray-50 transition"
+                  >
+                    Back
                   </button>
                 </div>
               </>
@@ -419,7 +485,6 @@ export default function Pricing() {
               </>
             )}
 
-            {/* STEP 3 */}
             {/* STEP 3 */}
             {modalStep === 3 && (
               <>
