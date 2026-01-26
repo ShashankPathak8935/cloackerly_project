@@ -4,14 +4,6 @@ import html2canvas from "html2canvas";
 import { createRoot } from "react-dom/client";
 
 export const SubscriptionView = () => {
-  const subscription = {
-    status: "Active",
-    startDate: "August 15, 2024",
-    lastOrderDate: "August 15, 2025",
-    nextPaymentDate: "August 16, 2026",
-    paymentType: "Via Manual Renewal",
-  };
-
   const [details, setDetails] = useState(null);
 
   // Load user AFTER component mounts
@@ -21,6 +13,8 @@ export const SubscriptionView = () => {
       setDetails(JSON.parse(stored));
     }
   }, []);
+
+  console.log("subs", details);
 
   const InvoiceTemplate = ({ data }) => {
     return (
@@ -83,8 +77,8 @@ export const SubscriptionView = () => {
                     data?.status === "Paid"
                       ? "#16a34a"
                       : item.status === "Rejected"
-                      ? "#dc2626"
-                      : "#d97706",
+                        ? "#dc2626"
+                        : "#d97706",
                   fontWeight: 600,
                 }}
               >
@@ -307,105 +301,73 @@ export const SubscriptionView = () => {
   };
 
   return (
-    <div className="text-white space-y-10">
-      {/* SUBSCRIPTION DETAILS TABLE */}
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-        <table className="w-full border-collapse text-sm">
-          <tbody>
-            <TableRow
-              label="Status"
-              value={details?.status || "Not Available"}
-            />
-            <TableRow
-              label="Start Date"
-              value={details?.start_date || "Not Available"}
-            />
-            <TableRow
-              label="Last Order Date"
-              value={details?.end_date || "Not Available"}
-            />
-            <TableRow
-              label="Next Payment Date"
-              value={details?.end_date || "Not Available"}
-            />
-            <TableRow
-              label="Payment Method"
-              value={details?.method || "Not Available"}
-            />
-          </tbody>
-        </table>
-
-        {/* ACTION BUTTONS */}
-        {/* <div className="flex gap-4 mt-6">
-          <ActionButton title="Cancel" />
-          <ActionButton title="Add Payment" />
-          <ActionButton title="Renew Now" />
-        </div> */}
-      </div>
-
-      {/* SUBSCRIPTION TOTALS */}
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 space-y-6">
-        <h2 className="text-xl font-semibold">Subscription Details</h2>
-
-        <table className="w-full border-collapse text-sm">
-          <tbody>
-            <TableRow
-              label="Billing Cycle"
-              value={details?.billing_cycle || "Not Available"}
-            />
-            <TableRow
-              label="Currency"
-              value={details?.currency || "Not Available"}
-            />
-            <TableRow
-              label="Plan Name"
-              value={details?.plan_name || "Not Available"}
-            />
-            <TableRow
-              label="Total"
-              value={details?.amount || "Not Available"}
-            />
-          </tbody>
-        </table>
-      </div>
-
-      {/* RELATED ORDERS */}
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-        <h2 className="text-xl font-semibold mb-4">Related orders</h2>
-
-        <table className="w-full border-collapse text-sm">
-          <thead>
-            <tr className="bg-slate-700 text-left border-b border-slate-600">
-              <th className="p-3">ORDER</th>
-              <th className="p-3">DATE</th>
-              <th className="p-3">STATUS</th>
-              <th className="p-3">TOTAL</th>
-              <th className="p-3">ACTIONS</th>
+    <div className="space-y-8">
+      {/* SUBSCRIPTION STATUS */}
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th className="px-6 py-3 text-left font-medium text-gray-600">
+                Status
+              </th>
+              <th className="px-6 py-3 text-left font-medium text-gray-600">
+                Start Date
+              </th>
+              <th className="px-6 py-3 text-left font-medium text-gray-600">
+                Last Order Date
+              </th>
+              <th className="px-6 py-3 text-left font-medium text-gray-600">
+                Next Payment Date
+              </th>
             </tr>
           </thead>
 
           <tbody>
-            <tr className="border-b border-slate-700">
-              <td className="p-3">{details?.payment_id || "N/A"}</td>
-              <td className="p-3">{details?.start_date || "N/A"}</td>
-              <td className="p-3">{details?.status || "N/A"}</td>
-              <td className="p-3 text-purple-400">
-                {details?.amount || "Not Available"}
-                {details?.currency}
+            <tr>
+              <td className="px-6 py-4 text-gray-900 font-medium">
+                {details?.isActive ? "Active" : "Inactive"}
               </td>
-              <td className="p-3 flex gap-2">
-                <ActionButton
-                  title="View 👁"
-                  onClick={() => handleAction("view")}
-                />
-                <ActionButton
-                  title="Print Invoice"
-                  onClick={() => handleAction("print")}
-                />
-                <ActionButton
-                  title="Download Invoice"
-                  onClick={() => handleAction("download")}
-                />
+              <td className="px-6 py-4 text-gray-900">
+                {details?.startDate?.split("T")[0] || "Not Available"}
+              </td>
+              <td className="px-6 py-4 text-gray-900">
+                {details?.endDate?.split("T")[0] || "Not Available"}
+              </td>
+              <td className="px-6 py-4 text-gray-900">
+                {details?.endDate?.split("T")[0] || "Not Available"}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {/* SUBSCRIPTION PLAN */}
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+        <table className="w-full text-sm border-collapse">
+          <thead className="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th className="px-6 py-3 text-left font-medium text-gray-600 align-middle">
+                Billing Cycle
+              </th>
+              <th className="px-6 py-3 text-left font-medium text-gray-600 align-middle">
+                Plan Name
+              </th>
+              <th className="px-6 py-3 text-left font-medium text-gray-600 align-middle">
+                Total Amount
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr className="border-b">
+              <td className="px-6 py-3 text-gray-900 align-middle">
+                {details?.Plan?.name?.split(" ")[1] || "Not Available"}
+              </td>
+              <td className="px-6 py-3 text-gray-900 font-medium align-middle">
+                {details?.Plan?.name || "Not Available"}
+              </td>
+              <td className="px-6 py-3 text-gray-900 align-middle">
+                {details?.Plan?.price || "Not Available"}
               </td>
             </tr>
           </tbody>
@@ -417,9 +379,11 @@ export const SubscriptionView = () => {
 
 // Small reusable row component
 const TableRow = ({ label, value }) => (
-  <tr className="border-b border-slate-700">
-    <td className="p-3 font-medium">{label}</td>
-    <td className="p-3">{value}</td>
+  <tr className="border-b border-gray-100 last:border-none">
+    <td className="px-6 py-4 font-medium text-gray-700 whitespace-nowrap">
+      {label}
+    </td>
+    <td className="px-6 py-4 text-gray-900">{value}</td>
   </tr>
 );
 

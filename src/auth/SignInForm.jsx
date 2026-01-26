@@ -58,6 +58,8 @@ export default function LoginPage() {
 
         localStorage.setItem("user", JSON.stringify(response.data.user));
         localStorage.setItem("token", response.data.token);
+        localStorage.setItem("plan", JSON.stringify(response.data.plan));
+        
         showSuccessToast("Signin successful!");
 
         await new Promise((res) => setTimeout(res, 400));

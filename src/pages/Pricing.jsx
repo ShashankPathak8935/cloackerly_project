@@ -7,13 +7,21 @@ import { CreditCard, Wallet } from "lucide-react";
 /* ===================== PAYMENT DETAILS ===================== */
 
 const PAYMENT_DETAILS = {
+  ETH: {
+    address: "0x05Efa283b941708E54e26925327847399f3D00F0",
+    qr: "/ETH.jpeg",
+  },
+  BTC: {
+    address: "bc1q27zdy7pwwd4nju26tusaofxlv37d50fh0p7zp",
+    qr: "/BTC.jpeg",
+  },
   ERC20: {
-    address: "0x8A8e46327fdA6ca4505bCBE5d7839a591ee82A32",
-    qr: "/ERC.jpeg",
+    address: "0x05Efa283b941708E54e26925327847399f3D00F0",
+    qr: "/ERC20.jpeg",
   },
   TRC20: {
-    address: "TN26mZ3G2RyFbbUT2T7CMn42tBBX8hLo9W",
-    qr: "/TRC.jpeg",
+    address: "TTkEHAVGPNBWzPT66jWTXW1gD5Cg2HXMob",
+    qr: "/TRC20.jpeg",
   },
 };
 
@@ -62,6 +70,14 @@ export default function Pricing() {
     setTxHash("");
     setLoading(false);
     setPayload(null);
+  };
+
+  // currency obj
+  const CURRENCY_MAP = {
+    ETH: "ETH",
+    BTC: "BTC",
+    ERC20: "USDT (ERC20)",
+    TRC20: "USDT (TRC20)",
   };
 
   const calculateStartEndDates = (billing) => {
@@ -281,7 +297,7 @@ export default function Pricing() {
 
                 {/* PAYMENT METHODS */}
                 <div className="mt-6 space-y-4">
-                  {["USDT", "card"].map((m) => (
+                  {["Digital Payments", "card"].map((m) => (
                     <label
                       key={m}
                       className={`flex items-center justify-between rounded-xl border px-4 py-4 cursor-pointer transition-all
@@ -294,7 +310,7 @@ export default function Pricing() {
                       <div className="flex items-center gap-4">
                         {/* HD ICON */}
                         <div className="h-10 w-10 flex items-center justify-center">
-                          {m === "USDT" ? (
+                          {m === "Digital payments" ? (
                             <img
                               src="https://cryptologos.cc/logos/tether-usdt-logo.png?v=029"
                               alt="USDT"
@@ -315,7 +331,7 @@ export default function Pricing() {
                             {m.toUpperCase()}
                           </p>
                           <p className="text-xs text-gray-500">
-                            {m === "USDT"
+                            {m === "Digital payments"
                               ? "Crypto wallet payment"
                               : "Credit / Debit Card"}
                           </p>
@@ -361,7 +377,7 @@ export default function Pricing() {
             )}
 
             {/* STEP 2 - USDT */}
-            {modalStep === 2 && paymentMethod === "USDT" && (
+            {modalStep === 2 && paymentMethod === "Digital Payments" && (
               <>
                 {/* TITLE */}
                 <div className="flex items-start gap-3">
@@ -378,13 +394,7 @@ export default function Pricing() {
 
                 {/* NETWORK OPTIONS */}
                 <div className="mt-2 max-h-[200px] overflow-y-auto pr-2 space-y-1">
-                  {[
-                    "ERC20",
-                    "TRC20",
-                    "Bitcoin(BTC)",
-                    "Ethereum(ETH)",
-                    "USDT(BEP20)",
-                  ].map((n) => (
+                  {["ETH", "BTC", "ERC20", "TRC20"].map((n) => (
                     <label
                       key={n}
                       className={`flex items-center justify-between rounded-xl border px-4 py-2 cursor-pointer transition-all
@@ -397,7 +407,7 @@ export default function Pricing() {
                       <div className="flex items-center gap-4">
                         {/* NETWORK IMAGE */}
                         <div className="h-10 w-10 flex items-center justify-center">
-                          {n === "ERC20" || n === "Ethereum(ETH)" ? (
+                          {n === "ERC20" || n === "ETH" ? (
                             <img
                               src="https://cryptologos.cc/logos/ethereum-eth-logo.png?v=029"
                               alt="Ethereum"
@@ -409,7 +419,7 @@ export default function Pricing() {
                               alt="TRON"
                               className="h-9 w-9 object-contain"
                             />
-                          ) : n === "Bitcoin(BTC)" ? (
+                          ) : n === "BTC" ? (
                             <img
                               src="https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=029"
                               alt="Bitcoin"
@@ -430,11 +440,10 @@ export default function Pricing() {
                             {n}
                           </p>
                           <p className="text-xs text-gray-500">
+                            {n === "ETH" && "Native ETH transfer"}
+                            {n === "BTC" && "Bitcoin Blockchain"}
                             {n === "ERC20" && "Ethereum Network"}
                             {n === "TRC20" && "TRON Network (Low fees)"}
-                            {n === "Bitcoin(BTC)" && "Bitcoin Blockchain"}
-                            {n === "Ethereum(ETH)" && "Native ETH transfer"}
-                            {n === "USDT(BEP20)" && "Binance Smart Chain"}
                           </p>
                         </div>
                       </div>
@@ -479,7 +488,10 @@ export default function Pricing() {
             {modalStep === 2 && paymentMethod === "card" && (
               <>
                 <PayPalIntegration cart={payload} />
-                <button className="mt-6" onClick={() => setModalStep(1)}>
+                <button
+                  className="mt-6 bg-blue-600"
+                  onClick={() => setModalStep(1)}
+                >
                   Back
                 </button>
               </>
@@ -490,7 +502,7 @@ export default function Pricing() {
               <>
                 {/* TITLE */}
                 <h2 className="text-lg font-semibold text-gray-900">
-                  Complete your payment
+                  Scan this Qr code to Make UPI Payment
                 </h2>
 
                 <p className="mt-2 text-sm text-gray-600">
@@ -553,7 +565,7 @@ export default function Pricing() {
                 </div>
 
                 {/* ACTIONS */}
-                <div className="flex justify-end gap-3 mt-8">
+                <div className="flex justify-end gap-3 mt-2">
                   <button
                     onClick={() => setModalStep(2)}
                     disabled={loading}
@@ -578,8 +590,7 @@ export default function Pricing() {
                         billing_cycle: billing,
                         method: "cryptocurrency",
                         amount: totalAmount,
-                        currency:
-                          network === "ERC20" ? "USDT (ERC20)" : "USDT (TRC20)",
+                        currency: CURRENCY_MAP[network],
                         start_date,
                         end_date,
                         payment_id: txHash,
@@ -587,6 +598,7 @@ export default function Pricing() {
 
                       try {
                         const res = await makeCryptoPayment(payloadData);
+
                         if (res?.success || res?.status === 201) {
                           setModalStep(4);
                         }
@@ -619,42 +631,80 @@ export default function Pricing() {
 
             {/* STEP 4 - THANK YOU */}
             {modalStep === 4 && (
-              <div className="text-center">
-                <div className="flex justify-center">
-                  <div className="h-16 w-16 rounded-full bg-green-600 flex items-center justify-center text-3xl">
-                    ✓
+              <div className="px-4 text-center bg-white">
+                {/* ICON */}
+                <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 text-emerald-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+
+                {/* TITLE */}
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Payment received
+                </h2>
+
+                {/* DESCRIPTION */}
+                <p className="mt-2 text-sm text-gray-500 leading-relaxed">
+                  We’ve successfully received your payment.
+                  <br />
+                  Our team is currently verifying the transaction.
+                </p>
+
+                {/* STATUS BOX */}
+                <div className="mt-6 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-left">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 h-2.5 w-2.5 rounded-full bg-yellow-500" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">
+                        Status: Under review
+                      </p>
+                      <p className="mt-1 text-xs text-gray-500">
+                        This process usually completes within 24 hours. Once
+                        approved, your subscription will be activated
+                        automatically.
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <h2 className="text-2xl font-bold mt-4 text-white">
-                  Thank You for Your Payment!
-                </h2>
-
-                <p className="mt-3 text-gray-300 text-sm leading-relaxed">
-                  We have successfully received your payment.
-                  <br />
-                  Your transaction is currently under review.
-                </p>
-
-                <div className="mt-4 bg-[#1E293B] p-4 rounded-lg text-sm text-gray-300">
-                  ⏳ <b>Review Time:</b> Up to <b>24 hours</b> <br />
-                  After verification, your account will get full access to:
-                  <ul className="mt-2 text-left list-disc list-inside text-gray-400">
-                    <li>Campaign creation</li>
-                    <li>Dashboard analytics</li>
-                    <li>All plan features</li>
-                  </ul>
+                {/* FEATURES */}
+                <div className="mt-5 grid grid-cols-1 gap-2 text-sm text-gray-600">
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-emerald-600">✓</span> Campaign
+                    creation
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-emerald-600">✓</span> Analytics
+                    dashboard
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-emerald-600">✓</span> Full plan access
+                  </div>
                 </div>
 
+                {/* FOOTER */}
                 <p className="mt-4 text-xs text-gray-400">
-                  You will be notified once your payment is approved.
+                  You’ll be notified once verification is complete.
                 </p>
 
+                {/* BUTTON */}
                 <button
                   onClick={resetPaymentState}
-                  className="mt-6 bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg cursor-pointer"
+                  className="mt-6 w-full rounded-lg border border-gray-300 bg-white py-2.5 text-sm font-medium text-gray-800 hover:bg-gray-100 transition"
                 >
-                  OK
+                  Close
                 </button>
               </div>
             )}
