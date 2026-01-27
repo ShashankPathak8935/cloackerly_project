@@ -30,10 +30,11 @@ const Clicklog = lazy(() => import("../pages/clickLogs1"));
 const CheckoutFlow = lazy(() => import("../components/ui/checkOutFlow"));
 const ResetPassword = lazy(() => import("../auth/ResetPassword"));
 // const UpdatePassword = lazy(() => import("../auth/updatePassword"));
-const RealtimeAnalytics = lazy(()=> import("../pages/RealtimeAnalytics"))
-const Socket = lazy(()=> import("../pages/socket"));
-const PaypalIntegration = lazy(()=> import("../pages/paypalIntegration"));
-const Billing = lazy(()=>import("../pages/Billing"));
+const RealtimeAnalytics = lazy(() => import("../pages/RealtimeAnalytics"));
+const Socket = lazy(() => import("../pages/socket"));
+const PaypalIntegration = lazy(() => import("../pages/paypalIntegration"));
+const Billing = lazy(() => import("../pages/Billing"));
+const Verifyotp = lazy(() => import("../auth/VerifyOtp"));
 
 const Layout = () => (
   <div className="w-[100vw] h-[100vh] bg-[#0b0d14]">
@@ -93,6 +94,14 @@ export default function Routess() {
               </LoginProtector>
             }
           />
+          <Route
+            path="/verify-otp"
+            element={
+              <LoginProtector>
+                <Verifyotp />
+              </LoginProtector>
+            }
+          />
 
           {/* Protected Routes */}
           <Route
@@ -100,7 +109,7 @@ export default function Routess() {
             element={
               <RoutesProtector>
                 {/* <DashboardGuard> */}
-                  <Dashboard />
+                <Dashboard />
                 {/* </DashboardGuard> */}
               </RoutesProtector>
             }
@@ -122,16 +131,9 @@ export default function Routess() {
               path="real-time-analytics/:id"
               element={<RealtimeAnalytics />}
             />
-            <Route
-              path="pricing"
-              element={<Pricing />}
-            />
-             <Route
-              path="billing"
-              element={<Billing />}
-            />
+            <Route path="pricing" element={<Pricing />} />
+            <Route path="billing" element={<Billing />} />
           </Route>
-          
 
           <Route
             path="/myProfile"

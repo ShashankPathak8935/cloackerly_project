@@ -297,7 +297,7 @@ export default function Pricing() {
 
                 {/* PAYMENT METHODS */}
                 <div className="mt-6 space-y-4">
-                  {["Digital Payments", "card"].map((m) => (
+                  {["Digital Payments", "card/Paypal"].map((m) => (
                     <label
                       key={m}
                       className={`flex items-center justify-between rounded-xl border px-4 py-4 cursor-pointer transition-all
@@ -310,7 +310,7 @@ export default function Pricing() {
                       <div className="flex items-center gap-4">
                         {/* HD ICON */}
                         <div className="h-10 w-10 flex items-center justify-center">
-                          {m === "Digital payments" ? (
+                          {m === "Digital Payments" ? (
                             <img
                               src="https://cryptologos.cc/logos/tether-usdt-logo.png?v=029"
                               alt="USDT"
@@ -331,9 +331,9 @@ export default function Pricing() {
                             {m.toUpperCase()}
                           </p>
                           <p className="text-xs text-gray-500">
-                            {m === "Digital payments"
+                            {m === "Digital Payments"
                               ? "Crypto wallet payment"
-                              : "Credit / Debit Card"}
+                              : "Card (Debit/credit) / Paypal payment"}
                           </p>
                         </div>
                       </div>
@@ -437,7 +437,7 @@ export default function Pricing() {
                         {/* TEXT */}
                         <div>
                           <p className="text-sm font-medium text-gray-800">
-                            {n}
+                            {n === "ERC20" || n === "TRC20" ? `${n} USDT` : n}
                           </p>
                           <p className="text-xs text-gray-500">
                             {n === "ETH" && "Native ETH transfer"}
@@ -485,14 +485,26 @@ export default function Pricing() {
             )}
 
             {/* STEP 2 - CARD */}
-            {modalStep === 2 && paymentMethod === "card" && (
+            {modalStep === 2 && paymentMethod === "card/Paypal" && (
               <>
                 <PayPalIntegration cart={payload} />
                 <button
-                  className="mt-6 bg-blue-600"
                   onClick={() => setModalStep(1)}
+                  className="
+    mt-6
+    flex items-center justify-center gap-2
+    px-6 py-2.5
+    rounded-xl
+    bg-gradient-to-r from-blue-600 to-indigo-600
+    text-white text-sm font-semibold
+    shadow-md
+    hover:from-blue-700 hover:to-indigo-700
+    hover:shadow-lg
+    active:scale-95
+    transition-all duration-200
+  "
                 >
-                  Back
+                  ← Back
                 </button>
               </>
             )}

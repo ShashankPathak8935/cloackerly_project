@@ -492,8 +492,7 @@ const BillingPage = () => {
             }}
           >
             This is a system-generated invoice. No signature required.
-            <br />© {new Date().getFullYear()} Clockerly. All rights
-            reserved.
+            <br />© {new Date().getFullYear()} Clockerly. All rights reserved.
           </div>
         </div>
       </div>
@@ -520,6 +519,7 @@ const BillingPage = () => {
     fontSize: "14px",
   };
 
+  // download invoice as PDF
   const handleDownloadInvoice = async (item) => {
     const container = document.createElement("div");
 
@@ -662,15 +662,15 @@ const BillingPage = () => {
                   {/* Status */}
                   <div>
                     <span
-                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
-                    ${
-                      item.status === "success"
-                        ? "bg-emerald-50 text-emerald-600"
-                        : item.status === "failed"
-                          ? "bg-red-50 text-red-600"
-                          : "bg-amber-50 text-amber-600"
-                    }
-                  `}
+                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold capitalize
+      ${
+        item.status === "Paid"
+          ? "bg-emerald-50 text-emerald-600"
+          : item.status === "Rejected"
+            ? "bg-red-50 text-red-600"
+            : "bg-amber-50 text-amber-600"
+      }
+    `}
                     >
                       {item.status}
                     </span>

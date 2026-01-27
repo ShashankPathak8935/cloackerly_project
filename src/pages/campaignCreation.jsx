@@ -442,7 +442,7 @@ export default function CampaignBuilder() {
         "get",
         `${createCampaignApi}/${id}`,
         null,
-        null
+        null,
       );
 
       const c = res.data.data;
@@ -464,7 +464,7 @@ export default function CampaignBuilder() {
       });
 
       setMoneyPages(
-        c?.money_page || [{ description: "", url: "", weight: 100 }]
+        c?.money_page || [{ description: "", url: "", weight: 100 }],
       );
 
       setDynamicVariables(c?.dynamicVariables || []);
@@ -806,7 +806,7 @@ export default function CampaignBuilder() {
           "patch",
           `${createCampaignApi}/${uid}`,
           null,
-          payload
+          payload,
         );
 
         showSuccessToast("Campaign updated successfully!");
@@ -822,12 +822,12 @@ export default function CampaignBuilder() {
           "post",
           createCampaignApi,
           null,
-          data
+          data,
         );
 
         // use response to show success
         showSuccessToast(
-          "Campaign created successfully! you are going to route to Integration page"
+          "Campaign created successfully! you are going to route to Integration page",
         );
         navigate("/Dashboard/campaign-integration", {
           state: {
@@ -895,8 +895,8 @@ export default function CampaignBuilder() {
                 active
                   ? "bg-blue-600 border-blue-600 shadow-lg shadow-blue-600/30 scale-105"
                   : completed
-                  ? "bg-emerald-500 border-emerald-500"
-                  : "bg-white border-slate-300 group-hover:border-slate-400"
+                    ? "bg-emerald-500 border-emerald-500"
+                    : "bg-white border-slate-300 group-hover:border-slate-400"
               }
             `}
                   >
@@ -1466,7 +1466,7 @@ export default function CampaignBuilder() {
                       <option key={opt.value} value={opt.value}>
                         {opt.label}
                       </option>
-                    )
+                    ),
                   )}
                 </select>
 
@@ -1553,8 +1553,8 @@ export default function CampaignBuilder() {
                                       onClick={() =>
                                         field.onChange(
                                           field.value.filter(
-                                            (_, id) => id !== i
-                                          )
+                                            (_, id) => id !== i,
+                                          ),
                                         )
                                       }
                                       className="text-slate-400 hover:text-slate-600"
@@ -1680,40 +1680,40 @@ export default function CampaignBuilder() {
                         fixedOptions.filter(
                           (opt) =>
                             !(field.value || []).some(
-                              (sel) => sel.id === opt.id
-                            )
-                        )
+                              (sel) => sel.id === opt.id,
+                            ),
+                        ),
                       );
                       const [selectedOptions, setSelectedOptions] = useState(
-                        field.value || []
+                        field.value || [],
                       );
                       const [selectedLeft, setSelectedLeft] = useState([]);
                       const [selectedRight, setSelectedRight] = useState([]);
 
                       const moveRight = () => {
                         const moved = availableOptions.filter((o) =>
-                          selectedLeft.includes(o.id.toString())
+                          selectedLeft.includes(o.id.toString()),
                         );
                         const updatedSelected = [...selectedOptions, ...moved];
                         setSelectedOptions(updatedSelected);
                         setAvailableOptions(
                           availableOptions.filter(
-                            (o) => !selectedLeft.includes(o.id.toString())
-                          )
+                            (o) => !selectedLeft.includes(o.id.toString()),
+                          ),
                         );
                         setSelectedLeft([]);
                         setValue("filters", updatedSelected);
                       };
                       const moveLeft = () => {
                         const moved = selectedOptions.filter((o) =>
-                          selectedRight.includes(o.id.toString())
+                          selectedRight.includes(o.id.toString()),
                         );
                         const updatedAvailable = [
                           ...availableOptions,
                           ...moved,
                         ];
                         const updatedSelected = selectedOptions.filter(
-                          (o) => !selectedRight.includes(o.id.toString())
+                          (o) => !selectedRight.includes(o.id.toString()),
                         );
                         setAvailableOptions(updatedAvailable);
                         setSelectedOptions(updatedSelected);
@@ -1771,8 +1771,8 @@ export default function CampaignBuilder() {
                                 setSelectedLeft(
                                   Array.from(
                                     e.target.selectedOptions,
-                                    (opt) => opt.value
-                                  )
+                                    (opt) => opt.value,
+                                  ),
                                 )
                               }
                             >
@@ -1890,8 +1890,8 @@ export default function CampaignBuilder() {
                                 setSelectedRight(
                                   Array.from(
                                     e.target.selectedOptions,
-                                    (opt) => opt.value
-                                  )
+                                    (opt) => opt.value,
+                                  ),
                                 )
                               }
                             >
@@ -2063,7 +2063,7 @@ export default function CampaignBuilder() {
                             onChange={(e) => {
                               setValue(
                                 "automate.zeroRedirect.curl",
-                                e.target.checked
+                                e.target.checked,
                               );
                               if (e.target.checked)
                                 setValue("automate.zeroRedirect.iframe", false);
@@ -2080,7 +2080,7 @@ export default function CampaignBuilder() {
                             onChange={(e) => {
                               setValue(
                                 "automate.zeroRedirect.iframe",
-                                e.target.checked
+                                e.target.checked,
                               );
                               if (e.target.checked)
                                 setValue("automate.zeroRedirect.curl", false);
@@ -2174,7 +2174,7 @@ export default function CampaignBuilder() {
                         {...register("http_code")}
                         className="accent-blue-600"
                       />
-                      HTTP 301
+                      HTTPS 301
                     </label>
                     <label className="flex items-center gap-2">
                       <input
@@ -2183,7 +2183,7 @@ export default function CampaignBuilder() {
                         {...register("http_code")}
                         className="accent-blue-600"
                       />
-                      HTTP 302
+                      HTTPS 302
                     </label>
                   </div>
                 </div>

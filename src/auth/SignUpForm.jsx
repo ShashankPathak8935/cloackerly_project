@@ -41,6 +41,7 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
 
   const {
     register,
@@ -70,15 +71,35 @@ export default function SignupPage() {
         payload,
       );
 
-      if (response?.status === 201 || response?.success) {
-        showSuccessToast("Account created successfully!");
+      if (response?.data?.success === true) {
+        showSuccessToast("Enter Otp to Verify your mail!");
+
+        localStorage.setItem(
+          "signup_data",
+          JSON.stringify({
+            name: `${data.firstName} ${data.lastName}`,
+            email: data.email,
+            password: data.password,
+          }),
+        );
+
         reset();
-        navigate("/signin");
+        navigate("/verify-otp");
       } else {
         showErrorToast(
           response?.message || "Something went wrong. Please try again.",
         );
       }
+
+      // if (response?.status === 201 || response?.success) {
+      //   showSuccessToast("Account created successfully!");
+      //   reset();
+      //   navigate("/signin");
+      // } else {
+      //   showErrorToast(
+      //     response?.message || "Something went wrong. Please try again.",
+      //   );
+      // }
     } catch (err) {
       const message =
         err?.response?.data?.message ||
