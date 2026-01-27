@@ -108,9 +108,9 @@ export default function Routess() {
             path="/Dashboard"
             element={
               <RoutesProtector>
-                {/* <DashboardGuard> */}
+                <DashboardGuard>
                 <Dashboard />
-                {/* </DashboardGuard> */}
+                </DashboardGuard>
               </RoutesProtector>
             }
           >
