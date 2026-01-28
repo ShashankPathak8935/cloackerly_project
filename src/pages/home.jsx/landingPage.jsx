@@ -91,7 +91,7 @@ export default function LandingActions() {
             transition={{ duration: 0.9 }}
             className="text-gray-300 mt-4 text-lg"
           >
-            CloakShield intelligently filters bad traffic, protects campaigns,
+            Clockerly intelligently filters bad traffic, protects campaigns,
             and boosts ROI — all automatically.
           </motion.p>
 

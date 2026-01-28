@@ -3,6 +3,7 @@ import { apiFunction, createApiFunction } from "../api/ApiFunction";
 import { cryptoPayment, getPlans } from "../api/Apis";
 import PayPalIntegration from "./paypalIntegration";
 import { CreditCard, Wallet } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 /* ===================== PAYMENT DETAILS ===================== */
 
@@ -40,6 +41,7 @@ export default function Pricing() {
   const [txHash, setTxHash] = useState("");
   const [loading, setLoading] = useState(false);
   const [payload, setPayload] = useState(null);
+  const navigate = useNavigate();
 
   /* ===================== FETCH PLANS ===================== */
 
@@ -70,6 +72,7 @@ export default function Pricing() {
     setTxHash("");
     setLoading(false);
     setPayload(null);
+    navigate("/Dashboard/billing");
   };
 
   // currency obj
@@ -354,7 +357,37 @@ export default function Pricing() {
                   {/* PROCEED */}
                   <button
                     disabled={!paymentMethod}
-                    onClick={() => setModalStep(2)}
+                    onClick={() => {
+                      setModalStep(2);
+                      if (paymentMethod === "card/Paypal") {
+                        const { start_date, end_date } =
+                          calculateStartEndDates(billing);
+                        setPayload({
+                          plan_id: selectedPlan.id,
+                          plan_name: selectedPlan.name,
+                          billing_cycle: billing,
+
+                          method:
+                            paymentMethod === "USDT"
+                              ? "cryptocurrency"
+                              : "card",
+
+                          amount: totalAmount,
+
+                          currency:
+                            paymentMethod === "USDT"
+                              ? network === "ERC20"
+                                ? "USDT (ERC20)"
+                                : "USDT (TRC20)"
+                              : "USD",
+
+                          start_date,
+                          end_date,
+
+                          payment_id: null,
+                        });
+                      }
+                    }}
                     className={`w-full py-3 text-base font-semibold rounded-xl transition
                    ${
                      paymentMethod

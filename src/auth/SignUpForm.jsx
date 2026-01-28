@@ -166,7 +166,7 @@ export default function SignupPage() {
               </svg>
             </div>
             <h2 className="ml-4 text-3xl font-semibold tracking-wide">
-              Click Stopper
+              Clockerly
             </h2>
           </div>
 

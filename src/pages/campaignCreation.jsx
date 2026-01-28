@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { apiFunction } from "../api/ApiFunction";
 import { createCampaignApi } from "../api/Apis";
 import { BROWSER_LIST, COUNTRY_LIST, DEVICE_LIST } from "../data/dataList";
-import { showSuccessToast } from "../components/toast/toast";
+import { showErrorToast, showSuccessToast } from "../components/toast/toast";
 
 /* ===========================
    Icon components (inline SVG)
@@ -838,7 +838,8 @@ export default function CampaignBuilder() {
       }
     } catch (err) {
       console.error("Error creating campaign:", err);
-      showCustomAlert("Error creating campaign. See console for details.");
+      showErrorToast(err?.response?.data?.message || "Failed to create campaign.");
+      
     }
   };
 

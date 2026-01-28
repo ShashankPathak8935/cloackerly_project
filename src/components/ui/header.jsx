@@ -11,19 +11,33 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFunction } from "../../api/ApiFunction";
-import { signOutApi } from "../../api/Apis";
+import { getUpdatedPlan, signOutApi } from "../../api/Apis";
 
 const Header = ({ onMenuClick }) => {
   const navigate = useNavigate();
   const [showProfileModal, setShowProfileModal] = useState(false);
   const avatarRef = useRef(null);
   const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const [planName, setPlanName] = useState();
+  const [planStatus, setPlanStatus] = useState();
 
   // Example plan data (replace later with API)
-  const [planDetails] = useState({
-    name: "Premium Plan",
-    status: "Active",
-  });
+  const fetchUpdatedPlan = async () => {
+    try {
+      const response = await apiFunction("get", getUpdatedPlan, null, null);
+
+      const plan = response?.data?.data;
+      console.log(plan?.status);
+
+      if (plan) {
+        localStorage.setItem("plan", JSON.stringify(plan));
+        setPlanName(plan?.Plan?.name);
+        setPlanStatus(plan?.status);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   // ✅ Close dropdown on outside click
   useEffect(() => {
@@ -36,12 +50,18 @@ const Header = ({ onMenuClick }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // fetch plan
+  useEffect(() => {
+    fetchUpdatedPlan();
+  }, []);
+
   const handleLogout = async () => {
     const response = await apiFunction("get", signOutApi, null, null);
     if (response) {
       localStorage.removeItem("user");
       localStorage.removeItem("token");
-      localStorage.removeItem("dashboard_todos");
+      localStorage.removeItem("plan");
+      localStorage.removeItem("todo_tasks");
 
       navigate("/");
     }
@@ -72,7 +92,7 @@ const Header = ({ onMenuClick }) => {
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-6 h-6 text-emerald-600" />
             <span className="text-lg font-semibold tracking-tight text-gray-900">
-              Cloaker
+              Clockerly
             </span>
           </div>
         </div>
@@ -120,7 +140,7 @@ const Header = ({ onMenuClick }) => {
           <div className="hidden md:flex items-center gap-2 text-sm">
             <span className="text-gray-900">Plan :</span>
             <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
-              {planDetails.name}
+              {planName || "N/A"}
             </span>
             <span
               className="
@@ -128,7 +148,7 @@ const Header = ({ onMenuClick }) => {
           bg-emerald-100 text-emerald-700
         "
             >
-              {planDetails.status}
+              {planStatus || "N/A"}
             </span>
           </div>
 
