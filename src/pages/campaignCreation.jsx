@@ -1035,10 +1035,10 @@ export default function CampaignBuilder() {
                     //   );
                     // }}
                     onClick={handleSubmit(onSubmit)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-md cursor-pointer"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-md cursor-pointer flex justify-center items-center" 
                   >
                     <svg
-                      class="svg-inline--fa fa-floppy-disk me-2"
+                      class="svg-inline--fa fa-floppy-disk me-2 w-5 h-5"
                       aria-hidden="true"
                       focusable="false"
                       data-prefix="fas"

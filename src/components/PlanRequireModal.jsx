@@ -2,53 +2,81 @@ export default function PlanRequiredModal({ open, onLogout, onUpgrade }) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md">
-      <div className="w-full max-w-xl bg-[#0b1220] rounded-2xl border border-gray-700 shadow-2xl overflow-hidden">
-        {/* Header */}
-        <div className="px-6 py-6 border-b border-gray-700 flex flex-col items-center text-center gap-2">
-          <div className="h-12 w-12 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400 text-xl">
-            💳
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md">
+      <div className="relative w-full max-w-xl rounded-3xl bg-white shadow-[0_40px_120px_rgba(0,0,0,0.18)] overflow-hidden group">
+        {/* Gradient Header */}
+        <div className="relative px-10 pt-10 pb-8 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+          {/* Floating Glow */}
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl"></div>
+
+          {/* Icon */}
+          <div className="relative mx-auto h-16 w-16 rounded-2xl bg-white shadow-md flex items-center justify-center text-2xl text-blue-600 mb-4">
+            🚀
           </div>
 
-          <h2 className="text-lg font-semibold text-white">
+          {/* Badge */}
+          <div className="relative inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-50 text-red-600 text-xs font-medium border border-red-200">
             Subscription Required
+          </div>
+
+          {/* Heading */}
+          <h2 className="relative mt-4 text-3xl font-semibold text-gray-900 tracking-tight">
+            Unlock your full workspace
           </h2>
 
-          <p className="text-xs text-gray-400">
-            Upgrade to unlock full dashboard access
+          <p className="relative mt-3 text-sm text-gray-600 leading-relaxed max-w-md mx-auto">
+            Your access to advanced insights, campaign tools, and real-time
+            analytics is currently limited. Upgrade your plan and get back to
+            building faster.
           </p>
         </div>
 
-        {/* Body */}
-        <div className="px-8 py-8 text-center">
-          <h3 className="text-xl font-semibold text-white">
-            Your plan is inactive
-          </h3>
+        {/* Features */}
+        <div className="px-10 py-8">
+          <div className="grid grid-cols-2 gap-5 text-sm text-gray-700">
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600">✔</span>
+              <span>Advanced analytics & reports</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600">✔</span>
+              <span>Unlimited campaigns</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600">✔</span>
+              <span>Team collaboration tools</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-blue-600">✔</span>
+              <span>Priority email support</span>
+            </div>
+          </div>
 
-          <p className="text-sm text-gray-400 mt-3">
-            Your subscription has expired or is missing. Choose a plan to
-            continue using analytics, campaigns and tools.
-          </p>
-
-          <div className="mt-5 text-xs text-gray-500">
-            🔒 No data will be lost
+          {/* Assurance */}
+          <div className="mt-6 flex items-center justify-center gap-6 text-xs text-gray-500">
+            <span>🔒 Your data stays safe</span>
+            <span>⚡ Instant activation</span>
+            <span>💳 Cancel anytime</span>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-5 border-t border-gray-700 flex justify-between">
+        <div className="px-8 py-6 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
           <button
             onClick={onLogout}
-            className="px-5 py-2.5 cursor-pointer bg-red-600 hover:bg-red-700 rounded-xl text-sm text-white"
+            className="text-sm text-gray-500 hover:text-red-600 transition"
           >
             Sign out
           </button>
 
           <button
             onClick={onUpgrade}
-            className="px-6 py-2.5 cursor-pointer bg-blue-600 hover:bg-blue-700 rounded-xl text-sm text-white"
+            className="group px-7 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-sm font-medium text-white shadow-lg shadow-blue-600/30 transition-all duration-200"
           >
-            View Plans
+            Upgrade now
+            <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">
+              →
+            </span>
           </button>
         </div>
       </div>
