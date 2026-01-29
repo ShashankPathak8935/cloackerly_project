@@ -15,7 +15,7 @@ function PayPalIntegration(cart) {
   const navigate = useNavigate();
   const initialOptions = {
     "client-id":
-      "Adenx-z-vmV67v-6MNYwq878nvqIsC9Hx1VNxd2oWSxgW1duvnSVAaPdSBRYkDZMlGIBfnw1GV4uBtZr",
+      "AQj5ohGmgGCDcsh2vUgIarHDHIDRKYhQ65fNpTMHiZg38cJOpPEIFw5ZIy8CVZglIPAp12SoqwdFb9HL",
     currency: "USD",
     intent: "capture",
   };
@@ -23,6 +23,7 @@ function PayPalIntegration(cart) {
   const [message, setMessage] = useState("");
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [openCancelModal, setOpenCancelModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
 
   return (
     <div className="paypal-integration mt-6">
@@ -81,7 +82,7 @@ function PayPalIntegration(cart) {
           }}
           onApprove={async (data, actions) => {
             try {
-              const token = LocalStorage.getItem("token");
+             
               //   const response = await fetch(
               //     `/api/orders/${data.orderID}/capture`,
               //     {
@@ -98,7 +99,7 @@ function PayPalIntegration(cart) {
                 null,
               );
 
-              const orderData = await response.data;
+              const orderData =  response.data;
               // Three cases to handle:
               //   (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
               //   (2) Other non-recoverable errors -> Show a failure message
@@ -181,18 +182,18 @@ function PayPalIntegration(cart) {
           onCancel={(data) => {
             console.log("Payment cancelled", data);
 
-            // setCancelReason(
-            //   "You cancelled the payment. No amount has been deducted.",
-            // );
-            setOpenCancelModal(true);
+            setCancelReason(
+              "You cancelled the payment. No amount has been deducted.",
+            );
+            setOpenCancelModal(false);
           }}
           onError={(err) => {
             console.error("PayPal Error:", err);
 
-            // setCancelReason(
-            //   "Payment failed due to a technical issue or card problem. Please try again.",
-            // );
-            setOpenCancelModal(true);
+            setCancelReason(
+              "Payment failed due to a technical issue or card problem. Please try again.",
+            );
+            setOpenCancelModal(false);
           }}
         />
       </PayPalScriptProvider>
