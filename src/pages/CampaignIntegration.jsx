@@ -20,7 +20,7 @@ const CloakingIntegration = () => {
   const camp = location?.state?.data;
   const navigate = useNavigate();
   const [showIntegrationTable, setShowIntegrationTable] = useState(
-    !camp?.integration
+    !camp?.integration,
   );
 
   const tabs = [
@@ -29,7 +29,7 @@ const CloakingIntegration = () => {
       label: "PHP Upload",
       svg: (
         <svg
-          class="svg-inline--fa fa-php me-2"
+          class="svg-inline--fa fa-php me-2 w-4 h-4"
           aria-hidden="true"
           focusable="false"
           data-prefix="fab"
@@ -51,7 +51,7 @@ const CloakingIntegration = () => {
       label: "PHP Paste",
       svg: (
         <svg
-          class="svg-inline--fa fa-php me-2"
+          class="svg-inline--fa fa-php me-2 w-4 h-4"
           aria-hidden="true"
           focusable="false"
           data-prefix="fab"
@@ -73,7 +73,7 @@ const CloakingIntegration = () => {
       label: "Wordpress Plugin",
       svg: (
         <svg
-          class="svg-inline--fa fa-wordpress me-2"
+          class="svg-inline--fa fa-wordpress me-2 w-4 h-4"
           aria-hidden="true"
           focusable="false"
           data-prefix="fab"
@@ -95,7 +95,7 @@ const CloakingIntegration = () => {
       label: "Javascript CDN",
       svg: (
         <svg
-          class="svg-inline--fa fa-code me-2"
+          class="svg-inline--fa fa-code me-2 w-4 h-4"
           aria-hidden="true"
           focusable="false"
           data-prefix="fas"
@@ -204,13 +204,13 @@ if ($data && isset($data['action'])) {
 
    // Redirect to target if safe
     if ($data['action'] === true && !empty($data['target'])) {
-        header("Location: " . $data['target'], true, 302);
+        header("Location: " . $data['target'], true, $data['http_code'] ?? 301);
         exit;
     }
 
     // Block visitor
-    if ($data['action'] === false) {
-        header("Location: " . $data['target'], true, 302);
+    if ($data['action'] === false && !empty($data['target'])) {
+        header("Location: " . $data['target'], true, $data['http_code'] ?? 301);
         exit;
         // http_response_code(403);
         // exit("Access Denied");
@@ -279,7 +279,7 @@ if ($data && isset($data['action'])) {
         );
     }
   };
-  console.log(showIntegrationTable);
+  // console.log(showIntegrationTable);
 
   return (
     // Outer padding and dark background for the main content area
@@ -302,12 +302,10 @@ if ($data && isset($data['action'])) {
             </div>
             <button
               onClick={() => {
-               
-                
                 navigate("/Dashboard/create-campaign", {
                   state: {
                     mode: "edit",
-                        id:camp.uid,
+                    id: camp.uid,
                     data: camp, // campaign data from db
                   },
                 });
@@ -335,7 +333,10 @@ if ($data && isset($data['action'])) {
       </div>
     ) : (
       <div className="bg-gray-900 min-h-full">
-        <IntegrationTable camp={camp} setShowIntegrationTable={setShowIntegrationTable}/>
+        <IntegrationTable
+          camp={camp}
+          setShowIntegrationTable={setShowIntegrationTable}
+        />
       </div>
     )
   );
@@ -373,20 +374,20 @@ const handleCopy = (text) => {
       showSuccessToast("Copied to clipboard!");
     })
     .catch((err) => {
-      console.error("Failed to copy text: ", err);
+      // console.error("Failed to copy text: ", err);
     });
 };
 
 const generateZip = async () => {
   const zip = new JSZip();
   // ADD FILES TO ZIP
-  const folder = zip.folder("SecurityShield");
+  const folder = zip.folder("ClickStopper");
 
   folder.file("index.php", wordpressPluginCode);
 
   const zipBlob = await zip.generateAsync({ type: "blob" });
 
-  saveAs(zipBlob, "SecurityShield.zip");
+  saveAs(zipBlob, "ClickStopper.zip");
 };
 
 const generatePhpZip = async (phpCode) => {
@@ -398,8 +399,7 @@ const generatePhpZip = async (phpCode) => {
   saveAs(zipBlob, "index.zip");
 };
 
-const javascriptIntegration = async (camp, url,setShowIntegrationTable) => {
- 
+const javascriptIntegration = async (camp, url, setShowIntegrationTable) => {
   const data = {
     url: url, // client site URL
     campId: camp?.cid, // expected camp id
@@ -408,11 +408,8 @@ const javascriptIntegration = async (camp, url,setShowIntegrationTable) => {
     "post",
     javascriptIntegrationCheckApi,
     null,
-    data
+    data,
   );
- 
-  
-
 
   if (res.data.success) {
     const data = {
@@ -424,7 +421,7 @@ const javascriptIntegration = async (camp, url,setShowIntegrationTable) => {
       "patch",
       createCampaignApi,
       camp?.uid,
-      data
+      data,
     );
     showSuccessToast("✅ Integration Successful");
     setShowIntegrationTable(false);
@@ -438,7 +435,6 @@ async function checkIntegration(camp, url, setShowIntegrationTable) {
   const res = await fetch(`${URL}/?TS-BHDNR-84848=1`);
 
   const text = await res.text();
-
 
   let status = "failed";
   if (text.trim() != camp?.cid) {
@@ -459,24 +455,32 @@ async function checkIntegration(camp, url, setShowIntegrationTable) {
     "patch",
     createCampaignApi,
     camp?.uid,
-    data
+    data,
   );
   if (integrate.status === 200) {
     showSuccessToast("Integration Status: " + status);
-      setShowIntegrationTable(false);
+    setShowIntegrationTable(false);
     return;
   }
   setShowIntegrationTable(true);
   showErrorToast("Integration fail Error try again" + status);
 }
 
-const Phpupload = ({ camp, phpCode, pastedUrl, setPastedUrl,setShowIntegrationTable }) => (
+const Phpupload = ({
+  camp,
+  phpCode,
+  pastedUrl,
+  setPastedUrl,
+  setShowIntegrationTable,
+}) => (
   <div>
     <div className="flex items-start p-4 bg-blue-900/40 border border-blue-800 rounded-lg mb-6">
       <p className="text-blue-200 text-sm">
-        <span className="font-semibold">Important:{setShowIntegrationTable}</span> Use the PHP upload
-        method when your safe page, money page, and cloaked URL are all distinct
-        and separate.
+        <span className="font-semibold">
+          Important:{setShowIntegrationTable}
+        </span>{" "}
+        Use the PHP upload method when your safe page, money page, and cloaked
+        URL are all distinct and separate.
       </p>
     </div>
 
@@ -497,7 +501,7 @@ const Phpupload = ({ camp, phpCode, pastedUrl, setPastedUrl,setShowIntegrationTa
       className="flex items-center cursor-pointer justify-center px-6 py-2 bg-blue-600 text-white text-base font-medium rounded-lg hover:bg-blue-700 transition duration-150 shadow-lg mb-8"
     >
       <svg
-        class="svg-inline--fa fa-angle-down me-2"
+        class="svg-inline--fa fa-angle-down me-2 w-5 h-5"
         aria-hidden="true"
         focusable="false"
         data-prefix="fas"
@@ -526,11 +530,11 @@ const Phpupload = ({ camp, phpCode, pastedUrl, setPastedUrl,setShowIntegrationTa
       >
         Enter the URL of the pasted PHP file:
       </label>
-         {!pastedUrl && (
-  <p className="text-sm text-red-400 mb-2 text-left">
-    Please enter a valid URL to enable testing
-  </p>
-)}
+      {!pastedUrl && (
+        <p className="text-sm text-red-400 mb-2 text-left">
+          Please enter a valid URL to enable testing
+        </p>
+      )}
 
       {/* URL Input Field */}
       <input
@@ -541,8 +545,6 @@ const Phpupload = ({ camp, phpCode, pastedUrl, setPastedUrl,setShowIntegrationTa
         placeholder="Please put URL of your pasted script here, for example https://domain.com/scriptname.php"
         className="w-full px-4 py-3 mb-6 bg-gray-800 border border-gray-700 rounded-lg text-gray-300 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none"
       />
-
-   
 
       {/* Redirection Guidance */}
       <div className="mb-6">
@@ -561,41 +563,43 @@ const Phpupload = ({ camp, phpCode, pastedUrl, setPastedUrl,setShowIntegrationTa
       </div>
 
       {/* Test URL Button */}
-     <button
-  disabled={!pastedUrl.trim()}
-  onClick={() => checkIntegration(camp, pastedUrl, setShowIntegrationTable)}
-  className={`flex items-center  px-6 py-3 text-base font-semibold rounded-lg transition duration-150 shadow-md
+      <button
+        disabled={!pastedUrl.trim()}
+        onClick={() =>
+          checkIntegration(camp, pastedUrl, setShowIntegrationTable)
+        }
+        className={`flex items-center  px-6 py-3 text-base font-semibold rounded-lg transition duration-150 shadow-md
     ${
       pastedUrl.trim()
         ? "bg-green-600 hover:bg-green-700 text-white cursor-pointer"
         : "bg-gray-600 text-gray-300 cursor-not-allowed"
     }
   `}
->
-  <svg
-    className="h-5 w-5 mr-2"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polygon points="5 3 19 12 5 21 5 3" />
-  </svg>
-  TEST URL
-</button>
-
-
-
-
-
-
+      >
+        <svg
+          className="h-5 w-5 mr-2"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polygon points="5 3 19 12 5 21 5 3" />
+        </svg>
+        TEST URL
+      </button>
     </div>
   </div>
 );
 
-const PhpPaste = ({ camp, phpCode, pastedUrl, setPastedUrl,setShowIntegrationTable }) => (
+const PhpPaste = ({
+  camp,
+  phpCode,
+  pastedUrl,
+  setPastedUrl,
+  setShowIntegrationTable,
+}) => (
   <div>
     {/* === 3. Guidance/Warning Banner (Unchanged) === */}
     <div className="flex items-start p-4 bg-blue-900/40 border border-blue-800 rounded-lg mb-6">
@@ -661,11 +665,11 @@ const PhpPaste = ({ camp, phpCode, pastedUrl, setPastedUrl,setShowIntegrationTab
       >
         Enter the URL of the pasted PHP file:
       </label>
-       {!pastedUrl && (
-  <p className="text-sm text-red-400 mb-2 text-left">
-    Please enter a valid URL to enable testing
-  </p>
-)}
+      {!pastedUrl && (
+        <p className="text-sm text-red-400 mb-2 text-left">
+          Please enter a valid URL to enable testing
+        </p>
+      )}
 
       {/* URL Input Field */}
       <input
@@ -695,35 +699,42 @@ const PhpPaste = ({ camp, phpCode, pastedUrl, setPastedUrl,setShowIntegrationTab
 
       {/* Test URL Button */}
       <button
-  disabled={!pastedUrl.trim()}
-  onClick={() => checkIntegration(camp, pastedUrl, setShowIntegrationTable)}
-  className={`flex items-center px-6 py-3 text-base font-semibold rounded-lg transition duration-150 shadow-md
+        disabled={!pastedUrl.trim()}
+        onClick={() =>
+          checkIntegration(camp, pastedUrl, setShowIntegrationTable)
+        }
+        className={`flex items-center px-6 py-3 text-base font-semibold rounded-lg transition duration-150 shadow-md
     ${
       pastedUrl.trim()
         ? "bg-green-600 hover:bg-green-700 text-white cursor-pointer"
         : "bg-gray-600 text-gray-300 cursor-not-allowed"
     }
   `}
->
-  <svg
-    className="h-5 w-5 mr-2"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polygon points="5 3 19 12 5 21 5 3" />
-  </svg>
-  TEST URL
-</button>
-
+      >
+        <svg
+          className="h-5 w-5 mr-2"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polygon points="5 3 19 12 5 21 5 3" />
+        </svg>
+        TEST URL
+      </button>
     </div>
   </div>
 );
 
-const Wordpress = ({ camp, phpCode, pastedUrl, setPastedUrl,setShowIntegrationTable }) => (
+const Wordpress = ({
+  camp,
+  phpCode,
+  pastedUrl,
+  setPastedUrl,
+  setShowIntegrationTable,
+}) => (
   <div>
     {/* <div className="flex items-start p-4 bg-blue-900/40 border border-blue-800 rounded-lg mb-6">
       <p className="text-blue-200 text-sm">
@@ -744,7 +755,7 @@ const Wordpress = ({ camp, phpCode, pastedUrl, setPastedUrl,setShowIntegrationTa
         className="flex items-center cursor-pointer justify-center px-6 py-2 bg-blue-600 text-white text-base font-medium rounded-lg hover:bg-blue-700 transition duration-150 shadow-lg mb-8"
       >
         <svg
-          class="svg-inline--fa fa-angle-down me-2"
+          class="svg-inline--fa fa-angle-down me-2 w-5 h-5"
           aria-hidden="true"
           focusable="false"
           data-prefix="fas"
@@ -780,7 +791,7 @@ const Wordpress = ({ camp, phpCode, pastedUrl, setPastedUrl,setShowIntegrationTa
 
     {/* === 5. Copy to Clipboard Button (Placed right after the code block) === */}
     <button
-      onClick={handleCopy}
+      onClick={() => handleCopy(phpCode)}
       className="flex items-center cursor-pointer justify-center px-6 py-2 bg-blue-600 text-white text-base font-medium rounded-lg hover:bg-blue-700 transition duration-150 shadow-lg mb-8"
     >
       <svg
@@ -809,11 +820,11 @@ const Wordpress = ({ camp, phpCode, pastedUrl, setPastedUrl,setShowIntegrationTa
       >
         Enter the URL of the pasted PHP file:
       </label>
-       {!pastedUrl && (
-  <p className="text-sm text-red-400 mb-2 text-left">
-    Please enter a valid URL to enable testing
-  </p>
-)}
+      {!pastedUrl && (
+        <p className="text-sm text-red-400 mb-2 text-left">
+          Please enter a valid URL to enable testing
+        </p>
+      )}
 
       {/* URL Input Field */}
       <input
@@ -843,35 +854,41 @@ const Wordpress = ({ camp, phpCode, pastedUrl, setPastedUrl,setShowIntegrationTa
 
       {/* Test URL Button */}
       <button
-  disabled={!pastedUrl.trim()}
-  onClick={() => checkIntegration(camp, pastedUrl)}
-  className={`flex items-center px-6 py-3 text-base font-semibold rounded-lg transition duration-150 shadow-md
+        disabled={!pastedUrl.trim()}
+        onClick={() =>
+          checkIntegration(camp, pastedUrl, setShowIntegrationTable)
+        }
+        className={`flex items-center px-6 py-3 text-base font-semibold rounded-lg transition duration-150 shadow-md
     ${
       pastedUrl.trim()
         ? "bg-green-600 hover:bg-green-700 text-white cursor-pointer"
         : "bg-gray-600 text-gray-300 cursor-not-allowed"
     }
   `}
->
-  <svg
-    className="h-5 w-5 mr-2"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polygon points="5 3 19 12 5 21 5 3" />
-  </svg>
-  TEST URL
-</button>
-
+      >
+        <svg
+          className="h-5 w-5 mr-2"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polygon points="5 3 19 12 5 21 5 3" />
+        </svg>
+        TEST URL
+      </button>
     </div>
   </div>
 );
 
-const Javascript = ({ camp, pastedUrl, setPastedUrl,setShowIntegrationTable }) => (
+const Javascript = ({
+  camp,
+  pastedUrl,
+  setPastedUrl,
+  setShowIntegrationTable,
+}) => (
   <div>
     <div className="mb-4">
       <p className="text-sm text-left text-white-400 mb-2">
@@ -908,7 +925,7 @@ const Javascript = ({ camp, pastedUrl, setPastedUrl,setShowIntegrationTable }) =
         handleCopy(
           `<script src="${import.meta.env.VITE_SERVER_URL}/cdn/${
             camp?.cid
-          }.js"></script>`
+          }.js"></script>`,
         )
       }
       className="flex  items-center justify-center cursor-pointer px-6 py-2 bg-blue-600 text-white text-base font-medium rounded-lg hover:bg-blue-700 transition duration-150 shadow-lg mb-8"
@@ -941,10 +958,10 @@ const Javascript = ({ camp, pastedUrl, setPastedUrl,setShowIntegrationTable }) =
         Enter the URL:
       </label>
       {!pastedUrl && (
-  <p className="text-sm text-red-400 mb-2 text-left">
-    Please enter a valid URL to enable testing
-  </p>
-)}
+        <p className="text-sm text-red-400 mb-2 text-left">
+          Please enter a valid URL to enable testing
+        </p>
+      )}
 
       {/* URL Input Field */}
       <input
@@ -965,33 +982,33 @@ const Javascript = ({ camp, pastedUrl, setPastedUrl,setShowIntegrationTable }) =
 
       {/* Test URL Button */}
       <button
-  disabled={!pastedUrl.trim()}
-  onClick={() => javascriptIntegration(camp, pastedUrl,setShowIntegrationTable)}
-  className={`flex items-center px-6 py-3 text-base font-semibold rounded-lg transition duration-150 shadow-md
+        disabled={!pastedUrl.trim()}
+        onClick={() =>
+          javascriptIntegration(camp, pastedUrl, setShowIntegrationTable)
+        }
+        className={`flex items-center px-6 py-3 text-base font-semibold rounded-lg transition duration-150 shadow-md
     ${
       pastedUrl.trim()
         ? "bg-green-600 hover:bg-green-700 text-white cursor-pointer"
         : "bg-gray-600 text-gray-300 cursor-not-allowed"
     }
   `}
->
-  <svg
-    className="h-5 w-5 mr-2"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polygon points="5 3 19 12 5 21 5 3" />
-  </svg>
-  TEST URL
-</button>
-
+      >
+        <svg
+          className="h-5 w-5 mr-2"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polygon points="5 3 19 12 5 21 5 3" />
+        </svg>
+        TEST URL
+      </button>
     </div>
   </div>
 );
-
 
 export default CloakingIntegration;
