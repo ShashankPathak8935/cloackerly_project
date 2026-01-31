@@ -8,6 +8,11 @@ import { showErrorToast, showSuccessToast } from "../components/toast/toast";
 import { createApiFunction } from "../api/ApiFunction";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { motion } from "framer-motion";
+import {
+  UserIcon,
+  EnvelopeIcon,
+  LockClosedIcon,
+} from "@heroicons/react/24/outline";
 
 import { signupApi } from "../api/Apis";
 
@@ -114,120 +119,103 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen w-screen flex flex-col md:flex-row overflow-hidden">
       {/* LEFT PANEL */}
-      <div className="hidden xl:flex w-1/2 relative overflow-hidden bg-[#0B0E2A] text-white items-center justify-center">
-        {/* Subtle grid background */}
-        <div
-          className="absolute inset-0 opacity-[0.15]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }}
+      <div
+        className="hidden xl:flex w-1/2 relative overflow-hidden 
+              bg-black
+            text-white items-center justify-center"
+      >
+        {/* animated grid */}
+        <motion.div
+          animate={{ backgroundPosition: ["0% 0%", "100% 100%"] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 opacity-20 
+               bg-black"
         />
 
-        {/* Floating gradient blobs */}
+        {/* floating glow */}
         <motion.div
-          animate={{ y: [0, -30, 0], x: [0, 20, 0] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-20 -left-20 w-96 h-96 rounded-full
-    bg-indigo-600/30 blur-[120px]"
+          animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }}
+          transition={{ duration: 6, repeat: Infinity }}
+          className="absolute w-[420px] h-[420px] rounded-full 
+          bg-black "
         />
 
+        {/* main content */}
         <motion.div
-          animate={{ y: [0, 25, 0], x: [0, -15, 0] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-[-100px] right-[-100px] w-96 h-96 rounded-full
-    bg-purple-600/30 blur-[140px]"
-        />
-
-        {/* Main content */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 50, y: 90 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: "easeOut" }}
-          className="relative z-10 text-center px-14"
+          className="relative z-10 text-center px-12 max-w-xl"
         >
-          {/* Logo */}
-          <div className="flex items-center justify-center mb-6">
-            <div className="bg-indigo-500/90 p-4 rounded-xl shadow-xl">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-7 h-7"
-              >
-                <rect x="3" y="3" width="7" height="7" rx="1" />
-                <rect x="14" y="3" width="7" height="7" rx="1" />
-                <rect x="14" y="14" width="7" height="7" rx="1" />
-              </svg>
-            </div>
-            <h2 className="ml-4 text-3xl font-semibold tracking-wide">
-              Clockerly
-            </h2>
-          </div>
+          {/* logo */}
+          <motion.div
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 4, repeat: Infinity }}
+            className="flex items-center justify-center mb-6"
+          >
+            <img src="/logo.png" alt="Clockerly Logo" className="w-35 h-35" />
+          </motion.div>
 
-          {/* Heading */}
-          <h3 className="text-2xl font-bold mb-3 leading-snug">
-            Create your account
-            <br />
-            and protect your traffic
-          </h3>
+          {/* heading */}
+          <h2 className="text-3xl font-bold tracking-tight">
+            Welcome to <span className="text-[#CBFA23]">Clockerly</span>
+            <span className="text-md font-bold text-[#CBFA23]">.io</span>
+          </h2>
 
-          {/* Description */}
-          <p className="text-gray-300 text-sm max-w-md mx-auto leading-relaxed">
-            Stop fake clicks, secure your ad spend, and gain full control with
-            intelligent traffic cloaking built for modern teams.
+          <p className="mt-4 text-gray-300 leading-relaxed">
+            Secure access to your dashboard. Protect campaigns, block bad
+            traffic, and maximize ROI — automatically.
           </p>
 
-          {/* Animated stats */}
-          <div className="mt-10 grid grid-cols-3 gap-6 text-center">
-            {[
-              { label: "Blocked Bots", value: "99%" },
-              { label: "Response Time", value: "<50ms" },
-              { label: "Uptime", value: "99.9%" },
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 + i * 0.2 }}
-              >
-                <p className="text-2xl font-bold text-white">{item.value}</p>
-                <p className="text-xs text-gray-400 mt-1">{item.label}</p>
-              </motion.div>
-            ))}
+          {/* animated feature pills */}
+          <div className="mt-10 flex justify-center gap-4 flex-wrap">
+            {["Bot Protection", "Smart Cloaking", "Real-time Analytics"].map(
+              (item, i) => (
+                <motion.div
+                  key={item}
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 3 + i, repeat: Infinity }}
+                  className="px-4 py-2 rounded-full text-sm 
+                  bg-white/10 backdrop-blur border border-white/20"
+                >
+                  {item}
+                </motion.div>
+              ),
+            )}
           </div>
         </motion.div>
       </div>
 
       {/* RIGHT PANEL */}
-      <div className="w-full xl:w-1/2 bg-white flex flex-col justify-center px-8 md:px-20 py-12">
-        <h1 className="text-3xl font-semibold text-gray-900 mb-2">
+      <div className="w-full xl:w-1/2 bg-gradient-to-br from-white to-gray-50 flex flex-col justify-center px-10 md:px-20 py-12 shadow-xl border border-gray-200">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Create your Account
         </h1>
         <p className="text-gray-500 mb-8">Create an account to get started!</p>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* First & Last Name */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {/* Name Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* First Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 First Name <span className="text-red-500">*</span>
               </label>
-              <input
-                {...register("firstName")}
-                type="text"
-                placeholder="Enter your first name"
-                className={`h-11 w-full rounded-lg border px-3 py-2 text-sm placeholder:text-gray-400 text-gray-800 focus:outline-none transition ${
-                  errors.firstName
-                    ? "border-red-500"
-                    : "border-gray-300 focus:ring-2 focus:ring-indigo-200"
-                }`}
-              />
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <UserIcon className="w-5 h-5" />
+                </span>
+                <input
+                  {...register("firstName")}
+                  type="text"
+                  placeholder="Enter your first name"
+                  className={`h-11 w-full pl-10 rounded-xl border px-3 py-2 text-sm placeholder:text-gray-400 text-gray-800 focus:outline-none transition shadow-sm ${
+                    errors.firstName
+                      ? "border-red-500 focus:ring-red-200"
+                      : "border-gray-300 focus:ring-indigo-200"
+                  }`}
+                />
+              </div>
               {errors.firstName && (
                 <p className="mt-1 text-xs text-red-500">
                   {errors.firstName.message}
@@ -235,20 +223,26 @@ export default function SignupPage() {
               )}
             </div>
 
+            {/* Last Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Last Name <span className="text-red-500">*</span>
               </label>
-              <input
-                {...register("lastName")}
-                type="text"
-                placeholder="Enter your last name"
-                className={`h-11 w-full rounded-lg border px-3 py-2 text-sm placeholder:text-gray-400 text-gray-800 focus:outline-none transition ${
-                  errors.lastName
-                    ? "border-red-500"
-                    : "border-gray-300 focus:ring-2 focus:ring-indigo-200"
-                }`}
-              />
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <UserIcon className="w-5 h-5" />
+                </span>
+                <input
+                  {...register("lastName")}
+                  type="text"
+                  placeholder="Enter your last name"
+                  className={`h-11 w-full pl-10 rounded-xl border px-3 py-2 text-sm placeholder:text-gray-400 text-gray-800 focus:outline-none transition shadow-sm ${
+                    errors.lastName
+                      ? "border-red-500 focus:ring-red-200"
+                      : "border-gray-300 focus:ring-indigo-200"
+                  }`}
+                />
+              </div>
               {errors.lastName && (
                 <p className="mt-1 text-xs text-red-500">
                   {errors.lastName.message}
@@ -262,17 +256,22 @@ export default function SignupPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email <span className="text-red-500">*</span>
             </label>
-            <input
-              {...register("email")}
-              type="email"
-              placeholder="Enter your email"
-              autoComplete="off"
-              className={`h-11 w-full rounded-lg border px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none transition ${
-                errors.email
-                  ? "border-red-500"
-                  : "border-gray-300 focus:ring-2 focus:ring-indigo-200"
-              }`}
-            />
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                <EnvelopeIcon className="w-5 h-5" />
+              </span>
+              <input
+                {...register("email")}
+                type="email"
+                placeholder="Enter your email"
+                autoComplete="off"
+                className={`h-11 w-full pl-10 rounded-xl border px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none transition shadow-sm ${
+                  errors.email
+                    ? "border-red-500 focus:ring-red-200"
+                    : "border-gray-300 focus:ring-indigo-200"
+                }`}
+              />
+            </div>
             {errors.email && (
               <p className="mt-1 text-xs text-red-500">
                 {errors.email.message}
@@ -286,27 +285,29 @@ export default function SignupPage() {
               Password <span className="text-red-500">*</span>
             </label>
             <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                <LockClosedIcon className="w-5 h-5" />
+              </span>
               <input
                 {...register("password")}
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
                 autoComplete="new-password"
-                className={`h-11 w-full rounded-lg border px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none transition ${
+                className={`h-11 w-full pl-10 rounded-xl border px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none transition shadow-sm ${
                   errors.password
-                    ? "border-red-500"
-                    : "border-gray-300 focus:ring-2 focus:ring-indigo-200"
+                    ? "border-red-500 focus:ring-red-200"
+                    : "border-gray-300 focus:ring-indigo-200"
                 }`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
-                autoComplete="new-password"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
               >
                 {showPassword ? (
-                  <EyeIcon className="h-5 w-5" />
+                  <EyeIcon className="w-5 h-5" />
                 ) : (
-                  <EyeSlashIcon className="h-5 w-5" />
+                  <EyeSlashIcon className="w-5 h-5" />
                 )}
               </button>
             </div>
@@ -323,25 +324,28 @@ export default function SignupPage() {
               Confirm Password <span className="text-red-500">*</span>
             </label>
             <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                <LockClosedIcon className="w-5 h-5" />
+              </span>
               <input
                 {...register("confirmPassword")}
                 type={showConfirm ? "text" : "password"}
                 placeholder="Confirm your password"
-                className={`h-11 w-full rounded-lg border px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none transition ${
+                className={`h-11 w-full pl-10 rounded-xl border px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none transition shadow-sm ${
                   errors.confirmPassword
-                    ? "border-red-500"
-                    : "border-gray-300 focus:ring-2 focus:ring-indigo-200"
+                    ? "border-red-500 focus:ring-red-200"
+                    : "border-gray-300 focus:ring-indigo-200"
                 }`}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirm((s) => !s)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
               >
                 {showConfirm ? (
-                  <EyeIcon className="h-5 w-5" />
+                  <EyeIcon className="w-5 h-5" />
                 ) : (
-                  <EyeSlashIcon className="h-5 w-5" />
+                  <EyeSlashIcon className="w-5 h-5" />
                 )}
               </button>
             </div>
@@ -378,14 +382,14 @@ export default function SignupPage() {
             </label>
           </div>
 
-          {/* ✅ Submit Button */}
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-2.5 cursor-pointer rounded-lg font-medium text-white flex items-center justify-center gap-2 transition ${
+            className={`w-full py-3 flex items-center justify-center gap-2 rounded-xl font-semibold text-white transition shadow-lg ${
               loading
                 ? "bg-indigo-400 cursor-not-allowed"
-                : "bg-indigo-600 hover:bg-indigo-700 cursor-pointer"
+                : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
             }`}
           >
             {loading ? (
@@ -419,7 +423,10 @@ export default function SignupPage() {
 
           <p className="text-sm text-gray-600 mt-3 text-center">
             Already have an account?{" "}
-            <Link to="/signin" className="text-indigo-600 hover:underline">
+            <Link
+              to="/signin"
+              className="text-indigo-600 hover:underline font-medium"
+            >
               Sign in
             </Link>
           </p>

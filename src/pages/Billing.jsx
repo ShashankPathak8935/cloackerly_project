@@ -37,242 +37,6 @@ const BillingPage = () => {
     }
   };
 
-  // const InvoiceTemplate = ({ item }) => {
-  //   return (
-  //     <div
-  //       style={{
-  //         width: "800px",
-  //         padding: "40px",
-  //         backgroundColor: "#ffffff",
-  //         color: "#111827",
-  //         fontFamily: "Outfit, Arial, sans-serif",
-  //         boxSizing: "border-box",
-  //       }}
-  //     >
-
-  //       <div
-  //         style={{
-  //           display: "flex",
-  //           justifyContent: "space-between",
-  //           marginBottom: "40px",
-  //         }}
-  //       >
-  //         <div>
-
-  //           <div
-  //             style={{
-  //               width: "120px",
-  //               height: "40px",
-  //               backgroundColor: "#e5e7eb",
-  //               display: "flex",
-  //               alignItems: "center",
-  //               justifyContent: "center",
-  //               fontSize: "12px",
-  //               fontWeight: 600,
-  //               marginBottom: "10px",
-  //             }}
-  //           >
-  //             LOGO
-  //           </div>
-
-  //           <h1 style={{ fontSize: "28px", margin: 0 }}>INVOICE</h1>
-  //           <p style={{ fontSize: "12px", color: "#6b7280", marginTop: "4px" }}>
-  //             <h3 style={{ fontSize: "16px", margin: 0 }}>Clockerly</h3>
-  //           </p>
-  //         </div>
-
-  //         <div
-  //           style={{ textAlign: "right", fontSize: "12px", color: "#374151" }}
-  //         >
-  //           <p>
-  //             <b>Invoice ID:</b> {item.payment_id}
-  //           </p>
-  //           <p>
-  //             <b>Date:</b> {new Date(item.start_date).toLocaleDateString()}
-  //           </p>
-  //           <p>
-  //             <b>Status:</b>{" "}
-  //             <span
-  //               style={{
-  //                 color:
-  //                   item.status === "Paid"
-  //                     ? "#16a34a"
-  //                     : item.status === "Rejected"
-  //                     ? "#dc2626"
-  //                     : "#d97706",
-  //                 fontWeight: 600,
-  //               }}
-  //             >
-  //               {item.status?.toUpperCase()}
-  //             </span>
-  //           </p>
-  //         </div>
-  //       </div>
-
-  //       <div style={{ marginBottom: "30px" }}>
-  //         <h3
-  //           style={{ fontSize: "14px", marginBottom: "6px", color: "#111827" }}
-  //         >
-  //           Billed For
-  //         </h3>
-  //         <p style={{ fontSize: "13px", color: "#374151", margin: 0 }}>
-  //           Subscription Plan: <b>{item.plan_name || "N/A"}</b>
-  //         </p>
-  //         <p style={{ fontSize: "13px", color: "#374151", margin: 0 }}>
-  //           Payment Method: {item.method || "N/A"}
-  //         </p>
-  //       </div>
-
-  //       <div
-  //         style={{ marginBottom: "30px", fontSize: "13px", color: "#374151" }}
-  //       >
-  //         <p style={{ margin: 0 }}>
-  //           <b>Email:</b> billing@clickstopper.com
-  //         </p>
-  //         <p style={{ margin: 0 }}>
-  //           <b>Phone:</b>{" "}
-  //           <a
-  //             href="tel:+13214188331"
-  //             style={{ color: "#111827", textDecoration: "none" }}
-  //           >
-  //             +1 321-418-8331
-  //           </a>
-  //         </p>
-  //         <p style={{ margin: 0 }}>
-  //           <b>Address:</b> 5600 Tribune Way, Plano, TX 75094-4502, US
-  //         </p>
-  //       </div>
-
-  //       <table
-  //         style={{
-  //           width: "100%",
-  //           borderCollapse: "collapse",
-  //           marginBottom: "20px",
-  //         }}
-  //       >
-  //         <thead>
-  //           <tr style={{ backgroundColor: "#f3f4f6" }}>
-  //             <th style={th}>Description</th>
-  //             <th style={th}>Period</th>
-  //             <th style={{ ...th, textAlign: "right" }}>Amount</th>
-  //           </tr>
-  //         </thead>
-  //         <tbody>
-  //           <tr>
-  //             <td style={td}>{item.plan_name} Subscription</td>
-  //             <td style={td}>
-  //               {item.start_date
-  //                 ? new Date(item.start_date).toLocaleDateString()
-  //                 : "N/A"}{" "}
-  //               –{" "}
-  //               {item.end_date
-  //                 ? new Date(item.end_date).toLocaleDateString()
-  //                 : "N/A"}
-  //             </td>
-  //             <td style={{ ...td, textAlign: "right", fontWeight: 600 }}>
-  //               ${item.amount}
-  //             </td>
-  //           </tr>
-  //         </tbody>
-  //       </table>
-
-  //       <div
-  //         style={{
-  //           display: "flex",
-  //           justifyContent: "flex-end",
-  //           marginBottom: "20px",
-  //         }}
-  //       >
-  //         <div style={{ width: "250px" }}>
-  //           <div style={totalRow}>
-  //             <span>Subtotal</span>
-  //             <span>${item.amount}</span>
-  //           </div>
-  //           <div style={totalRow}>
-  //             <span>Tax</span>
-  //             <span>$0.00</span>
-  //           </div>
-  //           <div style={{ ...totalRow, fontWeight: 700, fontSize: "16px" }}>
-  //             <span>Total</span>
-  //             <span>${item.amount}</span>
-  //           </div>
-  //         </div>
-  //       </div>
-
-  //       <div
-  //         style={{
-  //           marginBottom: "30px",
-  //           paddingTop: "10px",
-  //           borderTop: "1px dashed #e5e7eb",
-  //           fontSize: "12px",
-  //           color: "#4b5563",
-  //         }}
-  //       >
-  //         <p style={{ marginBottom: "6px" }}>
-  //           This invoice reflects the successful processing of your subscription
-  //           payment.
-  //         </p>
-
-  //         <p style={{ marginBottom: "6px" }}>
-  //           All amounts are in USD. Please make the payment within 15 days from
-  //           the issue date of this invoice.
-  //         </p>
-
-  //         <p style={{ marginBottom: "6px" }}>
-  //           Tax is not charged on this bill as per paragraph 1 of Article 9 of
-  //           the Value Added Tax Act.
-  //         </p>
-
-  //         <p style={{ marginBottom: "6px" }}>
-  //           If you have any questions regarding this invoice or your
-  //           subscription, please contact our billing team at{" "}
-  //           <b>billing@clickstopper.com</b>.
-  //         </p>
-
-  //         <p style={{ fontStyle: "italic" }}>
-  //           Thank you for your confidence in my work.
-  //         </p>
-  //       </div>
-
-  //       <div
-  //         style={{
-  //           borderTop: "1px solid #e5e7eb",
-  //           paddingTop: "16px",
-  //           fontSize: "11px",
-  //           color: "#6b7280",
-  //           textAlign: "center",
-  //         }}
-  //       >
-  //         This is a system generated invoice. No signature required.
-  //         <br />© {new Date().getFullYear()} Click Stopper. All rights reserved.
-  //       </div>
-  //     </div>
-  //   );
-  // };
-
-  /* Styles */
-  // const th = {
-  //   padding: "12px",
-  //   fontSize: "12px",
-  //   textAlign: "left",
-  //   borderBottom: "1px solid #e5e7eb",
-  //   color: "#374151",
-  // };
-
-  // const td = {
-  //   padding: "12px",
-  //   fontSize: "13px",
-  //   borderBottom: "1px solid #e5e7eb",
-  //   color: "#111827",
-  // };
-
-  // const totalRow = {
-  //   display: "flex",
-  //   justifyContent: "space-between",
-  //   marginBottom: "8px",
-  //   fontSize: "13px",
-  // };
-
   const InvoiceTemplate = ({ item }) => {
     return (
       <div
@@ -306,7 +70,7 @@ const BillingPage = () => {
                 INVOICE
               </h1>
               <p style={{ margin: "6px 0 0", fontSize: "13px", opacity: 0.9 }}>
-                Clockerly — Subscription Billing
+                Clockerly.io — Subscription Billing
               </p>
             </div>
 
@@ -376,11 +140,11 @@ const BillingPage = () => {
             }}
           >
             <div>
-              <p style={{ margin: 0, fontWeight: 600 }}>Clockerly</p>
+              <p style={{ margin: 0, fontWeight: 600 }}>Clockerly.io</p>
               <p style={{ margin: "4px 0" }}>
                 5600 Tribune Way, Plano, TX 75094-4502, US
               </p>
-              <p style={{ margin: 0 }}>billing@clockerly.com</p>
+              <p style={{ margin: 0 }}>billing@clockerly.io.com</p>
             </div>
 
             <div style={{ textAlign: "right" }}>
@@ -477,7 +241,7 @@ const BillingPage = () => {
             </p>
             <p style={{ margin: "10px 0 0" }}>
               For billing questions or invoice clarification, please contact our
-              support team at <b>billing@clockerly.com</b>.
+              support team at <b>billing@clockerly.io.com</b>.
             </p>
           </div>
 
@@ -492,7 +256,7 @@ const BillingPage = () => {
             }}
           >
             This is a system-generated invoice. No signature required.
-            <br />© {new Date().getFullYear()} Clockerly. All rights reserved.
+            <br />© {new Date().getFullYear()} Clockerly.io. All rights reserved.
           </div>
         </div>
       </div>

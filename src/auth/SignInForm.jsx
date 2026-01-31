@@ -51,6 +51,7 @@ export default function LoginPage() {
         null,
         formData,
       );
+      console.log("✅ Login response:", response);
 
       if (response && response.data?.token) {
         localStorage.removeItem("user");
@@ -119,7 +120,7 @@ export default function LoginPage() {
       {/* LEFT PANEL */}
       <div
         className="hidden xl:flex w-1/2 relative overflow-hidden 
-        bg-[radial-gradient(circle_at_top,#1b1f4a_0%,#0b0e2a_55%,#050714_100%)] 
+        bg-black
       text-white items-center justify-center"
       >
         {/* animated grid */}
@@ -127,8 +128,7 @@ export default function LoginPage() {
           animate={{ backgroundPosition: ["0% 0%", "100% 100%"] }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
           className="absolute inset-0 opacity-20 
-         bg-[radial-gradient(circle,_rgba(255,255,255,0.06)_1px,_transparent_1px)] 
-         bg-[length:40px_40px]"
+         bg-black"
         />
 
         {/* floating glow */}
@@ -136,7 +136,7 @@ export default function LoginPage() {
           animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }}
           transition={{ duration: 6, repeat: Infinity }}
           className="absolute w-[420px] h-[420px] rounded-full 
-    bg-indigo-600/40 blur-[140px]"
+    bg-black "
         />
 
         {/* main content */}
@@ -152,30 +152,12 @@ export default function LoginPage() {
             transition={{ duration: 4, repeat: Infinity }}
             className="flex items-center justify-center mb-6"
           >
-            <div
-              className="bg-indigo-500/20 backdrop-blur p-4 rounded-xl 
-        shadow-[0_0_40px_rgba(99,102,241,0.6)]"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="white"
-                className="w-7 h-7"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4 6h16M4 12h16m-7 6h7"
-                />
-              </svg>
-            </div>
+            <img src="/logo.png" alt="Clockerly Logo" className="w-35 h-35" />
           </motion.div>
 
           {/* heading */}
           <h2 className="text-3xl font-bold tracking-tight">
-            Welcome to <span className="text-indigo-400">Clockerly</span>
+            Welcome to <span className="text-[#CBFA23]">Clockerly.io</span><span className="text-md font-bold text-[#CBFA23]">.io</span>
           </h2>
 
           <p className="mt-4 text-gray-300 leading-relaxed">

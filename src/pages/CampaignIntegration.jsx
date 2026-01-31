@@ -284,43 +284,60 @@ if ($data && isset($data['action'])) {
   return (
     // Outer padding and dark background for the main content area
     showIntegrationTable ? (
-      <div className="p-4 md:p-8 bg-gray-900 min-h-full">
+      <div className="p-4 md:p-8 bg-white min-h-full">
         {/* Max width container for clean layout */}
         <div className="max-w-7xl mx-auto">
           {/* === 1. Component Header (Unchanged) === */}
           <header className="flex justify-between items-center mb-6">
             <div className="flex flex-col">
-              <div className="flex flex-row items-center">
-                <h1 className="text-2xl font-semibold text-white">
-                  Cloaking Intergration
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">
+                  Cloaking Integration
                 </h1>
-                <p className="text-sm text-green-500 pl-2">[ID:{camp?.cid}]</p>
+
+                {/* ID BADGE */}
+                <span className="px-2.5 py-0.5 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full">
+                  ID: {camp?.cid}
+                </span>
               </div>
-              <p className="text-sm text-left text-gray-500 mt-1">
-                Create/Edit/Delete Campaigns
+
+              <p className="text-sm text-slate-500 mt-1">
+                Create, edit, and manage campaign configurations
               </p>
             </div>
+
+            {/* ACTION BUTTON */}
             <button
               onClick={() => {
                 navigate("/Dashboard/create-campaign", {
                   state: {
                     mode: "edit",
                     id: camp.uid,
-                    data: camp, // campaign data from db
+                    data: camp,
                   },
                 });
               }}
-              className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition duration-150 cursor-pointer"
+              className="px-4 py-2 text-sm font-medium rounded-lg
+               bg-blue-600 text-white
+               hover:bg-blue-800 cursor-pointer
+               focus:outline-none focus:ring-2 focus:ring-slate-300
+               transition-all duration-150"
             >
               Edit Campaign
             </button>
           </header>
 
           {/* --- Separator Line (Optional, for visual clarity) --- */}
-          <hr className="border-gray-700 mb-8" />
+          <hr className="border-blue-600 mb-8" />
 
           {/* === 2. Integration Method Tabs (Unchanged) === */}
-          <div className="flex space-x-2 p-1 bg-gray-800 rounded-xl mb-6">
+          <div
+            className="flex space-x-2 p-1 mb-6
+                bg-white
+                border border-slate-200
+                rounded-xl
+                shadow-sm"
+          >
             {tabs?.map((t) => {
               return <Tab t={t} tab={tab} setTab={(id) => setTab(id)} />;
             })}
@@ -332,7 +349,7 @@ if ($data && isset($data['action'])) {
         </div>
       </div>
     ) : (
-      <div className="bg-gray-900 min-h-full">
+      <div className="bg-white min-h-full">
         <IntegrationTable
           camp={camp}
           setShowIntegrationTable={setShowIntegrationTable}
@@ -346,13 +363,15 @@ if ($data && isset($data['action'])) {
 const Tab = ({ t, tab, setTab }) => (
   <button
     className={`
-          flex-1 text-sm font-medium py-2 px-3 rounded-lg flex items-center justify-center transition duration-200 cursor-pointer
-          ${
-            tab === t.id
-              ? "bg-blue-600 text-white shadow-md" // Adjusted active color for better consistency
-              : "text-gray-400 hover:bg-gray-700/50"
-          }
-        `}
+      flex-1 text-sm font-medium py-2 px-3 rounded-lg
+      flex items-center justify-center gap-2
+      transition-all duration-200 cursor-pointer
+      ${
+        tab === t.id
+          ? "bg-blue-600 text-white shadow-sm"
+          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+      }
+    `}
     onClick={() => {
       setTab(t.id);
     }}
@@ -474,8 +493,13 @@ const Phpupload = ({
   setShowIntegrationTable,
 }) => (
   <div>
-    <div className="flex items-start p-4 bg-blue-900/40 border border-blue-800 rounded-lg mb-6">
-      <p className="text-blue-200 text-sm">
+    <div
+      className="flex items-start p-4 mb-6
+                bg-blue-50
+                border border-blue-200
+                rounded-lg"
+    >
+      <p className="text-blue-900 text-sm">
         <span className="font-semibold">
           Important:{setShowIntegrationTable}
         </span>{" "}
@@ -486,7 +510,7 @@ const Phpupload = ({
 
     {/* === 4. Code Snippet Instructions & Block === */}
     <div className="mb-4">
-      <p className="text-sm text-gray-400 mb-2">
+      <p className="text-sm text-slate-600 leading-relaxed">
         Download the archive file, extract and upload the whole folder to any
         domain, except the money page domain. You’ll submit the URL of this
         folder to the ad network:
@@ -526,12 +550,13 @@ const Phpupload = ({
       {/* Input Label */}
       <label
         htmlFor="pastedUrl"
-        className="block text-base text-left font-medium text-white mb-2"
+        className="block text-base text-left font-medium text-slate-900 mb-2"
       >
         Enter the URL of the pasted PHP file:
       </label>
+
       {!pastedUrl && (
-        <p className="text-sm text-red-400 mb-2 text-left">
+        <p className="text-sm text-red-500 mb-2 text-left">
           Please enter a valid URL to enable testing
         </p>
       )}
@@ -543,22 +568,39 @@ const Phpupload = ({
         value={pastedUrl}
         onChange={(e) => setPastedUrl(e.target.value)}
         placeholder="Please put URL of your pasted script here, for example https://domain.com/scriptname.php"
-        className="w-full px-4 py-3 mb-6 bg-gray-800 border border-gray-700 rounded-lg text-gray-300 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none"
+        className="
+    w-full px-4 py-3 mb-6
+    bg-white
+    border border-slate-300
+    rounded-lg
+    text-slate-900
+    placeholder-slate-400
+    focus:ring-2 focus:ring-slate-300
+    focus:border-slate-400
+    outline-none
+  "
       />
 
       {/* Redirection Guidance */}
       <div className="mb-6">
-        <h3 className="text-lg font-medium text-left text-white mb-1">
+        <h3 className="text-lg font-medium text-left text-slate-900 mb-1">
           Redirecting from the root domain
         </h3>
-        <p className="text-sm text-gray-400">
+
+        <p className="text-sm text-slate-600 leading-relaxed">
           If you want to redirect from the root domain, for example,{" "}
-          <code className="bg-gray-700/50 p-1 rounded">domain.com</code> instead
-          of{" "}
-          <code className="bg-gray-700/50 p-1 rounded">domain.com/folder</code>,
-          you should paste code on top of the{" "}
-          <code className="bg-gray-700/50 p-1 rounded">index.php</code> to the
-          root of your domain.
+          <code className="bg-slate-100 text-slate-800 px-1.5 py-0.5 rounded-md font-mono text-xs">
+            domain.com
+          </code>{" "}
+          instead of{" "}
+          <code className="bg-slate-100 text-slate-800 px-1.5 py-0.5 rounded-md font-mono text-xs">
+            domain.com/folder
+          </code>
+          , you should paste code on top of the{" "}
+          <code className="bg-slate-100 text-slate-800 px-1.5 py-0.5 rounded-md font-mono text-xs">
+            index.php
+          </code>{" "}
+          to the root of your domain.
         </p>
       </div>
 
@@ -602,32 +644,44 @@ const PhpPaste = ({
 }) => (
   <div>
     {/* === 3. Guidance/Warning Banner (Unchanged) === */}
-    <div className="flex items-start p-4 bg-blue-900/40 border border-blue-800 rounded-lg mb-6">
+    <div
+      className="flex items-start p-4 mb-6
+                bg-white
+                border border-blue-200
+                rounded-lg
+                shadow-sm"
+    >
       <svg
-        /* ... (Icon) */ className="h-6 w-6 text-blue-400 mr-3 mt-0.5 flex-shrink-0"
-        /* ... */ viewBox="0 0 24 24"
+        className="h-6 w-6 text-blue-600 mr-3 mt-0.5 flex-shrink-0"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       >
         <circle cx="12" cy="12" r="10" />
         <line x1="12" y1="16" x2="12" y2="12" />
         <line x1="12" y1="8" x2="12.01" y2="8" />
       </svg>
-      <p className="text-blue-200 text-sm">
-        <span className="font-semibold">Important:</span> Use the PHP paste
-        method when the safe page and cloaked URL are the same.
+
+      <p className="text-slate-700 text-sm leading-relaxed">
+        <span className="font-semibold text-slate-900">Important:</span> Use the
+        PHP paste method when the safe page and cloaked URL are the same.
       </p>
     </div>
 
     {/* === 4. Code Snippet Instructions & Block === */}
     <div className="mb-4">
-      <p className="text-sm text-gray-400 mb-2">
+      <p className="text-sm text-slate-600 mb-2 leading-relaxed">
         Copy and paste the PHP code on top of your safe page, above everything
         else, strictly at the start of the index.php. Make sure there is no
         whitespace before php.
       </p>
 
       {/* Code Block Container */}
-      <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 font-mono text-sm overflow-auto max-h-96 relative">
-        <pre className="text-green-400 whitespace-pre-wrap text-left">
+      <div className="bg-white border border-slate-300 rounded-lg p-4 font-mono text-sm overflow-auto max-h-96 relative shadow-sm">
+        <pre className="text-emerald-600 whitespace-pre-wrap text-left">
           {/* PHP Code Snippet */}
           {phpCode}
         </pre>
@@ -661,12 +715,13 @@ const PhpPaste = ({
       {/* Input Label */}
       <label
         htmlFor="pastedUrl"
-        className="block text-base text-left font-medium text-white mb-2"
+        className="block text-base text-left font-medium text-slate-900 mb-2"
       >
         Enter the URL of the pasted PHP file:
       </label>
+
       {!pastedUrl && (
-        <p className="text-sm text-red-400 mb-2 text-left">
+        <p className="text-sm text-red-500 mb-2 text-left">
           Please enter a valid URL to enable testing
         </p>
       )}
@@ -678,22 +733,40 @@ const PhpPaste = ({
         value={pastedUrl}
         onChange={(e) => setPastedUrl(e.target.value)}
         placeholder="Please put URL of your pasted script here, for example https://domain.com/scriptname.php"
-        className="w-full px-4 py-3 mb-6 bg-gray-800 border border-gray-700 rounded-lg text-gray-300 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none"
+        className="
+    w-full px-4 py-3 mb-6
+    bg-white
+    border border-slate-300
+    rounded-lg
+    text-slate-900
+    placeholder-slate-400
+    focus:ring-2 focus:ring-slate-300
+    focus:border-slate-400
+    outline-none
+    transition-all duration-150
+  "
       />
 
       {/* Redirection Guidance */}
       <div className="mb-6">
-        <h3 className="text-lg font-medium text-left text-white mb-1">
+        <h3 className="text-lg font-medium text-left text-slate-900 mb-1">
           Redirecting from the root domain
         </h3>
-        <p className="text-sm text-gray-400">
+
+        <p className="text-sm text-slate-600 leading-relaxed">
           If you want to redirect from the root domain, for example,{" "}
-          <code className="bg-gray-700/50 p-1 rounded">domain.com</code> instead
-          of{" "}
-          <code className="bg-gray-700/50 p-1 rounded">domain.com/folder</code>,
-          you should paste code on top of the{" "}
-          <code className="bg-gray-700/50 p-1 rounded">index.php</code> to the
-          root of your domain.
+          <code className="bg-slate-100 text-slate-900 px-1.5 py-0.5 rounded-md font-mono text-xs">
+            domain.com
+          </code>{" "}
+          instead of{" "}
+          <code className="bg-slate-100 text-slate-900 px-1.5 py-0.5 rounded-md font-mono text-xs">
+            domain.com/folder
+          </code>
+          , you should paste code on top of the{" "}
+          <code className="bg-slate-100 text-slate-900 px-1.5 py-0.5 rounded-md font-mono text-xs">
+            index.php
+          </code>{" "}
+          to the root of your domain.
         </p>
       </div>
 
@@ -736,17 +809,9 @@ const Wordpress = ({
   setShowIntegrationTable,
 }) => (
   <div>
-    {/* <div className="flex items-start p-4 bg-blue-900/40 border border-blue-800 rounded-lg mb-6">
-      <p className="text-blue-200 text-sm">
-        <span className="font-semibold">Important:</span> Use the PHP upload
-        method when your safe page, money page, and cloaked URL are all distinct
-        and separate.
-      </p>
-    </div> */}
-
     {/* === 4. Code Snippet Instructions & Block === */}
     <div className="mb-4">
-      <p className="text-sm text-left text-gray-400 mb-2">
+      <p className="text-sm text-left text-slate-600 mb-2 leading-relaxed">
         First download the wordpress plugin and install in wordpress.
       </p>
 
@@ -773,15 +838,15 @@ const Wordpress = ({
         Download wordpress Plugin
       </button>
 
-      <p className="text-sm text-left text-gray-400 mb-1">
-        Copy the PHP code and paste it your wordpress website page or post.
-        <span className="text-red-500">
+      <p className="text-sm text-left text-slate-700 mb-1 leading-relaxed">
+        Copy the PHP code and paste it your wordpress website page or post.{" "}
+        <span className="text-rose-600 font-medium">
           Note: Disable cache plugin in this method.
         </span>
       </p>
 
       {/* Code Block Container */}
-      <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 font-mono text-sm overflow-auto max-h-96 relative">
+      <div className="bg-white border border-gray-700 rounded-lg p-4 font-mono text-sm overflow-auto max-h-96 relative">
         <pre className="text-green-400 whitespace-pre-wrap text-left">
           {/* PHP Code Snippet */}
           {phpCode}
@@ -816,12 +881,13 @@ const Wordpress = ({
       {/* Input Label */}
       <label
         htmlFor="pastedUrl"
-        className="block text-base text-left font-medium text-white mb-2"
+        className="block text-base text-left font-medium text-slate-900 mb-2"
       >
         Enter the URL of the pasted PHP file:
       </label>
+
       {!pastedUrl && (
-        <p className="text-sm text-red-400 mb-2 text-left">
+        <p className="text-sm text-rose-600 mb-2 text-left">
           Please enter a valid URL to enable testing
         </p>
       )}
@@ -833,22 +899,40 @@ const Wordpress = ({
         value={pastedUrl}
         onChange={(e) => setPastedUrl(e.target.value)}
         placeholder="Please put URL of your pasted script here, for example https://domain.com/scriptname.php"
-        className="w-full px-4 py-3 mb-6 bg-gray-800 border border-gray-700 rounded-lg text-gray-300 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none"
+        className="
+    w-full px-4 py-3 mb-6
+    bg-white
+    border border-slate-300
+    rounded-lg
+    text-slate-900
+    placeholder-slate-400
+    focus:ring-2 focus:ring-slate-300
+    focus:border-slate-400
+    outline-none
+    transition-all duration-150
+  "
       />
 
       {/* Redirection Guidance */}
       <div className="mb-6">
-        <h3 className="text-lg font-medium text-left text-white mb-1">
+        <h3 className="text-lg font-medium text-left text-slate-900 mb-1">
           Redirecting from the root domain
         </h3>
-        <p className="text-sm text-gray-400">
+
+        <p className="text-sm text-slate-600 leading-relaxed">
           If you want to redirect from the root domain, for example,{" "}
-          <code className="bg-gray-700/50 p-1 rounded">domain.com</code> instead
-          of{" "}
-          <code className="bg-gray-700/50 p-1 rounded">domain.com/folder</code>,
-          you should paste code on top of the{" "}
-          <code className="bg-gray-700/50 p-1 rounded">index.php</code> to the
-          root of your domain.
+          <code className="bg-slate-100 text-slate-900 px-1.5 py-0.5 rounded-md font-mono text-xs">
+            domain.com
+          </code>{" "}
+          instead of{" "}
+          <code className="bg-slate-100 text-slate-900 px-1.5 py-0.5 rounded-md font-mono text-xs">
+            domain.com/folder
+          </code>
+          , you should paste code on top of the{" "}
+          <code className="bg-slate-100 text-slate-900 px-1.5 py-0.5 rounded-md font-mono text-xs">
+            index.php
+          </code>{" "}
+          to the root of your domain.
         </p>
       </div>
 
@@ -891,18 +975,21 @@ const Javascript = ({
 }) => (
   <div>
     <div className="mb-4">
-      <p className="text-sm text-left text-white-400 mb-2">
+      <p className="text-sm text-left text-slate-700 mb-2 leading-relaxed">
         You'll add this JavaScript snippet to your safe page. If a visitor is
         considered safe, a JavaScript redirect to your money page occurs. If
         not, the visitor remains on your safe page.
       </p>
-      <p className="text-sm text-left text-gray-400 mb-2">
+
+      <p className="text-sm text-left text-slate-600 mb-2 leading-relaxed">
         Copy the JavaScript snippet and paste it between the{" "}
-        <code>&lt;head&gt;&lt;/head&gt;</code> tags of your safe page's HTML
-        source:
-        {`<script src="${import.meta.env.VITE_SERVER_URL}/v2/js_code/${
-          camp?.cid
-        }.js"></script>`}
+        <code className="bg-slate-100 text-slate-900 px-1.5 py-0.5 rounded-md font-mono text-xs">
+          &lt;head&gt;&lt;/head&gt;
+        </code>{" "}
+        tags of your safe page's HTML source:
+        <code className="bg-slate-100 text-slate-900 px-1.5 py-0.5 rounded-md font-mono text-xs block mt-1">
+          {`<script src="${import.meta.env.VITE_SERVER_URL}/v2/js_code/${camp?.cid}.js"></script>`}
+        </code>
       </p>
     </div>
 
@@ -911,12 +998,19 @@ const Javascript = ({
       id="pastedUrl"
       type="url"
       disabled
-      value={`<script src="${import.meta.env.VITE_SERVER_URL}/cdn/${
-        camp?.cid
-      }.js"></script>`}
-      // onChange={(e) => setPastedUrl(e.target.value)}
+      value={`<script src="${import.meta.env.VITE_SERVER_URL}/cdn/${camp?.cid}.js"></script>`}
       placeholder="Please put URL of your pasted script here, for example https://domain.com/scriptname.php"
-      className="w-full px-4 py-3 mb-6 bg-gray-800 border border-gray-700 rounded-lg text-gray-300 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none"
+      className="
+    w-full px-4 py-3 mb-6
+    bg-white
+    border border-slate-300
+    rounded-lg
+    text-slate-900
+    placeholder-slate-400
+    outline-none
+    cursor-not-allowed
+    transition-all duration-150
+  "
     />
 
     {/* === 5. Copy to Clipboard Button (Placed right after the code block) === */}
@@ -953,12 +1047,13 @@ const Javascript = ({
       {/* Input Label */}
       <label
         htmlFor="pastedUrl"
-        className="block text-base text-left font-medium text-white mb-2"
+        className="block text-base text-left font-medium text-slate-900 mb-2"
       >
         Enter the URL:
       </label>
+
       {!pastedUrl && (
-        <p className="text-sm text-red-400 mb-2 text-left">
+        <p className="text-sm text-rose-600 mb-2 text-left">
           Please enter a valid URL to enable testing
         </p>
       )}
@@ -970,12 +1065,23 @@ const Javascript = ({
         value={pastedUrl}
         onChange={(e) => setPastedUrl(e.target.value)}
         placeholder="Please put URL of your pasted js cdn link, for example https://domain.com/scriptname.php"
-        className="w-full px-4 py-3 mb-6 bg-gray-800 border border-gray-700 rounded-lg text-gray-300 placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500 outline-none"
+        className="
+    w-full px-4 py-3 mb-6
+    bg-white
+    border border-slate-300
+    rounded-lg
+    text-slate-900
+    placeholder-slate-400
+    focus:ring-2 focus:ring-slate-300
+    focus:border-slate-400
+    outline-none
+    transition-all duration-150
+  "
       />
 
       {/* Redirection Guidance */}
       <div className="mb-6">
-        <h3 className="text-lg font-medium text-left text-white mb-1">
+        <h3 className="text-lg font-medium text-left text-black mb-1">
           Redirecting from the root domain
         </h3>
       </div>

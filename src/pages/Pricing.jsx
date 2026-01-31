@@ -300,7 +300,7 @@ export default function Pricing() {
 
                 {/* PAYMENT METHODS */}
                 <div className="mt-6 space-y-4">
-                  {["Digital Payments", "card/Paypal"].map((m) => (
+                  {["Digital Payments"].map((m) => (
                     <label
                       key={m}
                       className={`flex items-center justify-between rounded-xl border px-4 py-4 cursor-pointer transition-all
@@ -518,7 +518,7 @@ export default function Pricing() {
             )}
 
             {/* STEP 2 - CARD */}
-            {modalStep === 2 && paymentMethod === "card/Paypal" && (
+            {/* {modalStep === 2 && paymentMethod === "card/Paypal" && (
               <>
                 <PayPalIntegration cart={payload} />
                 <button
@@ -540,7 +540,7 @@ export default function Pricing() {
                   ← Back
                 </button>
               </>
-            )}
+            )} */}
 
             {/* STEP 3 */}
             {modalStep === 3 && (
