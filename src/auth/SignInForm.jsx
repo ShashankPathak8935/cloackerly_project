@@ -157,7 +157,7 @@ export default function LoginPage() {
 
           {/* heading */}
           <h2 className="text-3xl font-bold tracking-tight">
-            Welcome to <span className="text-[#CBFA23]">Clockerly.io</span><span className="text-md font-bold text-[#CBFA23]">.io</span>
+            Welcome to <span className="text-[#CBFA23]">Clockerly</span><span className="text-md font-bold text-[#CBFA23]">.io</span>
           </h2>
 
           <p className="mt-4 text-gray-300 leading-relaxed">
