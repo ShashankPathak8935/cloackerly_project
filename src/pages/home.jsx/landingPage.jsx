@@ -57,66 +57,71 @@ export default function LandingActions() {
   return (
     <div className="min-h-screen flex bg-[#050814] text-white">
       {/* ================= LEFT : ANIMATED PREMIUM PANEL ================= */}
-      <div className="hidden lg:flex flex-1 relative overflow-hidden items-center px-20">
-        {/* Grid background */}
-        <div
-          className="absolute inset-0 opacity-20 
-          bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.08)_1px,_transparent_1px)] 
-          bg-[length:36px_36px]"
-        />
-
-        {/* Floating glow */}
-        <motion.div
-          animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.7, 0.4] }}
-          transition={{ duration: 6, repeat: Infinity }}
-          className="absolute -top-20 -left-20 w-[420px] h-[420px] rounded-full 
-          bg-indigo-600 blur-[120px]"
-        />
-
-        {/* Content */}
-        <div className="relative z-10 max-w-xl">
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="text-4xl font-bold leading-tight"
-          >
-            Protect Your Traffic.
-            <span className="text-indigo-400"> Maximize Conversions.</span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9 }}
-            className="text-gray-300 mt-4 text-lg"
-          >
-            Clockerly intelligently filters bad traffic, protects campaigns,
-            and boosts ROI — all automatically.
-          </motion.p>
-
-          {/* Animated stats */}
-          <div className="mt-10 grid grid-cols-3 gap-6">
-            {[
-              { label: "Blocked Bots", value: "98%" },
-              { label: "Faster ROI", value: "2.4x" },
-              { label: "Uptime", value: "99.99%" },
-            ].map((item, i) => (
+      <div
+              className="hidden xl:flex w-1/2 relative overflow-hidden 
+              bg-black
+            text-white items-center justify-center"
+            >
+              {/* animated grid */}
               <motion.div
-                key={i}
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 4 + i, repeat: Infinity }}
-                className="bg-white/5 backdrop-blur rounded-xl p-5 text-center"
+                animate={{ backgroundPosition: ["0% 0%", "100% 100%"] }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-0 opacity-20 
+               bg-black"
+              />
+      
+              {/* floating glow */}
+              <motion.div
+                animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }}
+                transition={{ duration: 6, repeat: Infinity }}
+                className="absolute w-[420px] h-[420px] rounded-full 
+          bg-black "
+              />
+      
+              {/* main content */}
+              <motion.div
+                initial={{ opacity: 50, y: 90 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, ease: "easeOut" }}
+                className="relative z-10 text-center px-12 max-w-xl"
               >
-                <p className="text-2xl font-bold text-indigo-400">
-                  {item.value}
+                {/* logo */}
+                <motion.div
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                  className="flex items-center justify-center mb-6"
+                >
+                  <img src="/logo.png" alt="Clockerly Logo" className="w-35 h-35" />
+                </motion.div>
+      
+                {/* heading */}
+                <h2 className="text-3xl font-bold tracking-tight">
+                  Welcome to <span className="text-[#CBFA23]">Clockerly</span><span className="text-md font-bold text-[#CBFA23]">.io</span>
+                </h2>
+      
+                <p className="mt-4 text-gray-300 leading-relaxed">
+                  Secure access to your dashboard. Protect campaigns, block bad
+                  traffic, and maximize ROI — automatically.
                 </p>
-                <p className="text-sm text-gray-400 mt-1">{item.label}</p>
+      
+                {/* animated feature pills */}
+                <div className="mt-10 flex justify-center gap-4 flex-wrap">
+                  {["Bot Protection", "Smart Cloaking", "Real-time Analytics"].map(
+                    (item, i) => (
+                      <motion.div
+                        key={item}
+                        animate={{ y: [0, -6, 0] }}
+                        transition={{ duration: 3 + i, repeat: Infinity }}
+                        className="px-4 py-2 rounded-full text-sm 
+                  bg-white/10 backdrop-blur border border-white/20"
+                      >
+                        {item}
+                      </motion.div>
+                    ),
+                  )}
+                </div>
               </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
+            </div>
 
       {/* ================= RIGHT : YOUR EXISTING UI ================= */}
       <div className="flex-1 bg-white flex items-center justify-center px-6">

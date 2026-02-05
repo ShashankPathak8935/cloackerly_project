@@ -4,6 +4,7 @@ import { createApiFunction } from "../api/ApiFunction";
 import { verifyOtpApi, resendOtpApi, signupApi } from "../api/Apis";
 import { showErrorToast, showSuccessToast } from "../components/toast/toast";
 import { set } from "react-hook-form";
+import { motion } from "framer-motion";
 
 export default function VerifyOtp() {
   const navigate = useNavigate();
@@ -131,6 +132,75 @@ export default function VerifyOtp() {
   return (
     <div className="min-h-screen w-screen flex flex-col md:flex-row overflow-hidden">
       {/* LEFT PANEL */}
+
+      <div
+        className="hidden xl:flex w-1/2 relative overflow-hidden 
+              bg-black
+            text-white items-center justify-center"
+      >
+        {/* animated grid */}
+        <motion.div
+          animate={{ backgroundPosition: ["0% 0%", "100% 100%"] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 opacity-20 
+               bg-black"
+        />
+
+        {/* floating glow */}
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }}
+          transition={{ duration: 6, repeat: Infinity }}
+          className="absolute w-[420px] h-[420px] rounded-full 
+          bg-black "
+        />
+
+        {/* main content */}
+        <motion.div
+          initial={{ opacity: 50, y: 90 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: "easeOut" }}
+          className="relative z-10 text-center px-12 max-w-xl"
+        >
+          {/* logo */}
+          <motion.div
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 4, repeat: Infinity }}
+            className="flex items-center justify-center mb-6"
+          >
+            <img src="/logo.png" alt="Clockerly Logo" className="w-35 h-35" />
+          </motion.div>
+
+          {/* heading */}
+          <h2 className="text-3xl font-bold tracking-tight">
+            Welcome to <span className="text-[#CBFA23]">Clockerly</span>
+            <span className="text-md font-bold text-[#CBFA23]">.io</span>
+          </h2>
+
+          <p className="mt-4 text-gray-300 leading-relaxed">
+            Secure access to your dashboard. Protect campaigns, block bad
+            traffic, and maximize ROI — automatically.
+          </p>
+
+          {/* animated feature pills */}
+          <div className="mt-10 flex justify-center gap-4 flex-wrap">
+            {["Bot Protection", "Smart Cloaking", "Real-time Analytics"].map(
+              (item, i) => (
+                <motion.div
+                  key={item}
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 3 + i, repeat: Infinity }}
+                  className="px-4 py-2 rounded-full text-sm 
+                  bg-white/10 backdrop-blur border border-white/20"
+                >
+                  {item}
+                </motion.div>
+              ),
+            )}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* RIGHT PANEL */}
       <div className="w-full xl:w-1/2 bg-white flex flex-col justify-center px-8 md:px-20 py-12">
         <h2 className="text-xl font-semibold mb-2 text-gray-800">
           Verify Email
@@ -193,45 +263,6 @@ export default function VerifyOtp() {
         >
           {resending ? "Resending..." : "Resend OTP"}
         </button>
-      </div>
-      {/* RIGHT PANEL */}
-      <div className="hidden xl:flex w-1/2 bg-[#0B0E2A] text-white items-center justify-center relative overflow-hidden">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-            opacity: 0.15,
-          }}
-        />
-        <div className="relative text-center px-10">
-          <div className="flex items-center justify-center mb-4">
-            <div className="bg-indigo-500 p-3 rounded-lg">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-6 h-6"
-              >
-                <rect x="3" y="3" width="7" height="7" rx="1" />
-                <rect x="14" y="3" width="7" height="7" rx="1" />
-                <rect x="14" y="14" width="7" height="7" rx="1" />
-              </svg>
-            </div>
-            <h2 className="ml-3 text-2xl font-semibold">Clockerly</h2>
-          </div>
-          <p className="text-gray-300 text-sm max-w-md mx-auto">
-            Shield your campaigns. Boost your performance. Experience smart
-            traffic cloaking — secure, optimized, effortless.
-          </p>
-        </div>
       </div>
     </div>
   );

@@ -1,10 +1,16 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { Link, useNavigate } from "react-router-dom";
 import { updatePassword } from "../api/Apis";
 import { createApiFunction } from "../api/ApiFunction";
 import { showErrorToast, showSuccessToast } from "../components/toast/toast";
+import { motion } from "framer-motion";
+import {
+  EyeIcon,
+  EyeSlashIcon,
+  KeyIcon,
+  LockClosedIcon,
+} from "@heroicons/react/24/outline";
 
 export default function UpdatePassword() {
   const [formData, setFormData] = useState({
@@ -19,7 +25,6 @@ export default function UpdatePassword() {
   const navigate = useNavigate();
   const email = localStorage.getItem("resetEmail");
 
-
   // Strong Password Regex
   const strongPasswordRegex =
     /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -28,14 +33,12 @@ export default function UpdatePassword() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-
   useEffect(() => {
-  if (!email) {
-    showErrorToast("Session expired. Please try again.");
-    navigate("/reset-password");
-  }
-}, []);
-
+    if (!email) {
+      showErrorToast("Session expired. Please try again.");
+      navigate("/reset-password");
+    }
+  }, []);
 
   // Submit Function
   const onSubmit = async (e) => {
@@ -69,184 +72,239 @@ export default function UpdatePassword() {
 
     if (!strongPasswordRegex.test(formData.newPassword)) {
       showErrorToast(
-        "Password must be at least 8 chars, include 1 uppercase letter, 1 number & 1 special character."
+        "Password must be at least 8 chars, include 1 uppercase letter, 1 number & 1 special character.",
       );
       return;
     }
-try {
-  setIsSubmitting(true);
+    try {
+      setIsSubmitting(true);
 
-  const res = await createApiFunction(
-  "post",
-  updatePassword,
-  null,
-  {
-    email: email,
-    otp: formData.otp,
-    password: formData.newPassword,
-  }
-);
+      const res = await createApiFunction("post", updatePassword, null, {
+        email: email,
+        otp: formData.otp,
+        password: formData.newPassword,
+      });
 
+      showSuccessToast(res?.data?.message || "Password updated successfully!");
+      localStorage.removeItem("resetEmail");
 
-  showSuccessToast(
-    res?.data?.message || "Password updated successfully!"
-  );
-  localStorage.removeItem("resetEmail");
-
-  setTimeout(() => {
-    navigate("/signin");
-  }, 800);
-
-} catch (err) {
-  showErrorToast(
-    err.response?.data?.message || "Something went wrong!"
-  );
-} finally {
-  setIsSubmitting(false);
-}
-
+      setTimeout(() => {
+        navigate("/signin");
+      }, 800);
+    } catch (err) {
+      showErrorToast(err.response?.data?.message || "Something went wrong!");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
-
-
 
   return (
     <>
       <div className="min-h-screen w-screen flex flex-col md:flex-row overflow-hidden">
         {/* LEFT PANEL */}
-        <div className="w-full xl:w-1/2 bg-white flex flex-col justify-center px-8 md:px-20 py-12">
-          <div className="p-5 md:p-20">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Update Your Password
+        <div
+          className="hidden xl:flex w-1/2 relative overflow-hidden 
+              bg-black
+            text-white items-center justify-center"
+        >
+          {/* animated grid */}
+          <motion.div
+            animate={{ backgroundPosition: ["0% 0%", "100% 100%"] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-0 opacity-20 
+               bg-black"
+          />
+
+          {/* floating glow */}
+          <motion.div
+            animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }}
+            transition={{ duration: 6, repeat: Infinity }}
+            className="absolute w-[420px] h-[420px] rounded-full 
+          bg-black "
+          />
+
+          {/* main content */}
+          <motion.div
+            initial={{ opacity: 50, y: 90 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: "easeOut" }}
+            className="relative z-10 text-center px-12 max-w-xl"
+          >
+            {/* logo */}
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 4, repeat: Infinity }}
+              className="flex items-center justify-center mb-6"
+            >
+              <img src="/logo.png" alt="Clockerly Logo" className="w-35 h-35" />
+            </motion.div>
+
+            {/* heading */}
+            <h2 className="text-3xl font-bold tracking-tight">
+              Welcome to <span className="text-[#CBFA23]">Clockerly</span>
+              <span className="text-md font-bold text-[#CBFA23]">.io</span>
+            </h2>
+
+            <p className="mt-4 text-gray-300 leading-relaxed">
+              Secure access to your dashboard. Protect campaigns, block bad
+              traffic, and maximize ROI — automatically.
+            </p>
+
+            {/* animated feature pills */}
+            <div className="mt-10 flex justify-center gap-4 flex-wrap">
+              {["Bot Protection", "Smart Cloaking", "Real-time Analytics"].map(
+                (item, i) => (
+                  <motion.div
+                    key={item}
+                    animate={{ y: [0, -6, 0] }}
+                    transition={{ duration: 3 + i, repeat: Infinity }}
+                    className="px-4 py-2 rounded-full text-sm 
+                  bg-white/10 backdrop-blur border border-white/20"
+                  >
+                    {item}
+                  </motion.div>
+                ),
+              )}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* RIGHT PANEL */}
+        <div className="w-full xl:w-1/2 bg-white flex items-center justify-center px-6 md:px-16 py-12">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+            {/* Header */}
+            <h1 className="text-2xl font-semibold text-gray-900">
+              Update your password
             </h1>
-            <p className="text-gray-500 mb-8">
-              Enter the OTP you received and set your new password.
+            <p className="text-sm text-gray-500 mt-2 mb-8">
+              Verify your identity using the OTP and create a new secure
+              password.
             </p>
 
             <form onSubmit={onSubmit}>
-              {/* OTP FIELD */}
-              <div className="mb-4">
+              {/* OTP */}
+              <div className="mb-5">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Enter OTP
+                  One-Time Password (OTP)
                 </label>
 
-                <input
-                  type="text"
-                  name="otp"
-                  placeholder="Enter 6-digit OTP"
-                  value={formData.otp}
-                  onChange={(e) => {
-                    const value = e.target.value;
+                <div className="relative">
+                  <KeyIcon className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
 
-                    // Allow only digits + limit to 4 digits
-                    if (/^\d{0,6}$/.test(value)) {
-                      setFormData({ ...formData, otp: value });
-                    }
-                  }}
-                  required
-                  maxLength={6}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
+                  <input
+                    type="text"
+                    name="otp"
+                    placeholder="6-digit OTP"
+                    value={formData.otp}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^\d{0,6}$/.test(value)) {
+                        setFormData({ ...formData, otp: value });
+                      }
+                    }}
+                    required
+                    maxLength={6}
+                    className="w-full h-11 pl-10 pr-3 rounded-lg border border-gray-300 text-sm text-gray-800 placeholder:text-gray-400
+            focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                  />
+                </div>
+
+                <p className="text-xs text-gray-500 mt-2">
+                  OTP must be numeric and 6 digits long
+                </p>
               </div>
-              <p className="text-sm text-gray-500 mb-4">✔  OTP must be in numeric</p>
 
               {/* New Password */}
-              <div className="mb-4 relative">
+              <div className="mb-5">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  New Password
+                  New password
                 </label>
 
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="newPassword"
-                  placeholder="Enter new password"
-                  value={formData.newPassword}
-                  onChange={handleChange}
-                  required
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
+                <div className="relative">
+                  <LockClosedIcon className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
 
-                <span
-                  className="absolute right-3 top-[30px] cursor-pointer text-gray-600"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeSlashIcon className="h-5 w-5" />
-                  )}
-                </span>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="newPassword"
+                    placeholder="Create a new password"
+                    value={formData.newPassword}
+                    onChange={handleChange}
+                    required
+                    className="w-full h-11 pl-10 pr-10 rounded-lg border border-gray-300 text-sm text-gray-800 placeholder:text-gray-400
+            focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                  />
+
+                  <span
+                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeIcon className="h-5 w-5" />
+                    ) : (
+                      <EyeSlashIcon className="h-5 w-5" />
+                    )}
+                  </span>
+                </div>
               </div>
 
               {/* Confirm Password */}
-              <div className="mb-4 relative">
+              <div className="mb-5">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirm Password
+                  Confirm password
                 </label>
 
-                <input
-                  type={showConfirm ? "text" : "password"}
-                  name="confirmPassword"
-                  placeholder="Confirm new password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
+                <div className="relative">
+                  <LockClosedIcon className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
 
-                <span
-                  className="absolute right-3 top-[30px] cursor-pointer text-gray-600"
-                  onClick={() => setShowConfirm(!showConfirm)}
-                >
-                  {showConfirm ? (
-                    <EyeIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeSlashIcon className="h-5 w-5" />
-                  )}
-                </span>
+                  <input
+                    type={showConfirm ? "text" : "password"}
+                    name="confirmPassword"
+                    placeholder="Re-enter new password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                    className="w-full h-11 pl-10 pr-10 rounded-lg border border-gray-300 text-sm text-gray-800 placeholder:text-gray-400
+            focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                  />
+
+                  <span
+                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
+                    onClick={() => setShowConfirm(!showConfirm)}
+                  >
+                    {showConfirm ? (
+                      <EyeIcon className="h-5 w-5" />
+                    ) : (
+                      <EyeSlashIcon className="h-5 w-5" />
+                    )}
+                  </span>
+                </div>
               </div>
 
-              {/* RULES */}
-              <p className="text-sm text-gray-500 mb-4">
-                Password must include:
-                <br />✔ One uppercase letter
-                <br />✔ One number
-                <br />✔ One special character (@, $, !, %, *, ?, &)
-                <br />✔ Minimum 8 characters
-              </p>
-
-              {/* Submit Button */}
+              {/* Submit */}
               <button
                 disabled={isSubmitting}
                 type="submit"
-                className={`w-full py-2.5 cursor-pointer rounded-lg font-medium transition flex items-center justify-center gap-2
-                ${
-                  isSubmitting
-                    ? "bg-indigo-400 text-white cursor-not-allowed opacity-70"
-                    : "bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer"
-                }`}
+                className={`w-full h-11 rounded-lg font-medium text-sm flex items-center justify-center transition
+          ${
+            isSubmitting
+              ? "bg-indigo-400 text-white cursor-not-allowed"
+              : "bg-indigo-600 text-white hover:bg-indigo-700"
+          }`}
               >
-                {isSubmitting ? "Updating..." : "Update Password"}
+                {isSubmitting ? "Updating password…" : "Update password"}
               </button>
 
+              {/* Footer */}
               <p className="text-sm text-gray-600 mt-6 text-center">
-                Go back to login —{" "}
-                <Link to="/signin" className="text-indigo-600 hover:underline">
+                Back to{" "}
+                <Link
+                  to="/signin"
+                  className="text-indigo-600 font-medium hover:underline"
+                >
                   Sign in
                 </Link>
               </p>
             </form>
-          </div>
-        </div>
-
-        {/* RIGHT PANEL */}
-        <div className="hidden xl:flex w-1/2 bg-[#0B0E2A] text-white items-center justify-center relative overflow-hidden">
-          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.05)_1px,_transparent_1px)] bg-[length:40px_40px]" />
-          <div className="relative text-center px-10">
-            <h2 className="text-2xl font-semibold mb-4">Click Stopper</h2>
-            <p className="text-gray-300 text-sm max-w-sm mx-auto">
-              Protect your campaigns with advanced cloaking and smart traffic
-              controls.
-            </p>
           </div>
         </div>
       </div>
