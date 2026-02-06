@@ -91,11 +91,11 @@ const Header = ({ onMenuClick }) => {
           />
           <div className="flex items-center gap-2">
             <img
-              src="/logo.png"
+              src="/logo-new-1.png"
               alt="Clockerly Logo"
-              className="w-8 h-8"
+              className="w-12 h-12"
             />
-            <span className="text-lg font-semibold tracking-tight text-gray-900">
+            <span className="text-2xl font-bold tracking-tight text-[#0427cb]">
               Clockerly.io
             </span>
           </div>

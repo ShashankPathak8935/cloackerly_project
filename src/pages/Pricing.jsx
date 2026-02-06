@@ -62,6 +62,30 @@ export default function Pricing() {
     fetchPlans();
   }, []);
 
+
+  /* ===================== PAYMENT HANDLERS ===================== */
+const handleSubscribe = async (priceId) => {
+  if (!priceId) return alert("Price ID is required for subscription");
+  try {
+    const response = await fetch("https://api.clockerly.io/api/v2/payment/stripe/checkout-subscription", {
+      method: "POST",
+      headers: { "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+      body: JSON.stringify({ planId: selectedPlan?.id, priceId: priceId }), // ₹500
+    });
+    const data = await response.json();
+    console.log("Subscription Response:", data); 
+    window.location.href = data.url; // Redirect to Stripe Checkout   
+  } catch (error) {
+    console.log("Error",error);  
+    
+  }
+}
+
+
+
+
   /* ===================== HELPERS ===================== */
 
   const resetPaymentState = () => {
@@ -300,7 +324,7 @@ export default function Pricing() {
 
                 {/* PAYMENT METHODS */}
                 <div className="mt-6 space-y-4">
-                  {["Digital Payments"].map((m) => (
+                  {["Digital Payments", "card"].map((m) => (
                     <label
                       key={m}
                       className={`flex items-center justify-between rounded-xl border px-4 py-4 cursor-pointer transition-all
@@ -359,7 +383,8 @@ export default function Pricing() {
                     disabled={!paymentMethod}
                     onClick={() => {
                       setModalStep(2);
-                      if (paymentMethod === "card/Paypal") {
+                      if (paymentMethod === "card") {
+                        handleSubscribe(selectedPlan.stripePriceId);
                         const { start_date, end_date } =
                           calculateStartEndDates(billing);
                         setPayload({
@@ -442,27 +467,27 @@ export default function Pricing() {
                         <div className="h-10 w-10 flex items-center justify-center">
                           {n === "ERC20" || n === "ETH" ? (
                             <img
-                              src="https://cryptologos.cc/logos/ethereum-eth-logo.png?v=029"
+                              src="/etherum.svg"
                               alt="Ethereum"
-                              className="h-9 w-9 object-contain"
+                              className="h-10 w-10 object-contain"
                             />
                           ) : n === "TRC20" ? (
                             <img
-                              src="https://cryptologos.cc/logos/tron-trx-logo.png?v=029"
+                              src="/trc20.svg"
                               alt="TRON"
-                              className="h-9 w-9 object-contain"
+                              className="h-10 w-10 object-contain"
                             />
                           ) : n === "BTC" ? (
                             <img
-                              src="https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=029"
+                              src="/bitcoin.svg"
                               alt="Bitcoin"
-                              className="h-9 w-9 object-contain"
+                              className="h-10 w-10 object-contain"
                             />
                           ) : (
                             <img
-                              src="https://cryptologos.cc/logos/bnb-bnb-logo.png?v=029"
+                              src="erc20.svg"
                               alt="BEP20"
-                              className="h-9 w-9 object-contain"
+                              className="h-10 w-10 object-contain"
                             />
                           )}
                         </div>
@@ -518,10 +543,11 @@ export default function Pricing() {
             )}
 
             {/* STEP 2 - CARD */}
-            {/* {modalStep === 2 && paymentMethod === "card/Paypal" && (
+            {modalStep === 2 && paymentMethod === "card" && (
               <>
-                <PayPalIntegration cart={payload} />
-                <button
+              <h2 className="text-center text-black">Redirecting to stripe payment gateway...</h2>
+                {/* <PayPalIntegration cart={payload} /> */}
+                {/* <button
                   onClick={() => setModalStep(1)}
                   className="
     mt-6
@@ -538,9 +564,9 @@ export default function Pricing() {
   "
                 >
                   ← Back
-                </button>
+                </button> */}
               </>
-            )} */}
+            )}
 
             {/* STEP 3 */}
             {modalStep === 3 && (

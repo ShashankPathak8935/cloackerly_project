@@ -4,7 +4,10 @@ import { motion } from "framer-motion";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { googleLoginApi } from "../../api/Apis.js";
 import { createApiFunction } from "../../api/ApiFunction.js";
-import {showErrorToast, showSuccessToast} from "../../components/toast/toast.jsx";
+import {
+  showErrorToast,
+  showSuccessToast,
+} from "../../components/toast/toast.jsx";
 
 export default function LandingActions() {
   const navigate = useNavigate();
@@ -23,7 +26,6 @@ export default function LandingActions() {
 
   // Google Login
   const loginWithGoogle = async (googleToken) => {
-
     try {
       const response = await createApiFunction("post", googleLoginApi, null, {
         token: googleToken,
@@ -50,7 +52,6 @@ export default function LandingActions() {
         err.response?.data?.message || "Google login failed. Please try again.";
       showErrorToast(msg);
     } finally {
-    
     }
   };
 
@@ -58,70 +59,75 @@ export default function LandingActions() {
     <div className="min-h-screen flex bg-[#050814] text-white">
       {/* ================= LEFT : ANIMATED PREMIUM PANEL ================= */}
       <div
-              className="hidden xl:flex w-1/2 relative overflow-hidden 
-              bg-black
-            text-white items-center justify-center"
-            >
-              {/* animated grid */}
-              <motion.div
-                animate={{ backgroundPosition: ["0% 0%", "100% 100%"] }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-0 opacity-20 
-               bg-black"
-              />
-      
-              {/* floating glow */}
-              <motion.div
-                animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }}
-                transition={{ duration: 6, repeat: Infinity }}
-                className="absolute w-[420px] h-[420px] rounded-full 
-          bg-black "
-              />
-      
-              {/* main content */}
-              <motion.div
-                initial={{ opacity: 50, y: 90 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, ease: "easeOut" }}
-                className="relative z-10 text-center px-12 max-w-xl"
-              >
-                {/* logo */}
+        className="hidden xl:flex w-1/2 relative overflow-hidden 
+                    bg-black
+                  text-white items-center justify-center"
+      >
+        {/* animated grid */}
+        <motion.div
+          animate={{ backgroundPosition: ["0% 0%", "100% 100%"] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 opacity-20 
+                     bg-black"
+        />
+
+        {/* floating glow */}
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }}
+          transition={{ duration: 6, repeat: Infinity }}
+          className="absolute w-[420px] h-[420px] rounded-full 
+                bg-black "
+        />
+
+        {/* main content */}
+        <motion.div
+          initial={{ opacity: 50, y: 90 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: "easeOut" }}
+          className="relative z-10 text-center px-12 max-w-xl"
+        >
+          {/* logo */}
+          <motion.div
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 4, repeat: Infinity }}
+            className="flex items-center justify-center mb-6"
+          >
+            <img
+              src="/logo-new.png"
+              alt="Clockerly Logo"
+              className="w-80 h-35"
+            />
+          </motion.div>
+
+          {/* heading */}
+          <h2 className="text-3xl font-bold tracking-tight">
+            Welcome to <span className="text-[#0427cb]">Clockerly</span>
+            <span className="text-md font-bold text-[#0427cb]">.io</span>
+          </h2>
+
+          <p className="mt-4 text-gray-300 leading-relaxed">
+            Secure access to your dashboard. Protect campaigns, block bad
+            traffic, and maximize ROI — automatically.
+          </p>
+
+          {/* animated feature pills */}
+          <div className="mt-10 flex justify-center gap-4 flex-wrap">
+            {["Bot Protection", "Smart Cloaking", "Real-time Analytics"].map(
+              (item, i) => (
                 <motion.div
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                  className="flex items-center justify-center mb-6"
+                  key={item}
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 3 + i, repeat: Infinity }}
+                  className="px-4 py-2 rounded-full text-sm 
+                        bg-white/10 backdrop-blur border border-white/20"
                 >
-                  <img src="/logo.png" alt="Clockerly Logo" className="w-35 h-35" />
+                  {item}
                 </motion.div>
-      
-                {/* heading */}
-                <h2 className="text-3xl font-bold tracking-tight">
-                  Welcome to <span className="text-[#CBFA23]">Clockerly</span><span className="text-md font-bold text-[#CBFA23]">.io</span>
-                </h2>
-      
-                <p className="mt-4 text-gray-300 leading-relaxed">
-                  Secure access to your dashboard. Protect campaigns, block bad
-                  traffic, and maximize ROI — automatically.
-                </p>
-      
-                {/* animated feature pills */}
-                <div className="mt-10 flex justify-center gap-4 flex-wrap">
-                  {["Bot Protection", "Smart Cloaking", "Real-time Analytics"].map(
-                    (item, i) => (
-                      <motion.div
-                        key={item}
-                        animate={{ y: [0, -6, 0] }}
-                        transition={{ duration: 3 + i, repeat: Infinity }}
-                        className="px-4 py-2 rounded-full text-sm 
-                  bg-white/10 backdrop-blur border border-white/20"
-                      >
-                        {item}
-                      </motion.div>
-                    ),
-                  )}
-                </div>
-              </motion.div>
-            </div>
+              ),
+            )}
+          </div>
+        </motion.div>
+      </div>
 
       {/* ================= RIGHT : YOUR EXISTING UI ================= */}
       <div className="flex-1 bg-white flex items-center justify-center px-6">

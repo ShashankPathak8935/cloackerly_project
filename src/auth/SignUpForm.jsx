@@ -121,15 +121,15 @@ export default function SignupPage() {
       {/* LEFT PANEL */}
       <div
         className="hidden xl:flex w-1/2 relative overflow-hidden 
-              bg-black
-            text-white items-center justify-center"
+                    bg-black
+                  text-white items-center justify-center"
       >
         {/* animated grid */}
         <motion.div
           animate={{ backgroundPosition: ["0% 0%", "100% 100%"] }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
           className="absolute inset-0 opacity-20 
-               bg-black"
+                     bg-black"
         />
 
         {/* floating glow */}
@@ -137,7 +137,7 @@ export default function SignupPage() {
           animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }}
           transition={{ duration: 6, repeat: Infinity }}
           className="absolute w-[420px] h-[420px] rounded-full 
-          bg-black "
+                bg-black "
         />
 
         {/* main content */}
@@ -153,13 +153,17 @@ export default function SignupPage() {
             transition={{ duration: 4, repeat: Infinity }}
             className="flex items-center justify-center mb-6"
           >
-            <img src="/logo.png" alt="Clockerly Logo" className="w-35 h-35" />
+            <img
+              src="/logo-new.png"
+              alt="Clockerly Logo"
+              className="w-80 h-35"
+            />
           </motion.div>
 
           {/* heading */}
           <h2 className="text-3xl font-bold tracking-tight">
-            Welcome to <span className="text-[#CBFA23]">Clockerly</span>
-            <span className="text-md font-bold text-[#CBFA23]">.io</span>
+            Welcome to <span className="text-[#0427cb]">Clockerly</span>
+            <span className="text-md font-bold text-[#0427cb]">.io</span>
           </h2>
 
           <p className="mt-4 text-gray-300 leading-relaxed">
@@ -176,7 +180,7 @@ export default function SignupPage() {
                   animate={{ y: [0, -6, 0] }}
                   transition={{ duration: 3 + i, repeat: Infinity }}
                   className="px-4 py-2 rounded-full text-sm 
-                  bg-white/10 backdrop-blur border border-white/20"
+                        bg-white/10 backdrop-blur border border-white/20"
                 >
                   {item}
                 </motion.div>
