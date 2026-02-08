@@ -384,7 +384,7 @@ const handleSubscribe = async (priceId) => {
                     onClick={() => {
                       setModalStep(2);
                       if (paymentMethod === "card") {
-                        handleSubscribe(selectedPlan.stripePriceId);
+                        // handleSubscribe(selectedPlan.stripePriceId);
                         const { start_date, end_date } =
                           calculateStartEndDates(billing);
                         setPayload({
@@ -546,8 +546,8 @@ const handleSubscribe = async (priceId) => {
             {modalStep === 2 && paymentMethod === "card" && (
               <>
               <h2 className="text-center text-black">Redirecting to stripe payment gateway...</h2>
-                {/* <PayPalIntegration cart={payload} /> */}
-                {/* <button
+                <PayPalIntegration cart={payload} />
+                <button
                   onClick={() => setModalStep(1)}
                   className="
     mt-6
@@ -564,7 +564,7 @@ const handleSubscribe = async (priceId) => {
   "
                 >
                   ← Back
-                </button> */}
+                </button>
               </>
             )}
 

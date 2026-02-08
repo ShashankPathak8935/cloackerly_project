@@ -7,7 +7,7 @@ import "intro.js/introjs.css";
 import "intro.js/themes/introjs-modern.css";
 import {  Briefcase, Home } from "lucide-react";
 import { PhoneCall } from "lucide-react";
-import {motion} from 'framer-motion'
+// import {motion} from 'framer-motion'
 import { Box } from "@mui/joy";
 
 const Dashboard = () => {
