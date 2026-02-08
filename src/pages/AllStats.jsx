@@ -126,7 +126,7 @@ const Dashboard = () => {
           acc.moneyClicks += Number(item.total_m_clicks || 0);
           return acc;
         },
-        { totalClicks: 0, safeClicks: 0, moneyClicks: 0 }
+        { totalClicks: 0, safeClicks: 0, moneyClicks: 0 },
       );
 
       setClickSummary(totals);
@@ -147,7 +147,7 @@ const Dashboard = () => {
         "get",
         `${getAllCampaign}?page=${page}&limit=${ITEMS_PER_PAGE}`,
         null,
-        null
+        null,
       );
       console.log(response);
 
@@ -224,96 +224,105 @@ const Dashboard = () => {
   const handleActionClick = (e, campaignId) => {
     const rect = e.currentTarget.getBoundingClientRect();
 
+    const dropdownHeight = 160;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    const openUpwards =
+      spaceBelow < dropdownHeight && spaceAbove > dropdownHeight;
+
     setDropdownPos({
-      top: rect.bottom + 2, // below button
-      left: rect.right - 150, // align right (w-48 = 192px)
+      left: rect.right - 224, // w-56 = 224px
+      top: openUpwards
+        ? rect.top - dropdownHeight - 8 // ⬆ open upwards
+        : rect.bottom + 8, // ⬇ open downwards
     });
     setOpenDropdownId(openDropdownId === campaignId ? null : campaignId);
   };
 
- const handleActionSelect = async (action, campaignId, row) => {
-     setOpenDropdownId(null); // मेनू बंद करें
-     switch (action) {
-       case "edit":
-         // alert(`Editing campaign ID: ${campaignId}`);
-         navigate("/Dashboard/create-campaign", {
-           state: {
-             mode: "edit",
-             id: row.uid,
-             data: row, // campaign data from db
-           },
-         });
-         // TODO: Navigate to Edit screen or open a modal
-         break;
-       case "duplicate": {
-         try {
-           if (!row) return;
-           console.log(row);
- 
-           // 🔁 deep clone campaign
-           const payload = JSON.parse(JSON.stringify(row));
- 
-           // ❌ backend generated fields hatao
-           delete payload.uid;
-           delete payload._id;
-           delete payload.createdAt;
-           delete payload.updatedAt;
-           delete payload.date_time;
- 
-           // 📝 campaign name modify
-           const data = {
-             ...payload,
- 
-             campaignName:
-               (payload.campaign_info?.campaignName || "Campaign") + " (Copy)",
-             trafficSource: payload.campaign_info?.trafficSource,
-           };
- 
-           // optional default status
- 
-           // 🚀 CREATE API CALL (same API as create)
-           const res = await apiFunction("post", createCampaignApi, null, data);
- 
-           if (res?.data?.status || res?.data?.success) {
-             const newCampaign = res.data.data;
- 
-             // ✅ UI update (top me add)
-             setCampaigns((prev) => [newCampaign, ...prev]);
- 
-             showSuccessToast("Campaign duplicated successfully");
-             await fetchCampaigns();
-             await fetchStats();
-           }
-         } catch (err) {
-           console.error("Duplicate campaign error:", err);
-           showErrorToast("Failed to duplicate campaign");
-         }
- 
-         break;
-       }
- 
-       case "delete":
-         if (window.confirm(`Are you sure you want to delete this campaign?`)) {
-           const res = await apiFunction(
-             "delete",
-             createCampaignApi,
-             campaignId,
-             null
-           );
- 
-           if (res) {
-             setCampaigns((prev) =>
-               prev.filter((item) => item.uid !== campaignId)
-             );
-             await fetchCampaigns();
-             await fetchStats();
-           }
-         }
-         break;
-       default:
-         break;
-     }
-   };
+  const handleActionSelect = async (action, campaignId, row) => {
+    setOpenDropdownId(null);
+
+    switch (action) {
+      case "edit":
+        // alert(`Editing campaign ID: ${campaignId}`);
+        navigate("/Dashboard/create-campaign", {
+          state: {
+            mode: "edit",
+            id: row.uid,
+            data: row, // campaign data from db
+          },
+        });
+        // TODO: Navigate to Edit screen or open a modal
+        break;
+      case "duplicate": {
+        try {
+          if (!row) return;
+          console.log(row);
+
+          // 🔁 deep clone campaign
+          const payload = JSON.parse(JSON.stringify(row));
+
+          // ❌ backend generated fields hatao
+          delete payload.uid;
+          delete payload._id;
+          delete payload.createdAt;
+          delete payload.updatedAt;
+          delete payload.date_time;
+
+          // 📝 campaign name modify
+          const data = {
+            ...payload,
+
+            campaignName:
+              (payload.campaign_info?.campaignName || "Campaign") + " (Copy)",
+            trafficSource: payload.campaign_info?.trafficSource,
+          };
+
+          // optional default status
+
+          // 🚀 CREATE API CALL (same API as create)
+          const res = await apiFunction("post", createCampaignApi, null, data);
+
+          if (res?.data?.status || res?.data?.success) {
+            const newCampaign = res.data.data;
+
+            // ✅ UI update (top me add)
+            setCampaigns((prev) => [newCampaign, ...prev]);
+
+            showSuccessToast("Campaign duplicated successfully");
+            await fetchCampaigns();
+            await fetchStats();
+          }
+        } catch (err) {
+          console.error("Duplicate campaign error:", err);
+          showErrorToast("Failed to duplicate campaign");
+        }
+
+        break;
+      }
+
+      case "delete":
+        if (window.confirm(`Are you sure you want to delete this campaign?`)) {
+          const res = await apiFunction(
+            "delete",
+            createCampaignApi,
+            campaignId,
+            null,
+          );
+
+          if (res) {
+            setCampaigns((prev) =>
+              prev.filter((item) => item.uid !== campaignId),
+            );
+            await fetchCampaigns();
+            await fetchStats();
+          }
+        }
+        break;
+      default:
+        break;
+    }
+  };
 
   const handleAddNewCampaign = () => {
     showInfoToast("Redirecting to Creating New Campaign");
@@ -332,8 +341,8 @@ const Dashboard = () => {
       // ⏳ loading UI
       setCampaigns((prev) =>
         prev.map((item) =>
-          item.uid === uid ? { ...item, statusLoading: true } : item
-        )
+          item.uid === uid ? { ...item, statusLoading: true } : item,
+        ),
       );
 
       const data = { status: newStatus };
@@ -351,8 +360,8 @@ const Dashboard = () => {
         prev.map((item) =>
           item.uid === uid
             ? { ...item, status: newStatus, statusLoading: false }
-            : item
-        )
+            : item,
+        ),
       );
 
       // 🔥 UPDATE STATS WITHOUT RELOAD
@@ -380,8 +389,8 @@ const Dashboard = () => {
       // ❌ loading hatao
       setCampaigns((prev) =>
         prev.map((item) =>
-          item.uid === uid ? { ...item, statusLoading: false } : item
-        )
+          item.uid === uid ? { ...item, statusLoading: false } : item,
+        ),
       );
     }
   };
@@ -821,33 +830,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Top Stats */}
-      {/* <div className="mb-6 flex gap-0 flex-wrap">
-        <StatCard
-          icon={<BarChart3 size={22} />}
-          value={stats.total_campaigns}
-          title="Total Campaigns"
-          subtitle="See in-depth performance"
-        />
-        <StatCard
-          icon={<PlayCircle size={22} />}
-          value={stats.active_campaigns}
-          title="Active Campaigns"
-          subtitle="Currently running"
-        />
-        <StatCard
-          icon={<ShieldCheck size={22} />}
-          value={stats.allowed_campaigns}
-          title="Allowed Traffic"
-          subtitle="View allow rules"
-        />
-        <StatCard
-          icon={<ShieldX size={22} />}
-          value={stats.blocked_campaigns}
-          title="Blocked Traffic"
-          subtitle="Security insights"
-        />
-      </div> */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
         {/* TOTAL */}
         <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
@@ -895,9 +877,6 @@ const Dashboard = () => {
       </div>
 
       <div className="bg-gray-100/40 p-6">
-        {/* <h3 className="text-blue text-lg font-semibold mb-2">
-          Clicks Data Overview
-        </h3> */}
         <div className="flex items-start justify-between mb-4">
           {/* Heading */}
           <h3 className="text-blue text-lg font-semibold pt-1">

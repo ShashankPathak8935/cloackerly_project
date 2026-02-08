@@ -73,7 +73,7 @@ function AllCampaignsDashboard() {
         "get",
         `${getAllCampaign}?page=${page}&limit=${ITEMS_PER_PAGE}`,
         null,
-        null
+        null,
       );
 
       // Assume total items is available in response.data.total or we use array length
@@ -125,7 +125,7 @@ function AllCampaignsDashboard() {
           acc.moneyClicks += Number(item.total_m_clicks || 0);
           return acc;
         },
-        { totalClicks: 0, safeClicks: 0, moneyClicks: 0 }
+        { totalClicks: 0, safeClicks: 0, moneyClicks: 0 },
       );
 
       setClickSummary(totals);
@@ -165,8 +165,8 @@ function AllCampaignsDashboard() {
       // ⏳ loading UI
       setCampaigns((prev) =>
         prev.map((item) =>
-          item.uid === uid ? { ...item, statusLoading: true } : item
-        )
+          item.uid === uid ? { ...item, statusLoading: true } : item,
+        ),
       );
 
       const data = { status: newStatus };
@@ -184,8 +184,8 @@ function AllCampaignsDashboard() {
         prev.map((item) =>
           item.uid === uid
             ? { ...item, status: newStatus, statusLoading: false }
-            : item
-        )
+            : item,
+        ),
       );
 
       // 🔥 UPDATE STATS WITHOUT RELOAD
@@ -213,8 +213,8 @@ function AllCampaignsDashboard() {
       // ❌ loading hatao
       setCampaigns((prev) =>
         prev.map((item) =>
-          item.uid === uid ? { ...item, statusLoading: false } : item
-        )
+          item.uid === uid ? { ...item, statusLoading: false } : item,
+        ),
       );
     }
   };
@@ -241,10 +241,17 @@ function AllCampaignsDashboard() {
   // --- NEW Handlers for Dropdown ---
   const handleActionClick = (e, campaignId) => {
     const rect = e.currentTarget.getBoundingClientRect();
+    const dropdownHeight = 160;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    const openUpwards =
+      spaceBelow < dropdownHeight && spaceAbove > dropdownHeight;
 
     setDropdownPos({
-      top: rect.bottom + 2, // below button
-      left: rect.right - 150, // align right (w-48 = 192px)
+      left: rect.right - 224, // w-56 = 224px
+      top: openUpwards
+        ? rect.top - dropdownHeight - 8 // ⬆ open upwards
+        : rect.bottom + 8, // ⬇ open downwards
     });
     setOpenDropdownId(openDropdownId === campaignId ? null : campaignId);
   };
@@ -290,7 +297,7 @@ function AllCampaignsDashboard() {
   // };
 
   // --- Existing Handlers ---
-  
+
   const handleActionSelect = async (action, campaignId, row) => {
     setOpenDropdownId(null); // मेनू बंद करें
     switch (action) {
@@ -358,12 +365,12 @@ function AllCampaignsDashboard() {
             "delete",
             createCampaignApi,
             campaignId,
-            null
+            null,
           );
 
           if (res) {
             setCampaigns((prev) =>
-              prev.filter((item) => item.uid !== campaignId)
+              prev.filter((item) => item.uid !== campaignId),
             );
             await fetchStats();
           }
@@ -399,7 +406,7 @@ function AllCampaignsDashboard() {
 
   const handleApplyFilter = () => {
     showInfoToast(
-      `Applying filter: Search='${searchTerm}', Date='${dateRange}'. Refetching data...`
+      `Applying filter: Search='${searchTerm}', Date='${dateRange}'. Refetching data...`,
     );
   };
 
@@ -408,11 +415,10 @@ function AllCampaignsDashboard() {
     navigate("/Dashboard/create-campaign");
   };
 
-
-    const ActionItem = ({ icon, label, onClick, danger }) => (
-      <button
-        onClick={onClick}
-        className={`
+  const ActionItem = ({ icon, label, onClick, danger }) => (
+    <button
+      onClick={onClick}
+      className={`
         w-full flex items-center gap-3
         px-4 py-2.5
         text-sm text-left
@@ -423,24 +429,24 @@ function AllCampaignsDashboard() {
             : "text-slate-700 hover:bg-slate-100"
         }
       `}
-      >
-        <span
-          className={`
+    >
+      <span
+        className={`
           flex h-8 w-8 items-center justify-center
           rounded-md
           ${danger ? "bg-red-100 text-red-500" : "bg-slate-100 text-slate-600"}
         `}
-        >
-          {icon}
-        </span>
-  
-        <span className="font-medium">{label}</span>
-      </button>
-    );
-  
-    const renderActionDropdown = (campaignId, row) => (
-      <div
-        className="
+      >
+        {icon}
+      </span>
+
+      <span className="font-medium">{label}</span>
+    </button>
+  );
+
+  const renderActionDropdown = (campaignId, row) => (
+    <div
+      className="
         fixed
         w-56
         rounded-xl
@@ -449,39 +455,39 @@ function AllCampaignsDashboard() {
         shadow-[0_12px_32px_rgba(15,23,42,0.15)]
         z-[9999999]
       "
-        style={{
-          left: dropdownPos.left,
-          top: dropdownPos.top,
-        }}
-      >
-        <div className="py-1">
-          {/* EDIT */}
-          <ActionItem
-            icon={<Edit3 size={16} />}
-            label="Edit campaign"
-            onClick={() => handleActionSelect("edit", campaignId, row)}
-          />
-  
-          {/* DUPLICATE */}
-          <ActionItem
-            icon={<Copy size={16} />}
-            label="Duplicate campaign"
-            onClick={() => handleActionSelect("duplicate", campaignId, row)}
-          />
-  
-          {/* DIVIDER */}
-          <div className="my-1 h-px bg-slate-100" />
-  
-          {/* DELETE */}
-          <ActionItem
-            danger
-            icon={<Trash2 size={16} />}
-            label="Delete campaign"
-            onClick={() => handleActionSelect("delete", campaignId, null)}
-          />
-        </div>
+      style={{
+        left: dropdownPos.left,
+        top: dropdownPos.top,
+      }}
+    >
+      <div className="py-1">
+        {/* EDIT */}
+        <ActionItem
+          icon={<Edit3 size={16} />}
+          label="Edit campaign"
+          onClick={() => handleActionSelect("edit", campaignId, row)}
+        />
+
+        {/* DUPLICATE */}
+        <ActionItem
+          icon={<Copy size={16} />}
+          label="Duplicate campaign"
+          onClick={() => handleActionSelect("duplicate", campaignId, row)}
+        />
+
+        {/* DIVIDER */}
+        <div className="my-1 h-px bg-slate-100" />
+
+        {/* DELETE */}
+        <ActionItem
+          danger
+          icon={<Trash2 size={16} />}
+          label="Delete campaign"
+          onClick={() => handleActionSelect("delete", campaignId, null)}
+        />
       </div>
-    );
+    </div>
+  );
 
   const TableColGroup = () => (
     <colgroup>

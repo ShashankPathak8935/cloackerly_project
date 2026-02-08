@@ -572,7 +572,7 @@ const WebAnalyticsPage = ({
         "get",
         getAllAnalyticsCamp,
         null,
-        null
+        null,
       );
       console.log(response);
 
@@ -591,7 +591,7 @@ const WebAnalyticsPage = ({
     if (!id) return;
 
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this campaign?"
+      "Are you sure you want to delete this campaign?",
     );
     if (!confirmDelete) return;
 
@@ -600,7 +600,7 @@ const WebAnalyticsPage = ({
         "delete",
         getAllAnalyticsCamp,
         id, // 👈 ID here
-        null
+        null,
       );
 
       showSuccessToast("Campaign deleted successfully");
@@ -609,7 +609,7 @@ const WebAnalyticsPage = ({
       fetchCampaigns();
     } catch (error) {
       showErrorToast(
-        error?.response?.data?.message || "Failed to delete campaign"
+        error?.response?.data?.message || "Failed to delete campaign",
       );
     }
   };
@@ -696,7 +696,7 @@ const WebAnalyticsPage = ({
       "post",
       javascriptIntegrationCheckApi,
       null,
-      data
+      data,
     );
     console.log(res);
 
@@ -711,7 +711,7 @@ const WebAnalyticsPage = ({
           "patch",
           getAllAnalyticsCamp,
           item?.id,
-          data
+          data,
         );
         console.log(integrate);
       } catch (error) {
@@ -836,7 +836,7 @@ const WebAnalyticsPage = ({
                 <div
                   className="
             absolute z-[9999]
-            top-full mt-2 left-1/2 -translate-x-1/2
+           bottom-full mb-2 left-1/2 -translate-x-1/2
             hidden group-hover:block
             bg-gray-900 text-white text-xs
             px-3 py-1.5 rounded-md

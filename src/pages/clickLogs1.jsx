@@ -126,7 +126,7 @@ const Clicklogs = () => {
         "get",
         `${clicksbycampaign}?startdate=${startDate}&enddate=${endDate}&campId=${campId}`,
         null,
-        null
+        null,
       );
 
       setTableData(res?.data?.data || []);
@@ -225,7 +225,7 @@ const Clicklogs = () => {
           <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
             <div className="overflow-y-auto" style={{ maxHeight: "420px" }}>
               <table className="min-w-full table-fixed">
-                <thead className="sticky top-0 z-20 bg-gray-50 border-b border-gray-200">
+                <thead className="sticky top-0 bg-gray-50 border-b border-gray-200">
                   <tr>
                     <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center w-16">
                       S No.
