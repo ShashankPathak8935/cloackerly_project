@@ -400,13 +400,13 @@ const handleCopy = (text) => {
 const generateZip = async () => {
   const zip = new JSZip();
   // ADD FILES TO ZIP
-  const folder = zip.folder("ClickStopper");
+  const folder = zip.folder("Clockerly");
 
   folder.file("index.php", wordpressPluginCode);
 
   const zipBlob = await zip.generateAsync({ type: "blob" });
 
-  saveAs(zipBlob, "ClickStopper.zip");
+  saveAs(zipBlob, "Clockerly.zip");
 };
 
 const generatePhpZip = async (phpCode) => {
