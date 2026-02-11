@@ -47,8 +47,36 @@ const Layout = () => (
 
 // ✅ Simple loading spinner (you can replace it with skeleton or spinner component)
 const Loader = () => (
-  <div className="flex items-center justify-center w-screen h-screen bg-gray-50">
-    <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-gray-700"></div>
+  <div className="relative flex h-screen w-screen items-center justify-center overflow-hidden bg-white">
+    <div className="pointer-events-none absolute -left-24 top-8 h-80 w-80 rounded-full bg-sky-200/80 blur-3xl" />
+    <div className="pointer-events-none absolute -right-20 bottom-6 h-80 w-80 rounded-full bg-blue-200/80 blur-3xl" />
+    <div className="pointer-events-none absolute inset-0 bg-white/45 backdrop-blur-xl" />
+
+    <div className="relative z-10 flex flex-col items-center justify-center gap-6 px-8 py-10">
+      <img
+        src="/logo-new.png"
+        alt="Clockerly logo"
+        className="h-52 w-52 object-contain drop-shadow-[0_12px_30px_rgba(2,6,23,0.2)] animate-[heartbeat_1.8s_ease-in-out_infinite] md:h-64 md:w-64"
+      />
+      <p className="text-[13px] font-semibold tracking-[0.28em] text-slate-600">
+        LOADING
+      </p>
+      <div className="flex items-center gap-2">
+        <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.2s]" />
+        <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-slate-500 [animation-delay:-0.1s]" />
+        <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-slate-600" />
+      </div>
+    </div>
+    <style>
+      {`@keyframes heartbeat {
+        0% { transform: scale(1); }
+        14% { transform: scale(1.08); }
+        28% { transform: scale(1); }
+        42% { transform: scale(1.1); }
+        70% { transform: scale(1); }
+        100% { transform: scale(1); }
+      }`}
+    </style>
   </div>
 );
 

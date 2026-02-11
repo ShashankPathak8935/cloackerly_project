@@ -255,9 +255,9 @@ const handleSubscribe = async (priceId) => {
               {/* META */}
               <p className="mt-2 text-xs text-gray-600">
                 {plan.maxCampaigns} Campaigns •{" "}
-                {plan.clicksPerCampaign === -1
+                {plan.clicksPerCampaign === -1 || plan.clicksPerCampaign === 10000
                   ? "Unlimited Clicks"
-                  : `${plan.clicksPerCampaign} Clicks`}
+                  : `10000 Clicks per day`}
               </p>
 
               {/* FEATURES */}
