@@ -206,6 +206,8 @@ const Header = ({ onMenuClick }) => {
               w-full h-full bg-blue-600
               text-white flex items-center justify-center
               font-semibold text-sm
+              cursor-pointer hover:bg-blue-700 transition
+
             "
                 >
                   {user?.name?.charAt(0).toUpperCase() || "?"}

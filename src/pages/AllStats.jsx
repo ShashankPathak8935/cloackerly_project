@@ -626,7 +626,7 @@ const Dashboard = () => {
                   <button
                     disabled={item.statusLoading}
                     onClick={() => handleStatusChange(item.uid, "Active")}
-                    className={`p-1.5 rounded-md transition hover:bg-gray-100
+                    className={`p-1.5 rounded-md transition cursor-pointer hover:bg-gray-300 
                     ${
                       item.status === "Active"
                         ? "text-blue-600"
@@ -647,7 +647,7 @@ const Dashboard = () => {
                   <button
                     disabled={item.statusLoading}
                     onClick={() => handleStatusChange(item.uid, "Allow")}
-                    className={`p-1.5 rounded-md transition hover:bg-gray-100
+                    className={`p-1.5 rounded-md transition cursor-pointer hover:bg-gray-300
                     ${
                       item.status === "Allow"
                         ? "text-yellow-500"
@@ -668,7 +668,7 @@ const Dashboard = () => {
                   <button
                     disabled={item.statusLoading}
                     onClick={() => handleStatusChange(item.uid, "Block")}
-                    className={`p-1.5 rounded-md transition hover:bg-gray-100
+                    className={`p-1.5 rounded-md transition cursor-pointer hover:bg-gray-300
                     ${
                       item.status === "Block" ? "text-red-500" : "text-gray-400"
                     }
@@ -754,7 +754,7 @@ const Dashboard = () => {
               >
                 <button
                   onClick={(e) => handleActionClick(e, item?.uid)}
-                  className={`w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 transition
+                  className={`w-8 h-8 flex items-center justify-center rounded-full text-gray-500 cursor-pointer hover:bg-blue-200 transition
                   ${isDropdownOpen ? "bg-gray-200 text-gray-800" : ""}
                 `}
                 >

@@ -213,7 +213,7 @@ const Clicklogs = () => {
 
             <button
               onClick={fetchData}
-              className="h-[40px] px-5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition"
+              className="h-[40px] px-5 rounded-lg bg-blue-600 text-white text-sm font-medium cursor-pointer hover:bg-blue-800 transition"
             >
               Search
             </button>
