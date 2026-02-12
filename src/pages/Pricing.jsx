@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { apiFunction, createApiFunction } from "../api/ApiFunction";
 import { cryptoPayment, getPlans } from "../api/Apis";
 import PayPalIntegration from "./paypalIntegration";
+import PayPalSubscription from "../components/paypalComponents/paypalSubscription";
 import { CreditCard, Wallet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -544,10 +545,9 @@ export default function Pricing() {
             {/* STEP 2 - CARD */}
             {modalStep === 2 && paymentMethod === "card" && (
               <>
-                <h2 className="text-center text-black">
-                  Redirecting to stripe payment gateway...
-                </h2>
-                <PayPalIntegration cart={payload} />
+                <PayPalSubscription cart={payload} />
+          
+                
                 <button
                   onClick={() => setModalStep(1)}
                   className="
