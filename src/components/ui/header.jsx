@@ -250,12 +250,12 @@ const Header = ({ onMenuClick }) => {
                     {
                       label: "Pricing",
                       icon: DollarSign,
-                      action: () => navigate("/"),
+                      action: () => navigate("/Dashboard/pricing"),
                     },
                     {
                       label: "Help",
                       icon: HelpCircle,
-                      action: () => navigate("/help"),
+                      action: () => navigate("/myProfile"),
                     },
                   ].map((item, i) => (
                     <button
