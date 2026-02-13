@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { apiFunction, createApiFunction } from "../api/ApiFunction";
 import { cryptoPayment, getPlans } from "../api/Apis";
 import PayPalIntegration from "./paypalIntegration";
+import PayPalSubscription from "../components/paypalComponents/paypalSubscription";
 import { CreditCard, Wallet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -62,29 +63,28 @@ export default function Pricing() {
     fetchPlans();
   }, []);
 
-
   /* ===================== PAYMENT HANDLERS ===================== */
-const handleSubscribe = async (priceId) => {
-  if (!priceId) return alert("Price ID is required for subscription");
-  try {
-    const response = await fetch("https://api.clockerly.io/api/v2/payment/stripe/checkout-subscription", {
-      method: "POST",
-      headers: { "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("token")}`
-      },
-      body: JSON.stringify({ planId: selectedPlan?.id, priceId: priceId }), // ₹500
-    });
-    const data = await response.json();
-    console.log("Subscription Response:", data); 
-    window.location.href = data.url; // Redirect to Stripe Checkout   
-  } catch (error) {
-    console.log("Error",error);  
-    
-  }
-}
-
-
-
+  const handleSubscribe = async (priceId) => {
+    if (!priceId) return alert("Price ID is required for subscription");
+    try {
+      const response = await fetch(
+        "https://api.clockerly.io/api/v2/payment/stripe/checkout-subscription",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ planId: selectedPlan?.id, priceId: priceId }), // ₹500
+        },
+      );
+      const data = await response.json();
+      console.log("Subscription Response:", data);
+      window.location.href = data.url; // Redirect to Stripe Checkout
+    } catch (error) {
+      console.log("Error", error);
+    }
+  };
 
   /* ===================== HELPERS ===================== */
 
@@ -416,7 +416,7 @@ const handleSubscribe = async (priceId) => {
                     className={`w-full py-3 text-base font-semibold rounded-xl transition
                    ${
                      paymentMethod
-                       ? "bg-blue-600 text-white hover:bg-blue-700"
+                       ? "bg-blue-600 text-white cursor-pointer hover:bg-blue-700"
                        : "bg-gray-200 text-gray-400 cursor-not-allowed"
                    }`}
                   >
@@ -426,7 +426,7 @@ const handleSubscribe = async (priceId) => {
                   {/* BACK */}
                   <button
                     onClick={resetPaymentState}
-                    className="w-full py-3 text-base font-medium rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 transition"
+                    className="w-full py-3 text-base font-medium rounded-xl border border-gray-300 text-gray-700 cursor-pointer hover:bg-gray-50 transition"
                   >
                     Back
                   </button>
@@ -525,7 +525,7 @@ const handleSubscribe = async (priceId) => {
                     className={`w-full px-6 py-3 text-base font-medium rounded-lg transition
         ${
           network
-            ? "bg-blue-600 text-white hover:bg-blue-700"
+            ? "bg-blue-600 text-white cursor-pointer hover:bg-blue-700"
             : "bg-gray-200 text-gray-400 cursor-not-allowed"
         }`}
                   >
@@ -534,7 +534,7 @@ const handleSubscribe = async (priceId) => {
 
                   <button
                     onClick={() => setModalStep(1)}
-                    className="w-full px-6 py-3 text-base font-medium rounded-lg border border-gray-300 text-gray-800 hover:bg-gray-50 transition"
+                    className="w-full px-6 py-3 text-base font-medium rounded-lg border border-gray-300 text-gray-800 cursor-pointer hover:bg-gray-50 transition"
                   >
                     Back
                   </button>
@@ -545,8 +545,9 @@ const handleSubscribe = async (priceId) => {
             {/* STEP 2 - CARD */}
             {modalStep === 2 && paymentMethod === "card" && (
               <>
-              <h2 className="text-center text-black">Redirecting to stripe payment gateway...</h2>
-                <PayPalIntegration cart={payload} />
+                <PayPalSubscription cart={payload} />
+          
+                
                 <button
                   onClick={() => setModalStep(1)}
                   className="
@@ -557,6 +558,7 @@ const handleSubscribe = async (priceId) => {
     bg-gradient-to-r from-blue-600 to-indigo-600
     text-white text-sm font-semibold
     shadow-md
+    cursor-pointer
     hover:from-blue-700 hover:to-indigo-700
     hover:shadow-lg
     active:scale-95
@@ -640,7 +642,7 @@ const handleSubscribe = async (priceId) => {
                   <button
                     onClick={() => setModalStep(2)}
                     disabled={loading}
-                    className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                    className="px-4 py-2 text-sm text-gray-600 cursor-pointer hover:text-gray-800"
                   >
                     Back
                   </button>
@@ -773,7 +775,7 @@ const handleSubscribe = async (priceId) => {
                 {/* BUTTON */}
                 <button
                   onClick={resetPaymentState}
-                  className="mt-6 w-full rounded-lg border border-gray-300 bg-white py-2.5 text-sm font-medium text-gray-800 hover:bg-gray-100 transition"
+                  className="mt-6 w-full rounded-lg border border-gray-300 bg-white py-2.5 text-sm font-medium text-gray-800 cursor-pointer hover:bg-gray-100 transition"
                 >
                   Close
                 </button>

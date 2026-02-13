@@ -168,7 +168,7 @@ const BlacklistedIPsPage = ({
         "get",
         `${blacklistIpApi}?userId=${userId}`,
         null,
-        null
+        null,
       );
 
       const rawData = res?.data || [];
@@ -194,7 +194,7 @@ const BlacklistedIPsPage = ({
   const deleteBlacklistedIp = async (id) => {
     try {
       const confirmDelete = window.confirm(
-        "Are you sure you want to delete this IP?"
+        "Are you sure you want to delete this IP?",
       );
 
       if (!confirmDelete) return;
@@ -251,7 +251,8 @@ const BlacklistedIPsPage = ({
             px-6 py-3 rounded-xl
             text-sm font-medium
             bg-blue-600 text-white
-            hover:bg-blue-700
+            cursor-pointer
+            hover:bg-blue-800
             shadow-[0_12px_30px_rgba(37,99,235,0.35)]
             transition
           "
@@ -268,7 +269,8 @@ const BlacklistedIPsPage = ({
             px-6 py-3 rounded-xl
             text-sm font-medium
             bg-white border border-gray-300
-            hover:bg-gray-100
+            cursor-pointer
+            hover:bg-gray-300
             shadow-sm transition
             ${isRefreshing && "opacity-60 cursor-not-allowed"}
           `}
