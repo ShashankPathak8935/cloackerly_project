@@ -254,8 +254,8 @@ export default function Pricing() {
 
               {/* META */}
               <p className="mt-2 text-xs text-gray-600">
-                {plan.maxCampaigns} Campaigns •{" "}
-                {plan.clicksPerCampaign === -1 || plan.clicksPerCampaign === 10000
+                {plan.maxCampaigns === -1 ? "Unlimited" :plan.maxCampaigns} Campaigns •{" "}
+                {plan.clicksPerCampaign === -1 
                   ? "Unlimited Clicks"
                   : `10000 Clicks per day`}
               </p>
