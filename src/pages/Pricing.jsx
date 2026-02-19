@@ -63,29 +63,28 @@ export default function Pricing() {
     fetchPlans();
   }, []);
 
-
   /* ===================== PAYMENT HANDLERS ===================== */
-const handleSubscribe = async (priceId) => {
-  if (!priceId) return alert("Price ID is required for subscription");
-  try {
-    const response = await fetch("https://api.clockerly.io/api/v2/payment/stripe/checkout-subscription", {
-      method: "POST",
-      headers: { "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("token")}`
-      },
-      body: JSON.stringify({ planId: selectedPlan?.id, priceId: priceId }), // ₹500
-    });
-    const data = await response.json();
-    console.log("Subscription Response:", data); 
-    window.location.href = data.url; // Redirect to Stripe Checkout   
-  } catch (error) {
-    console.log("Error",error);  
-    
-  }
-}
-
-
-
+  const handleSubscribe = async (priceId) => {
+    if (!priceId) return alert("Price ID is required for subscription");
+    try {
+      const response = await fetch(
+        "https://api.clockerly.io/api/v2/payment/stripe/checkout-subscription",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ planId: selectedPlan?.id, priceId: priceId }), // ₹500
+        },
+      );
+      const data = await response.json();
+      console.log("Subscription Response:", data);
+      window.location.href = data.url; // Redirect to Stripe Checkout
+    } catch (error) {
+      console.log("Error", error);
+    }
+  };
 
   /* ===================== HELPERS ===================== */
 
@@ -255,7 +254,7 @@ const handleSubscribe = async (priceId) => {
 
               {/* META */}
               <p className="mt-2 text-xs text-gray-600">
-                {plan.maxCampaigns} Campaigns •{" "}
+                {plan.maxCampaigns=== -1 ? "Unlimited" : plan.maxCampaigns} Campaigns •{" "}
                 {plan.clicksPerCampaign === -1
                   ? "Unlimited Clicks"
                   : `${plan.clicksPerCampaign} Clicks`}
@@ -390,6 +389,7 @@ const handleSubscribe = async (priceId) => {
                           calculateStartEndDates(billing);
                         setPayload({
                           plan_id: selectedPlan.id,
+                          price_id: selectedPlan.stripePriceId,
                           plan_name: selectedPlan.name,
                           billing_cycle: billing,
 
@@ -547,8 +547,7 @@ const handleSubscribe = async (priceId) => {
             {modalStep === 2 && paymentMethod === "card" && (
               <>
                 <PayPalSubscription cart={payload} />
-          
-                
+
                 <button
                   onClick={() => setModalStep(1)}
                   className="

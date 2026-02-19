@@ -210,7 +210,7 @@ function PayPalSubscription(cart) {
           createSubscription={(data, actions) => {
             return actions.subscription.create({
               //   plan_id: "P-3LG782042V538174NNGEIPZY"
-              plan_id: "P-53W58811MN842045LNF6IDAY",
+              plan_id: cart?.cart?.price_id, // pass the plan ID from your backend or state
             });
           }}
           onApprove={async (data) => {
