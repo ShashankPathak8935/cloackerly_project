@@ -257,7 +257,7 @@ export default function Pricing() {
                 {plan.maxCampaigns=== -1 ? "Unlimited" : plan.maxCampaigns} Campaigns •{" "}
                 {plan.clicksPerCampaign === -1
                   ? "Unlimited Clicks"
-                  : `${plan.clicksPerCampaign} Clicks`}
+                  : `10000 Clicks per day`}
               </p>
 
               {/* FEATURES */}
@@ -417,7 +417,7 @@ export default function Pricing() {
                     className={`w-full py-3 text-base font-semibold rounded-xl transition
                    ${
                      paymentMethod
-                       ? "bg-blue-600 text-white hover:bg-blue-700"
+                       ? "bg-blue-600 text-white cursor-pointer hover:bg-blue-700"
                        : "bg-gray-200 text-gray-400 cursor-not-allowed"
                    }`}
                   >
@@ -427,7 +427,7 @@ export default function Pricing() {
                   {/* BACK */}
                   <button
                     onClick={resetPaymentState}
-                    className="w-full py-3 text-base font-medium rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 transition"
+                    className="w-full py-3 text-base font-medium rounded-xl border border-gray-300 text-gray-700 cursor-pointer hover:bg-gray-50 transition"
                   >
                     Back
                   </button>
@@ -526,7 +526,7 @@ export default function Pricing() {
                     className={`w-full px-6 py-3 text-base font-medium rounded-lg transition
         ${
           network
-            ? "bg-blue-600 text-white hover:bg-blue-700"
+            ? "bg-blue-600 text-white cursor-pointer hover:bg-blue-700"
             : "bg-gray-200 text-gray-400 cursor-not-allowed"
         }`}
                   >
@@ -535,7 +535,7 @@ export default function Pricing() {
 
                   <button
                     onClick={() => setModalStep(1)}
-                    className="w-full px-6 py-3 text-base font-medium rounded-lg border border-gray-300 text-gray-800 hover:bg-gray-50 transition"
+                    className="w-full px-6 py-3 text-base font-medium rounded-lg border border-gray-300 text-gray-800 cursor-pointer hover:bg-gray-50 transition"
                   >
                     Back
                   </button>
@@ -558,6 +558,7 @@ export default function Pricing() {
     bg-gradient-to-r from-blue-600 to-indigo-600
     text-white text-sm font-semibold
     shadow-md
+    cursor-pointer
     hover:from-blue-700 hover:to-indigo-700
     hover:shadow-lg
     active:scale-95
@@ -641,7 +642,7 @@ export default function Pricing() {
                   <button
                     onClick={() => setModalStep(2)}
                     disabled={loading}
-                    className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                    className="px-4 py-2 text-sm text-gray-600 cursor-pointer hover:text-gray-800"
                   >
                     Back
                   </button>
@@ -774,7 +775,7 @@ export default function Pricing() {
                 {/* BUTTON */}
                 <button
                   onClick={resetPaymentState}
-                  className="mt-6 w-full rounded-lg border border-gray-300 bg-white py-2.5 text-sm font-medium text-gray-800 hover:bg-gray-100 transition"
+                  className="mt-6 w-full rounded-lg border border-gray-300 bg-white py-2.5 text-sm font-medium text-gray-800 cursor-pointer hover:bg-gray-100 transition"
                 >
                   Close
                 </button>

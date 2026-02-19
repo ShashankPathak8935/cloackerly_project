@@ -250,6 +250,20 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      <a
+        href="https://t.me/Clockerlysupport"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Chat on Telegram"
+        className="fixed bottom-[22px] right-[22px] z-[9999] flex items-center gap-[10px] rounded-[50px] bg-[#229ED9] px-[18px] py-3 text-sm font-semibold text-white no-underline shadow-[0_10px_25px_rgba(0,0,0,0.25)] transition-all duration-200 hover:scale-[1.08] hover:shadow-[0_18px_35px_rgba(0,0,0,0.35)]"
+      >
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg"
+          alt="Telegram"
+          className="h-[26px] w-[26px] block"
+        />
+         Support
+      </a>
     </>
   );
 };

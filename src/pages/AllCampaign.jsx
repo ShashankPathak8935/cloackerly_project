@@ -543,23 +543,23 @@ function AllCampaignsDashboard() {
               <td className="px-4 py-3 text-sm text-gray-500">{index + 1}</td>
 
               {/* Campaign Name */}
-              <td className="px-4 py-3 text-sm font-medium text-gray-900">
+              <td className="px-4 py-3 text-sm font-medium text-gray-900 text-left">
                 {item.campaign_info?.campaignName}
               </td>
 
               {/* Source */}
-              <td className="px-4 py-3 text-sm text-gray-600">
+              <td className="px-4 py-3 text-sm text-gray-600 text-left">
                 {item.campaign_info?.trafficSource}
               </td>
 
               {/* STATUS */}
               <td className="px-4 py-3">
-                <div className="flex items-center gap-2">
+                <div className="flex ">
                   {/* Active */}
                   <button
                     disabled={item.statusLoading}
                     onClick={() => handleStatusChange(item.uid, "Active")}
-                    className={`p-1.5 rounded-md transition hover:bg-gray-100
+                    className={`p-1.5 rounded-md transition cursor-pointer hover:bg-gray-300 
                     ${
                       item.status === "Active"
                         ? "text-blue-600"
@@ -580,7 +580,7 @@ function AllCampaignsDashboard() {
                   <button
                     disabled={item.statusLoading}
                     onClick={() => handleStatusChange(item.uid, "Allow")}
-                    className={`p-1.5 rounded-md transition hover:bg-gray-100
+                    className={`p-1.5 rounded-md transition cursor-pointer hover:bg-gray-300
                     ${
                       item.status === "Allow"
                         ? "text-yellow-500"
@@ -601,7 +601,7 @@ function AllCampaignsDashboard() {
                   <button
                     disabled={item.statusLoading}
                     onClick={() => handleStatusChange(item.uid, "Block")}
-                    className={`p-1.5 rounded-md transition hover:bg-gray-100
+                    className={`p-1.5 rounded-md transition cursor-pointer hover:bg-gray-300
                     ${
                       item.status === "Block" ? "text-red-500" : "text-gray-400"
                     }
@@ -622,7 +622,7 @@ function AllCampaignsDashboard() {
               </td>
 
               {/* Integration */}
-              <td className="px-4 py-3 text-center">
+              <td className=" text-center">
                 {item.integration ? (
                   <div className="relative group flex justify-center">
                     <svg
@@ -661,22 +661,22 @@ function AllCampaignsDashboard() {
               </td>
 
               {/* Clicks */}
-              <td className="px-4 py-3 text-sm text-gray-700 text-center">
+              <td className="px-4 py-3 text-sm text-gray-700 text-left">
                 {item?.campclicks?.total_t_clicks || 0}
               </td>
 
               {/* Safe */}
-              <td className="px-4 py-3 text-sm text-gray-700 text-right">
+              <td className="px-4 py-3 text-sm text-gray-700 text-left">
                 {item?.campclicks?.total_s_clicks || 0}
               </td>
 
               {/* Money */}
-              <td className="px-4 py-3 text-sm text-gray-700 text-right">
+              <td className="px-4 py-3 text-sm text-gray-700 text-left">
                 {item?.campclicks?.total_m_clicks || 0}
               </td>
 
               {/* Created */}
-              <td className="px-4 py-3 text-sm text-gray-500">
+              <td className="px-4 py-3 text-sm text-gray-500 text-left">
                 {new Date(item.date_time).toLocaleString()}
               </td>
 
@@ -687,7 +687,7 @@ function AllCampaignsDashboard() {
               >
                 <button
                   onClick={(e) => handleActionClick(e, item?.uid)}
-                  className={`w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 transition
+                  className={`w-8 h-8 flex items-center justify-center rounded-full text-gray-500 cursor-pointer hover:bg-blue-200 transition
                   ${isDropdownOpen ? "bg-gray-200 text-gray-800" : ""}
                 `}
                 >
@@ -702,7 +702,6 @@ function AllCampaignsDashboard() {
       </tbody>
     );
   };
-
   return (
     <div className="min-h-screen bg-white text-gray-800 p-6">
       {/* Header Section (Unchanged) */}
@@ -729,6 +728,7 @@ function AllCampaignsDashboard() {
         rounded-lg
         text-sm font-medium
         bg-blue-600 text-white
+        cursor-pointer
         hover:bg-blue-700
         shadow-[0_8px_24px_rgba(37,99,235,0.35)]
         transition-all
@@ -761,6 +761,7 @@ function AllCampaignsDashboard() {
         text-sm font-medium
         border border-gray-300
         bg-white text-gray-700
+        cursor-pointer
         hover:bg-gray-50
         shadow-sm
         transition
@@ -910,6 +911,7 @@ function AllCampaignsDashboard() {
         rounded-lg
         text-sm font-medium
         bg-blue-600 text-white
+        cursor-pointer
         hover:bg-blue-700
         shadow-[0_10px_30px_rgba(37,99,235,0.35)]
         transition
