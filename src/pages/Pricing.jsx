@@ -254,8 +254,8 @@ export default function Pricing() {
 
               {/* META */}
               <p className="mt-2 text-xs text-gray-600">
-                {plan.maxCampaigns === -1 ? "Unlimited" :plan.maxCampaigns} Campaigns •{" "}
-                {plan.clicksPerCampaign === -1 
+                {plan.maxCampaigns=== -1 ? "Unlimited" : plan.maxCampaigns} Campaigns •{" "}
+                {plan.clicksPerCampaign === -1
                   ? "Unlimited Clicks"
                   : `10000 Clicks per day`}
               </p>
@@ -389,6 +389,7 @@ export default function Pricing() {
                           calculateStartEndDates(billing);
                         setPayload({
                           plan_id: selectedPlan.id,
+                          price_id: selectedPlan.stripePriceId,
                           plan_name: selectedPlan.name,
                           billing_cycle: billing,
 
@@ -546,8 +547,7 @@ export default function Pricing() {
             {modalStep === 2 && paymentMethod === "card" && (
               <>
                 <PayPalSubscription cart={payload} />
-          
-                
+
                 <button
                   onClick={() => setModalStep(1)}
                   className="
