@@ -254,7 +254,8 @@ export default function Pricing() {
 
               {/* META */}
               <p className="mt-2 text-xs text-gray-600">
-                {plan.maxCampaigns=== -1 ? "Unlimited" : plan.maxCampaigns} Campaigns •{" "}
+                {plan.maxCampaigns === -1 ? "Unlimited" : plan.maxCampaigns}{" "}
+                Campaigns •{" "}
                 {plan.clicksPerCampaign === -1
                   ? "Unlimited Clicks"
                   : `10000 Clicks per day`}
@@ -324,7 +325,7 @@ export default function Pricing() {
 
                 {/* PAYMENT METHODS */}
                 <div className="mt-6 space-y-4">
-                  {["Digital Payments", "card"].map((m) => (
+                  {["Digital Payments"].map((m) => (
                     <label
                       key={m}
                       className={`flex items-center justify-between rounded-xl border px-4 py-4 cursor-pointer transition-all
@@ -544,7 +545,7 @@ export default function Pricing() {
             )}
 
             {/* STEP 2 - CARD */}
-            {modalStep === 2 && paymentMethod === "card" && (
+            {/* {modalStep === 2 && paymentMethod === "card" && (
               <>
                 <PayPalSubscription cart={payload} />
 
@@ -568,12 +569,12 @@ export default function Pricing() {
                   ← Back
                 </button>
               </>
-            )}
+            )} */}
 
-            {/* STEP 3 */}
+            
             {modalStep === 3 && (
               <>
-                {/* TITLE */}
+              
                 <h2 className="text-lg font-semibold text-gray-900">
                   Scan this Qr code to Make UPI Payment
                 </h2>
@@ -588,7 +589,7 @@ export default function Pricing() {
                   network
                 </p>
 
-                {/* QR */}
+              
                 <div className="flex justify-center mt-5">
                   <img
                     src={PAYMENT_DETAILS[network].qr}
@@ -597,7 +598,7 @@ export default function Pricing() {
                   />
                 </div>
 
-                {/* AMOUNT */}
+                
                 <div className="mt-6">
                   <label className="text-xs font-medium text-gray-600">
                     Amount to pay
@@ -609,7 +610,7 @@ export default function Pricing() {
                   />
                 </div>
 
-                {/* ADDRESS */}
+                
                 <div className="mt-4">
                   <label className="text-xs font-medium text-gray-600">
                     Payment address
@@ -621,7 +622,7 @@ export default function Pricing() {
                   />
                 </div>
 
-                {/* TX HASH */}
+              
                 <div className="mt-4">
                   <label className="text-xs font-medium text-gray-600">
                     Transaction hash
@@ -637,7 +638,7 @@ export default function Pricing() {
                   />
                 </div>
 
-                {/* ACTIONS */}
+            
                 <div className="flex justify-end gap-3 mt-2">
                   <button
                     onClick={() => setModalStep(2)}
@@ -702,7 +703,7 @@ export default function Pricing() {
               </>
             )}
 
-            {/* STEP 4 - THANK YOU */}
+            
             {modalStep === 4 && (
               <div className="px-4 text-center bg-white">
                 {/* ICON */}
