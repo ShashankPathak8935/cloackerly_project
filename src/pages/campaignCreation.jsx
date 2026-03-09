@@ -7,54 +7,8 @@ import { createCampaignApi } from "../api/Apis";
 import { BROWSER_LIST, COUNTRY_LIST, DEVICE_LIST } from "../data/dataList";
 import { showErrorToast, showSuccessToast } from "../components/toast/toast";
 
-/* ===========================
-   Icon components (inline SVG)
-   (kept from original parts)
-   =========================== */
 
-// const GitMerge = ({ className }) => (
-//   <svg
-//     className={className}
-//     xmlns="http://www.w3.org/2000/svg"
-//     viewBox="0 0 24 24"
-//     fill="none"
-//     stroke="currentColor"
-//     strokeWidth="2"
-//   >
-//     <circle cx="18" cy="18" r="3" />
-//     <circle cx="6" cy="6" r="3" />
-//     <path d="M6 21V9a9 9 0 0 1 9 9" />
-//   </svg>
-// );
-// const Filter = ({ className }) => (
-//   <svg
-//     className={className}
-//     xmlns="http://www.w3.org/2000/svg"
-//     viewBox="0 0 24 24"
-//     fill="none"
-//     stroke="currentColor"
-//     strokeWidth="2"
-//   >
-//     <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-//   </svg>
-// );
-// const Bot = ({ className }) => (
-//   <svg
-//     className={className}
-//     xmlns="http://www.w3.org/2000/svg"
-//     viewBox="0 0 24 24"
-//     fill="none"
-//     stroke="currentColor"
-//     strokeWidth="2"
-//   >
-//     <path d="M12 8V4H8" />
-//     <rect width="16" height="12" x="4" y="8" rx="2" />
-//     <path d="M2 14h2" />
-//     <path d="M20 14h2" />
-//     <path d="M15 13v2" />
-//     <path d="M9 13v2" />
-//   </svg>
-// );
+
 const Info = ({ className }) => (
   <svg
     className={className}
@@ -376,18 +330,22 @@ const StatusButton = ({ label, Icon, isActive, onClick }) => (
   <button
     type="button"
     onClick={onClick}
-    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-all duration-200 h-20 w-full cursor-pointer ${
+    className={`flex flex-col items-center justify-center 
+    p-3 rounded-lg border h-20 w-full cursor-pointer
+    transition-all duration-200
+    ${
       isActive
-        ? "border-blue-500 bg-blue-500/10"
-        : "border-slate-700 bg-slate-800 hover:bg-slate-700/50"
+        ? "border-blue-500 bg-blue-50 shadow-sm"
+        : "border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50"
     }`}
   >
     <Icon
-      className={`w-5 h-5 ${isActive ? "text-blue-400" : "text-slate-400"}`}
+      className={`w-5 h-5 ${isActive ? "text-blue-600" : "text-gray-500"}`}
     />
+
     <span
       className={`text-sm font-medium mt-2 ${
-        isActive ? "text-white" : "text-slate-300"
+        isActive ? "text-blue-700" : "text-gray-700"
       }`}
     >
       {label}

@@ -622,9 +622,9 @@ function AllCampaignsDashboard() {
               </td>
 
               {/* Integration */}
-              <td className=" text-center">
+              <td className="-ml-2px text-center">
                 {item.integration ? (
-                  <div className="relative group flex justify-center">
+                  <div className="relative group flex justify-start pl-7">
                     <svg
                       className="h-6 w-6 text-green-500"
                       fill="none"
@@ -639,24 +639,29 @@ function AllCampaignsDashboard() {
                       />
                     </svg>
 
-                    <div className="absolute bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs px-3 py-1 rounded-lg shadow-lg whitespace-nowrap z-50">
+                    <div
+                      className={`absolute hidden group-hover:block bg-gray-900 text-white text-xs px-3 py-1 rounded-lg shadow-lg whitespace-nowrap z-50
+                   ${index === 0 ? "top-full mt-2" : "bottom-full mb-2"}`}
+                    >
                       {item.integrationUrl || "No URL Found"}
                     </div>
                   </div>
                 ) : (
-                  <svg
-                    className="h-5 w-5 text-red-500 mx-auto"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
+                  <div className="relative group flex justify-start pl-7">
+                    <svg
+                      className="h-5 w-5 text-red-500"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </div>
                 )}
               </td>
 
@@ -677,7 +682,14 @@ function AllCampaignsDashboard() {
 
               {/* Created */}
               <td className="px-4 py-3 text-sm text-gray-500 text-left">
-                {new Date(item.date_time).toLocaleString()}
+                {new Date(item.date_time).toLocaleDateString()}{" "}
+                {new Date(item.date_time)
+                  .toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })
+                  .toUpperCase()}
               </td>
 
               {/* ACTION */}
@@ -946,7 +958,9 @@ function AllCampaignsDashboard() {
                   ].map((head) => (
                     <th
                       key={head}
-                      className="px-4 py-3 text-left text-[11px] font-semibold tracking-wider text-gray-600 uppercase"
+                      className={`px-4 py-3 text-left text-[11px] font-semibold tracking-wider text-gray-600 uppercase ${
+                        head === "Created on" ? "pl-6" : ""
+                      }`}
                     >
                       {head}
                     </th>

@@ -7,7 +7,7 @@ import html2canvas from "html2canvas";
 import { createRoot } from "react-dom/client";
 import { Download } from "lucide-react";
 
-const billingApi = "/billing"; // 👈 apna actual API path yahan daalna
+const billingApi = "/billing";
 
 const BillingPage = () => {
   const [billingList, setBillingList] = useState([]);
@@ -329,7 +329,7 @@ const BillingPage = () => {
   return (
     <div
       style={{ fontFamily: "Inter, Outfit, system-ui, sans-serif" }}
-      className="min-h-screen bg-gray-50 text-gray-900 px-10 py-8"
+      className="min-h-screen bg-gray-50 text-gray-900 px-4 py-8"
     >
       <div className="max-w-6xl mx-auto">
         {/* ===== HEADER ===== */}
@@ -346,9 +346,11 @@ const BillingPage = () => {
         <div className="bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.08)] border border-gray-200 overflow-hidden">
           {/* TABLE HEAD */}
           <div
-            className="grid grid-cols-[2fr_1fr_1fr_2fr_1fr_1fr_auto]
-                      px-8 py-4 text-xs font-medium text-gray-500 uppercase tracking-wide
-                      bg-gray-50 border-b border-gray-200"
+            className="hidden sm:grid 
+        sm:grid-cols-[180px_100px_100px_200px_110px_140px_80px] 
+        lg:grid-cols-[200px_120px_120px_220px_120px_150px_auto]
+        py-4 text-xs font-medium text-gray-500 uppercase tracking-wide
+        bg-gray-50 border-b border-gray-200 px-4"
           >
             <div>Plan</div>
             <div>Method</div>
@@ -356,19 +358,19 @@ const BillingPage = () => {
             <div>Payment ID</div>
             <div>Status</div>
             <div>Period</div>
-            <div className="text-right">Invoice</div>
+            <div>Invoice</div>
           </div>
 
           {/* TABLE BODY */}
           <div className="max-h-[420px] overflow-y-auto">
             {loading && (
-              <div className="px-8 py-10 text-center text-gray-500">
+              <div className="py-10 text-center text-gray-500">
                 Loading billing history…
               </div>
             )}
 
             {!loading && billingList.length === 0 && (
-              <div className="px-8 py-10 text-center text-gray-500">
+              <div className="py-10 text-center text-gray-500">
                 No billing records available
               </div>
             )}
@@ -377,10 +379,13 @@ const BillingPage = () => {
               billingList.map((item, index) => (
                 <div
                   key={item.id || index}
-                  className="grid grid-cols-[2fr_1fr_1fr_2fr_1fr_1fr_auto]
-                          px-8 py-5 text-sm
-                          border-b border-gray-100
-                          hover:bg-gray-50 transition"
+                  className="border-b border-gray-100 hover:bg-gray-50 transition px-4 py-4
+              
+              grid grid-cols-2 gap-y-3 text-sm
+              
+              sm:grid-cols-[180px_100px_100px_200px_110px_140px_80px]
+              lg:grid-cols-[200px_120px_120px_220px_120px_150px_auto]
+              sm:gap-0 sm:py-3"
                 >
                   {/* Plan */}
                   <div>
@@ -408,15 +413,11 @@ const BillingPage = () => {
 
                     {item.payment_id && (
                       <div
-                        className="
-        absolute z-[9999]
-        top-full left-1/2 -translate-x-1/2
-        hidden group-hover:block
-        bg-gray-900 text-white text-xs
-        px-3 py-1.5 rounded-md shadow-xl
-        whitespace-nowrap
-        pointer-events-none
-      "
+                        className="absolute z-[9999] top-full left-1/2 -translate-x-1/2
+                    hidden group-hover:block
+                    bg-gray-900 text-white text-xs
+                    px-3 py-1.5 rounded-md shadow-xl
+                    whitespace-nowrap pointer-events-none"
                       >
                         {item.payment_id}
                       </div>
@@ -459,7 +460,7 @@ const BillingPage = () => {
                   <div className="flex justify-center">
                     <button
                       onClick={() => handleDownloadInvoice(item)}
-                      className="p-2 rounded-lg cursor-pointer bg-gray-800 hover:bg-blue-600 text-gray-400 hover:text-white transition-all"
+                      className="p-2 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition"
                       title="Download Invoice"
                     >
                       <Download size={18} />

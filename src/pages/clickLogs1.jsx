@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { DEVICE_LIST } from "../data/dataList";
 import { showErrorToast } from "../components/toast/toast";
+import { Globe, AppWindow  } from "lucide-react";
 
 const dropdownStyle = {
   backgroundImage:
@@ -221,46 +222,52 @@ const Clicklogs = () => {
         </div>
 
         {/* Table */}
-        <div className="p-6">
+        <div className="p-6 sm:p-6">
           <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-            <div className="overflow-y-auto" style={{ maxHeight: "420px" }}>
-              <table className="min-w-full table-fixed">
+            <div
+              className="overflow-x-auto overflow-y-auto"
+              style={{ maxHeight: "420px" }}
+            >
+              <table className="min-w-[1200px] w-full table-auto">
                 <thead className="sticky top-0 bg-gray-50 border-b border-gray-200">
                   <tr>
-                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center w-16">
+                    <th className="px-3 sm:px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center whitespace-nowrap">
                       S No.
                     </th>
-                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center w-40">
-                      Date & Time
+                    <th className="px-3 sm:px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center">
+                      Date
                     </th>
-                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center">
+                    <th className="px-3 sm:px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center">
+                      Time
+                    </th>
+                    <th className="px-3 sm:px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center">
                       Result
                     </th>
-                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center w-40">
+                    <th className="px-3 sm:px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center">
                       Log
                     </th>
-                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center w-32">
+                    <th className="px-3 sm:px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center">
                       City
                     </th>
-                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center">
+                    <th className="px-3 sm:px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center">
                       IP
                     </th>
-                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center">
+                    <th className="px-3 sm:px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center whitespace-nowrap">
                       IP Score
                     </th>
-                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center">
+                    <th className="px-3 sm:px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center">
                       Proxy
                     </th>
-                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center">
+                    <th className="px-3 sm:px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center">
                       ISP
                     </th>
-                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center">
+                    <th className="px-3 sm:px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center">
                       ASN
                     </th>
-                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-left min-w-48">
+                    <th className="px-3 sm:px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-center">
                       Referrer
                     </th>
-                    <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-left min-w-48">
+                    <th className="px-3 sm:px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-start">
                       User Agent
                     </th>
                   </tr>
@@ -291,59 +298,161 @@ const Clicklogs = () => {
                         key={item.tid}
                         className="hover:bg-gray-50 transition"
                       >
-                        <td className="px-6 py-4 text-sm text-gray-700 text-center">
+                        <td className="px-3 sm:px-6 py-4 text-xs sm:text-sm text-gray-700 text-center whitespace-nowrap">
                           {index + 1}
                         </td>
 
-                        <td className="px-6 py-4 text-sm text-gray-700 min-w-40">
+                        <td className="px-3 sm:px-6 py-4 text-xs sm:text-sm text-gray-700 text-center whitespace-nowrap">
                           {item.created_at
-                            ? new Date(item.created_at).toLocaleString()
+                            ? new Date(item.created_at).toLocaleDateString()
+                            : "Unknown"}
+                        </td>
+                        <td className="px-3 sm:px-6 py-4 text-xs sm:text-sm text-gray-700 text-center whitespace-nowrap">
+                          {item.created_at
+                            ? new Date(item.created_at).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                              })
                             : "Unknown"}
                         </td>
 
-                        <td className="px-6 py-4 text-sm text-center">
-                          <span className="inline-flex px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700">
-                            {item.status ? "Money Page" : "Save Page"}
+                        <td className="px-3 sm:px-6 py-4 text-xs sm:text-sm text-gray-700 text-center whitespace-nowrap">
+                          <span className="inline-flex px-2 py-1 rounded-md text-xs font-medium text-gray-700">
+                            {item.status ? "Money Page" : "Safe Page"}
                           </span>
                         </td>
 
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-4 min-w-35">
                           <div className="flex items-center gap-2">
-                            {/* existing icon logic untouched */}
+                            {item?.isocode ? (
+                              <img
+                                title={item?.country}
+                                data-tooltip-id={`tooltip-${item?.isocode?.toLowerCase()}`}
+                                data-tooltip-content={item?.country}
+                                src={`https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/${
+                                  item?.isocode?.toLowerCase() || "in"
+                                }.svg`}
+                                style={{
+                                  width: "18px",
+                                  height: "18px",
+                                  borderRadius: "2px",
+                                  objectFit: "cover",
+                                }}
+                              />
+                            ) : (
+                              <div
+                          title="Unknown Location"
+                          className="flex items-center justify-center w-[18px] h-[18px] rounded-sm bg-gray-100"
+                           >
+                         <Globe className="w-3.5 h-3.5 text-gray-500" />
+                           </div>
+                            )}
+
+                            {/* BROWSER ICON */}
+                            {item?.browser ? (
+                              <img
+                                className="size-4"
+                                alt={item?.browser}
+                                data-tooltip-id={`tooltip-${item.browser}`}
+                                data-tooltip-content={item?.browser}
+                                src={`/icons/browsers/${item?.browser}.png`}
+                              />
+                            ) : (
+                              <img
+                                className="size-4"
+                                alt={item?.os}
+                                data-tooltip-id={`tooltip-${item.os}`}
+                                data-tooltip-content={item.os}
+                                src={`/icons/fallback-que.png`}
+                              />
+                            )}
+
+                            {/* OS ICON */}
+                            {item?.os ? (
+                              <img
+                                className="size-4"
+                                alt={item?.os}
+                                data-tooltip-id={`tooltip-${item.os}`}
+                                data-tooltip-content={item.os}
+                                src={`/icons/os/${item.os}.png`}
+                              />
+                            ) : (
+                              <img
+                                className="size-4"
+                                alt={item?.os}
+                                data-tooltip-id={`tooltip-${item.os}`}
+                                data-tooltip-content={item.os}
+                                src={`/icons/fallback-que.png`}
+                              />
+                            )}
+
+                            {/* DEVICE ICON */}
+                            {item?.device ? (
+                              <div
+                                className="
+        w-6 h-6 flex items-center justify-center
+        text-gray-700 dark:text-gray-300
+      "
+                                data-tooltip-id={`tooltip-${item.device}`}
+                                data-tooltip-content={item.device}
+                              >
+                                {getDeviceIcon(item.device)}
+                              </div>
+                            ) : (
+                              <img
+                                className="w-6 h-6"
+                                alt={item?.device || "Unknown Device"}
+                                data-tooltip-id={`tooltip-${item.device}`}
+                                data-tooltip-content={
+                                  item.device || "Unknown Device"
+                                }
+                                src={`/icons/fallback-que.jpg`}
+                              />
+                            )}
                           </div>
                         </td>
 
-                        <td className="px-6 py-4 text-sm text-gray-700">
+                        <td className="px-3 sm:px-6 py-4 text-xs sm:text-sm text-gray-700 text-center whitespace-nowrap">
                           {item.city || "N/A"}
                         </td>
 
-                        <td className="px-6 py-4 text-sm text-gray-700">
+                        <td className="px-3 sm:px-6 py-4 text-xs sm:text-sm text-gray-700 text-center whitespace-nowrap">
                           {item.ip || "Unknown"}
                         </td>
 
-                        <td className="px-6 py-4 text-sm text-center text-gray-700">
+                        <td className="px-3 sm:px-6 py-4 text-xs sm:text-sm text-gray-700 text-center whitespace-nowrap">
                           {item.risk ?? "N/A"}
                         </td>
 
-                        <td className="px-6 py-4 text-sm text-gray-700">
+                        <td className="px-3 sm:px-6 py-4 text-xs sm:text-sm text-gray-700 text-center whitespace-nowrap">
                           {item.proxy || "N/A"}
                         </td>
 
-                        <td className="px-6 py-4 text-sm text-gray-700">
+                        <td className="px-3 sm:px-6 py-4 text-xs sm:text-sm text-gray-700 text-center whitespace-nowrap">
                           {item.isp || "Unknown"}
                         </td>
 
-                        <td className="px-6 py-4 text-sm text-gray-700">
+                        <td className="px-3 sm:px-6 py-4 text-xs sm:text-sm text-gray-700 text-center whitespace-nowrap">
                           {item.asn || "Unknown"}
                         </td>
 
-                        <td className="px-6 py-4 text-sm text-gray-700 min-w-48">
+                        <td className="px-3 sm:px-6 py-4 text-xs sm:text-sm text-gray-700 text-center whitespace-nowrap">
                           {item.referrer || "No Referrer"}
                         </td>
 
-                        <td className="px-6 py-4 text-sm text-gray-700 min-w-48">
-                          {item.user_agent || "No User Agent"}
-                        </td>
+                        <td className="px-3 sm:px-6 py-4 text-xs sm:text-sm text-gray-700 text-left max-w-[250px] overflow-visible">
+                   <div className="relative group cursor-pointer">
+                  <span className="block truncate px-2 py-1 rounded-md hover:bg-blue-50 hover:text-blue-700 transition-all duration-200">
+                  {item.user_agent || "No User Agent"}
+                 </span>
+                  <div className="absolute right-full top-1/2 -translate-y-1/2 mr-3 hidden 
+                   group-hover:block z-50 w-[420px] rounded-xl bg-gray-900 text-gray-100 
+                  text-xs p-4 shadow-2xl border border-gray-700 break-words">
+                  {item.user_agent || "No User Agent"}
+                </div>
+               </div>
+               </td>
                       </tr>
                     ))
                   )}
@@ -352,7 +461,7 @@ const Clicklogs = () => {
             </div>
 
             {/* Pagination */}
-            <div className="flex items-center justify-center gap-2 py-4 border-t border-gray-200 bg-gray-50">
+            <div className="flex flex-wrap items-center justify-center gap-2 py-4 border-t border-gray-200 bg-gray-50">
               <button className="h-8 w-8 rounded-md text-gray-400 hover:bg-white hover:text-gray-700">
                 &lt;
               </button>

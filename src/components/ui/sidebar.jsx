@@ -66,6 +66,10 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
       label: "Click Logs",
       route: "/Dashboard/reports",
     },
+    {
+      label: "View Stats",
+      route: "/Dashboard/view-states",
+    },
   ];
 
   const handleNavigate = (route) => {
@@ -92,29 +96,6 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
           showFull ? "gap-3" : "justify-center"
         }`}
       >
-        {/* {user?.company?.logoUrl ? (
-          <img
-            src={employer?.company.logoUrl}
-            alt="Logo"
-            className="w-9 h-9 rounded-xl object-cover border border-gray-200"
-          />
-        ) : (
-          <div
-            className="mt-3
-        w-9 h-9 rounded-xl
-        bg-blue-500 text-white
-        flex items-center justify-center
-        text-sm font-semibold
-      "
-          >
-            {user?.name.charAt(0).toUpperCase()}
-          </div>
-        )} */}
-        {/* {showFull && (
-          <p className="mt-3 text-sm font-semibold text-gray-900 truncate">
-            {user?.name}
-          </p>
-        )} */}
       </div>
 
       {/* Navigation */}
