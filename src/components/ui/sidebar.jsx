@@ -10,6 +10,10 @@ import {
   FileText,
   DollarSign,
   Wallet,
+  LogOut,
+  Headset,
+  CircleHelp,
+  Gift 
 } from "lucide-react";
 
 // import { useSelector } from "react-redux";
@@ -18,10 +22,23 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
   const location = useLocation();
   const [databaseOpen, setDatabaseOpen] = useState(false);
   const showFull = !isCollapsed;
+  const isOffersActive = location.pathname === "/Dashboard/current-offers";
+  const isSupportActive = location.pathname === "/Dashboard/support";
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   // const { employer } = useSelector((state) => state.getDataReducer);
   const navigate = useNavigate();
+
+
+  const handleLogout = () => {
+    localStorage.clear();
+    sessionStorage.clear();
+    navigate("/login");
+  };
+  // handle support 
+  const handleSupport = () => {
+    navigate("/Dashboard/support");
+  };
 
   const navItems = [
     {
@@ -59,6 +76,11 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
       icon: <Wallet size={18} />,
       route: "/Dashboard/billing",
     },
+    {
+      label: "Campaign Guide",
+      icon: <CircleHelp    size={18} />,
+      route: "/Dashboard/campaign-guide",
+    },
   ];
 
   const databaseSubItems = [
@@ -68,7 +90,7 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
     },
     {
       label: "View Stats",
-      route: "/Dashboard/view-states",
+      route: "/Dashboard/view-stats",
     },
   ];
 
@@ -95,11 +117,10 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
         className={`px-2 mb-0 flex items-center ${
           showFull ? "gap-3" : "justify-center"
         }`}
-      >
-      </div>
+      ></div>
 
       {/* Navigation */}
-      <nav className="flex flex-col gap-1 text-gray-700">
+      <nav className="flex flex-col gap-1 text-gray-700 flex-1">
         {navItems.map((item, index) => {
           const isActive = location.pathname === item.route;
           const isDatabase = item.label === "Traffic Logs";
@@ -193,6 +214,92 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
           );
         })}
       </nav>
+      <div className="flex flex-col">
+        <button
+  onClick={() => navigate("/Dashboard/current-offers")}
+  className={`
+    group w-full
+    flex items-center gap-3
+    px-3 py-2
+    rounded-xl
+    transition-all duration-200
+    active:scale-[0.97]
+
+    ${isOffersActive
+      ? "text-blue-600 bg-blue-50"
+      : "text-gray-800 hover:bg-gray-100"}
+  `}
+>
+  <div
+    className={`
+      w-8 h-8 flex items-center justify-center rounded-lg
+      ${isOffersActive
+        ? "bg-blue-100 text-blue-600"
+        : "bg-gray-100 text-gray-600"}
+    `}
+  >
+    <Gift size={16} />
+  </div>
+
+  {showFull && (
+    <span className="text-sm font-semibold">
+      View Offers
+    </span>
+  )}
+</button>
+        {/* SUPPORT */}
+        <button
+          onClick={handleSupport}
+          className={`
+      group w-full
+      flex items-center gap-3
+      px-3 
+      rounded-xl
+      transition-all duration-200
+      active:scale-[0.97]
+      ${
+      isSupportActive
+        ? "text-blue-600 bg-blue-50"
+        : "text-gray-800 hover:bg-gray-100"
+    }
+`}
+        >
+          <div className={`
+      w-8 h-8 flex items-center justify-center rounded-lg
+      transition-all
+      ${
+        isSupportActive
+          ? "bg-blue-100 text-blue-600"
+          : "bg-gray-100 text-gray-600 group-hover:bg-gray-200"
+      }
+    `}>
+            <Headset size={16} />
+          </div>
+
+          {showFull && <span className="text-sm font-semibold">Support</span>}
+        </button>
+
+        {/* LOGOUT */}
+        <button
+          onClick={handleLogout}
+          className="
+      group w-full
+      flex items-center gap-3
+      px-3 py-2
+      rounded-xl
+      transition-all duration-200
+      text-red-500
+      hover:bg-red-50
+      active:scale-[0.97]
+    "
+        >
+          <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-100 text-red-600 group-hover:bg-red-200">
+            <LogOut size={16} />
+          </div>
+
+          {showFull && <span className="text-sm font-semibold">Logout</span>}
+        </button>
+      </div>
     </div>
   );
 };
@@ -210,7 +317,7 @@ const Sidebar = ({ collapsed, mobileVisible, onCloseMobile }) => {
       >
         <div
           className={`
-      h-[100vh] mt-[-8vh]
+      h-[90vh] mt-[-8vh]
       bg-white backdrop-blur-2xl
       border-r border-gray-100/60
       shadow-[1px_0_0_rgba(0,0,0,0.04)]
@@ -219,7 +326,7 @@ const Sidebar = ({ collapsed, mobileVisible, onCloseMobile }) => {
       ease-[cubic-bezier(.22,.61,.36,1)]
     `}
         >
-          <div className="h-full flex mt-[10vh] flex-col justify-end">
+          <div className="h-full flex mt-[10vh] flex-col">
             <SidebarContent
               isCollapsed={collapsed && !hovered}
               mobileVisible={mobileVisible}
