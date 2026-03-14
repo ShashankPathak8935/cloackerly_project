@@ -4,10 +4,10 @@ export default function ViewStatsCards2nd() {
   // ---------------- DATA ----------------
 
   const referrers = [
-    { url: "https://bagwala.org/", count: 5 },
-    { url: "http://bagwala.org/2025/11", count: 2 },
-    { url: "http://bagwala.org/category/foodies", count: 2 },
-    { url: "https://bagwala.org/wp-admin/post.php?id=1", count: 1 },
+    { url: "https://testwala.org/", count: 5 },
+    { url: "http://testurl.org/2025/11", count: 2 },
+    { url: "http://testcheck.org/category/foodies", count: 2 },
+    { url: "https://playtoys.org/wp-admin/post.php?id=1", count: 1 },
     { url: "https://google.com", count: 1 },
     { url: "https://facebook.com", count: 1 },
   ];

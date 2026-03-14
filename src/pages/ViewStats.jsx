@@ -12,6 +12,8 @@ import {
   CartesianGrid,
   Legend,
 } from "recharts";
+import { getClickLogs,getAllCampNames } from "../api/Apis";
+import { apiFunction } from "../api/ApiFunction";
 // import { DateRangePicker } from "react-date-range"; // optional if using date picker
 import ViewStatsCards from "../pages/ViewStatsCards";
 import ViewStatsCards2nd from "./ViewStatsCards2nd";
@@ -34,9 +36,85 @@ const sampleBarData = [
 ];
 
 const ViewStats = () => {
-  const [campaign, setCampaign] = useState("wp-admin");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
+  const [campId, setCampId] = useState("");
+  const [showDropdown,setShowDropdown] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [campaignList, setCampaignList] = useState([]);
+  const [startdate, setStartdate] = useState("");
+  const [enddate, setEnddate] = useState("");
+  const [viewstatsData, setViewStatsData] = useState();
+  
+
+
+  // fetch campaigns
+    React.useEffect(() => {
+      const fetchCampaigns = async () => {
+        try {
+          const res = await apiFunction("get", getAllCampNames, null, null);
+          setCampaignList(res?.data?.data || []); // store campaigns
+        } catch (err) {
+          console.error("Error fetching campaigns:", err);
+        }
+      };
+  
+      fetchCampaigns();
+    }, []);
+
+    
+  React.useEffect(() => {
+  const handleClickOutside = () => setShowDropdown(false);
+  document.addEventListener("click", handleClickOutside);
+  return () => document.removeEventListener("click", handleClickOutside);
+}, []);
+
+// fetch data 
+const fetchData = async () => {
+  console.log("startdate", startdate)
+    // const [start, end] = dateRange;
+
+    // if (!start || !end) {
+    //   showErrorToast("Please select a date range first.");
+    //   return;
+    // }
+
+    // // Validate campaign dropdown
+    // if (!campId) {
+    //   showErrorToast("Please select a campaign.");
+    //   return;
+    // }
+
+    // const startDate = start.toISOString().split("T")[0];
+    // const endDate = end.toISOString().split("T")[0];
+
+    // setLoading(true);
+
+    try {
+      const payload = {
+        startdate,
+        enddate
+      };
+      console.log("payload", payload)
+
+      //   https://app.clockerly.io/api/v2/campaign/clicksbycamp?startdate=2025-11-01&enddate=2025-11-21&campId=14
+      const res = await apiFunction(
+        "get",
+        `${getClickLogs}?startdate=${startdate}&enddate=${enddate}&campId=${campId}`,
+        null,
+        null,
+      );
+
+      setViewStatsData(res || "");
+    } catch (err) {
+      console.error("Error fetching data:", err);
+    } finally {
+      // setLoading(false);
+    }
+  };
+
+  console.log("setViewStatsData", viewstatsData)
+
+
+  
 
   return (
     <div className="p-4 font-sans min-h-screen bg-gray-50 mt-5">
@@ -54,20 +132,58 @@ const ViewStats = () => {
       {/* Filters */}
       <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6">
         {/* Campaign */}
-        <div className="flex flex-col">
-          <label className="text-sm font-medium mb-1 text-gray-700">
-            Campaign *
-          </label>
+        <div className="flex flex-col relative"
+        onClick={(e) => e.stopPropagation()}
+        >
+     <label className="text-sm font-medium mb-1 text-gray-700">
+    Campaign *
+    </label>
 
-          <select
-            value={campaign}
-            onChange={(e) => setCampaign(e.target.value)}
-            className="border border-gray-300 bg-gray-100 rounded-md px-3 py-2 text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:bg-white"
+  {/* INPUT (Search + Selected Value) */}
+  <input
+    type="text"
+    placeholder="Search campaign..."
+    value={searchText}
+    onChange={(e) => {
+      setSearchText(e.target.value);
+      setShowDropdown(true);
+    }}
+    onFocus={() => setShowDropdown(true)}
+    className="border border-gray-300 bg-gray-100 rounded-md px-3 py-2 text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:bg-white"
+  />
+
+  {/* DROPDOWN */}
+  {showDropdown && (
+    <div className="absolute top-full mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto z-50">
+      
+      {campaignList
+        .filter((camp) =>
+          camp?.campaign_info?.campaignName
+            ?.toLowerCase()
+            .includes(searchText.toLowerCase())
+        )
+        .map((camp) => (
+          <div
+            key={camp.uid}
+            onClick={() => {
+              setCampId(camp.uid);
+              setSearchText(camp.campaign_info.campaignName);
+              setShowDropdown(false);
+            }}
+            className="px-3 py-2 text-sm hover:bg-green-50 text-left text-gray-800 cursor-pointer"
           >
-            <option value="wp-admin">wp-admin</option>
-            <option value="campaign2">Campaign 2</option>
-          </select>
+            {camp?.campaign_info?.campaignName}
+          </div>
+        ))}
+
+      {campaignList.length === 0 && (
+        <div className="px-3 py-2 text-sm text-gray-800">
+          No campaign found
         </div>
+      )}
+    </div>
+  )}
+</div>
 
         {/* Date Range */}
         <div className="flex flex-col">
@@ -79,8 +195,9 @@ const ViewStats = () => {
             {/* From Date */}
             <input
               type="date"
-              value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
+              name="startdate"
+              value={startdate}
+              onChange={(e) => setStartdate(e.target.value)}
               className="border border-gray-300 bg-gray-100 rounded-md px-3 py-2 text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:bg-white"
             />
 
@@ -89,15 +206,18 @@ const ViewStats = () => {
             {/* To Date */}
             <input
               type="date"
-              value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
+              name="enddate"
+              value={enddate}
+              onChange={(e) => setEnddate(e.target.value)}
               className="border border-gray-300 bg-gray-100 rounded-md px-3 py-2 text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:bg-white"
             />
           </div>
         </div>
 
         {/* Apply Button */}
-        <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition">
+        <button className="bg-green-600 text-white px-4 py-2 cursor-pointer rounded-md hover:bg-green-700 transition"
+        onClick={fetchData}
+        >
           Apply
         </button>
       </div>
@@ -105,19 +225,19 @@ const ViewStats = () => {
       {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-white p-4 rounded-md shadow text-center">
-          <div className="text-green-600 text-2xl font-bold">186</div>
+          <div className="text-green-600 text-2xl font-bold">{viewstatsData?.stats?.total_clicks || 0}</div>
           <div className="text-gray-500 text-sm">Total Clicks</div>
         </div>
         <div className="bg-white p-4 rounded-md shadow text-center">
-          <div className="text-gray-800 text-2xl font-bold">2</div>
+          <div className="text-gray-800 text-2xl font-bold">{viewstatsData?.stats?.vpn_clicks || 10}</div>
           <div className="text-gray-500 text-sm">VPN Clicks</div>
         </div>
         <div className="bg-white p-4 rounded-md shadow text-center">
-          <div className="text-green-600 text-2xl font-bold">144</div>
+          <div className="text-green-600 text-2xl font-bold">{viewstatsData?.stats?.unique_clicks || 0}</div>
           <div className="text-gray-500 text-sm">Unique Clicks</div>
         </div>
         <div className="bg-white p-4 rounded-md shadow text-center">
-          <div className="text-red-600 text-2xl font-bold">5</div>
+          <div className="text-red-600 text-2xl font-bold">{viewstatsData?.stats?.high_risk_clicks || 0}</div>
           <div className="text-gray-500 text-sm">High Risk Clicks</div>
         </div>
       </div>

@@ -220,7 +220,7 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
   className={`
     group w-full
     flex items-center gap-3
-    px-3 py-2
+    px-3 py-2 cursor-pointer
     rounded-xl
     transition-all duration-200
     active:scale-[0.97]
@@ -253,7 +253,7 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
           className={`
       group w-full
       flex items-center gap-3
-      px-3 
+      px-3 cursor-pointer
       rounded-xl
       transition-all duration-200
       active:scale-[0.97]
@@ -285,7 +285,7 @@ const SidebarContent = ({ isCollapsed, mobileVisible, onCloseMobile }) => {
           className="
       group w-full
       flex items-center gap-3
-      px-3 py-2
+      px-3 py-2 cursor-pointer
       rounded-xl
       transition-all duration-200
       text-red-500

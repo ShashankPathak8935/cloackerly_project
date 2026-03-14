@@ -1,9 +1,47 @@
 import { ArrowUpRight, Sparkles, Clock, BadgeCheck,Crown, Calendar, CheckCircle  } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getUpdatedPlan} from "../api/Apis";
+import { apiFunction } from "../api/ApiFunction";
 
 export default function Offers() {
+  const navigate = useNavigate();
+    const [planName, setPlanName] = useState();
+    const [planStatus, setPlanStatus] = useState();
   const currentPlan = "Starter";
-  const upgradePlan = "Pro";
+
+
+
+    // Example plan data (replace later with API)
+    const fetchUpdatedPlan = async () => {
+      try {
+        const response = await apiFunction("get", getUpdatedPlan, null, null);
+  
+        const plan = response?.data?.data;
+        console.log("plan",plan);
+  
+        if (plan) {
+          localStorage.setItem("plan", JSON.stringify(plan));
+          setPlanName(plan?.Plan?.name);
+          setPlanStatus(plan?.status);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    console.log("setPlanName planStatus", planName, planStatus)
+
+
+
+
+
+
+  // fetch plan
+  useEffect(() => {
+    fetchUpdatedPlan();
+  }, []);
+
 
 
 
@@ -11,19 +49,19 @@ export default function Offers() {
 
 const [timeLeft, setTimeLeft] = useState(OFFER_DURATION);
 
-useEffect(() => {
-  const timer = setInterval(() => {
-    setTimeLeft((prev) => {
-      if (prev <= 1000) {
-        clearInterval(timer);
-        return 0;
-      }
-      return prev - 1000;
-    });
-  }, 1000);
+// useEffect(() => {
+//   const timer = setInterval(() => {
+//     setTimeLeft((prev) => {
+//       if (prev <= 1000) {
+//         clearInterval(timer);
+//         return 0;
+//       }
+//       return prev - 1000;
+//     });
+//   }, 1000);
 
-  return () => clearInterval(timer);
-}, []);
+//   return () => clearInterval(timer);
+// }, []);
 
 
 
@@ -37,6 +75,12 @@ const formatTime = (ms) => {
   return `${String(hours).padStart(2, "0")}:${String(
     minutes
   ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+};
+
+const planDetails = {
+  "Starter Monthly": "1 Campaign • 10,000 clicks/day",
+  "Pro Monthly": "10 Campaigns • 10,000 clicks/day",
+  "Enterprise Monthly": "Unlimited Campaigns • Unlimited clicks",
 };
 
   return (
@@ -68,15 +112,6 @@ const formatTime = (ms) => {
         unlimited clicks tracking and realtime analytics with a
         special discount.
       </p>
-
-      {/* COUNTDOWN */}
-{/* <div className="flex items-center gap-2 bg-white/20 w-fit px-3 py-1.5 rounded-lg text-xs font-semibold">
-  <Clock size={14} />
-  Deal ends in
-  <span className="tracking-widest ml-1">
-    {formatTime(timeLeft)}
-  </span>
-</div> */}
     </div>
      <div className="flex flex-col items-start md:items-end gap-2">
 
@@ -105,7 +140,9 @@ const formatTime = (ms) => {
     {/* RIGHT CTA */}
     <div className="flex flex-col items-start md:items-end gap-3">
 
-      <button className="bg-white text-indigo-600 px-6 py-2.5 rounded-lg font-semibold hover:scale-105 transition shadow">
+      <button className="bg-white text-indigo-600 px-6 py-2.5 rounded-lg font-semibold hover:scale-105 transition shadow"
+      onClick={() => navigate("/Dashboard/pricing")}
+      >
         Upgrade Now
       </button>
 
@@ -132,7 +169,7 @@ const formatTime = (ms) => {
     </div>
 
     <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-semibold">
-      Active
+      {planStatus}
     </span>
 
   </div>
@@ -143,11 +180,11 @@ const formatTime = (ms) => {
     <div className="space-y-1">
 
       <p className="text-lg font-semibold text-gray-900">
-        {currentPlan} Plan
+        {planName} Plan
       </p>
 
       <p className="text-sm text-gray-500">
-        1 Campaign • 10,000 clicks/day
+       {planDetails[planName] || "Plan details unavailable"}
       </p>
 
       <p className="text-xs text-gray-400">
@@ -162,7 +199,7 @@ const formatTime = (ms) => {
       <Calendar size={16} />
 
       <span>
-        Expires in <span className="font-semibold">15 days</span>
+        Expires in <span className="font-semibold">Few days</span>
       </span>
 
     </div>
@@ -216,7 +253,9 @@ const formatTime = (ms) => {
         </li>
       </ul>
 
-      <button className="mt-6 w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 transition flex items-center justify-center gap-2">
+      <button className="mt-6 w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 transition flex items-center justify-center gap-2"
+      onClick={() => navigate("/Dashboard/pricing")}
+      >
         Choose Plan
         <ArrowUpRight size={16}/>
       </button>
@@ -266,7 +305,9 @@ const formatTime = (ms) => {
 
       </ul>
 
-      <button className="mt-6 w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 transition flex items-center justify-center gap-2">
+      <button className="mt-6 w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 transition flex items-center justify-center gap-2"
+      onClick={() => navigate("/Dashboard/pricing")}
+      >
         Choose Plan
         <ArrowUpRight size={16}/>
       </button>
@@ -321,7 +362,10 @@ const formatTime = (ms) => {
 
       </ul>
 
-      <button className="mt-6 w-full bg-white text-indigo-600 py-2.5 rounded-lg hover:scale-105 transition flex items-center justify-center gap-2">
+      <button className="mt-6 w-full bg-white text-indigo-600 py-2.5 rounded-lg hover:scale-105 transition flex items-center justify-center gap-2
+      "
+      onClick={() => navigate("/Dashboard/pricing")}
+      >
         Choose Plan
         <ArrowUpRight size={16}/>
       </button>
@@ -401,7 +445,9 @@ const formatTime = (ms) => {
  
 
   {/* BUTTON */}
-  <button className="mt-6 w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 transition">
+  <button className="mt-6 w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 transition"
+  onClick={() => navigate("/Dashboard/pricing")}
+  >
     Upgrade to Pro
   </button>
 
@@ -468,7 +514,9 @@ const formatTime = (ms) => {
   </div>
 
   {/* BUTTON */}
-  <button className="mt-6 w-60 bg-white text-indigo-600 py-2.5 rounded-lg hover:scale-105 transition font-semibold">
+  <button className="mt-6 w-60 bg-white text-indigo-600 py-2.5 rounded-lg hover:scale-105 transition font-semibold"
+  onClick={() => navigate("/Dashboard/pricing")}
+  >
     Upgrade to Enterprise
   </button>
 
@@ -536,7 +584,9 @@ const formatTime = (ms) => {
         active:scale-95
         transition-all
         shadow-sm
-      ">
+      "
+      onClick={() => navigate("/Dashboard/pricing")}
+      >
         Claim Deal →
       </button>
 
