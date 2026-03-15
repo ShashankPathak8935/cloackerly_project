@@ -58,19 +58,19 @@ export default function Offers() {
 
 const [timeLeft, setTimeLeft] = useState(OFFER_DURATION);
 
-// useEffect(() => {
-//   const timer = setInterval(() => {
-//     setTimeLeft((prev) => {
-//       if (prev <= 1000) {
-//         clearInterval(timer);
-//         return 0;
-//       }
-//       return prev - 1000;
-//     });
-//   }, 1000);
+useEffect(() => {
+  const timer = setInterval(() => {
+    setTimeLeft((prev) => {
+      if (prev <= 1000) {
+        clearInterval(timer);
+        return 0;
+      }
+      return prev - 1000;
+    });
+  }, 1000);
 
-//   return () => clearInterval(timer);
-// }, []);
+  return () => clearInterval(timer);
+}, []);
 
 
 
