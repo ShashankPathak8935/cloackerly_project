@@ -324,16 +324,16 @@ export const SubscriptionView = () => {
 
           <tbody>
             <tr>
-              <td className="px-6 py-4 text-gray-900 font-medium">
+              <td className="px-6 py-4 text-left text-gray-900 font-medium">
                 {details?.isActive ? "Active" : "Inactive"}
               </td>
-              <td className="px-6 py-4 text-gray-900">
+              <td className="px-6 py-4 text-left text-gray-900">
                 {details?.startDate?.split("T")[0] || "Not Available"}
               </td>
-              <td className="px-6 py-4 text-gray-900">
+              <td className="px-6 py-4 text-left text-gray-900">
                 {details?.endDate?.split("T")[0] || "Not Available"}
               </td>
-              <td className="px-6 py-4 text-gray-900">
+              <td className="px-6 py-4 text-left text-gray-900">
                 {details?.endDate?.split("T")[0] || "Not Available"}
               </td>
             </tr>
@@ -360,13 +360,13 @@ export const SubscriptionView = () => {
 
           <tbody>
             <tr className="border-b">
-              <td className="px-6 py-3 text-gray-900 align-middle">
+              <td className="px-6 py-3 text-left text-gray-900 align-middle">
                 {details?.Plan?.name?.split(" ")[1] || "Not Available"}
               </td>
-              <td className="px-6 py-3 text-gray-900 font-medium align-middle">
+              <td className="px-6 py-3 text-left text-gray-900 font-medium align-middle">
                 {details?.Plan?.name || "Not Available"}
               </td>
-              <td className="px-6 py-3 text-gray-900 align-middle">
+              <td className="px-6 py-3 text-left text-gray-900 align-middle">
                 {details?.Plan?.price || "Not Available"}
               </td>
             </tr>

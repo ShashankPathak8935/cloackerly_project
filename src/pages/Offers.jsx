@@ -8,6 +8,7 @@ export default function Offers() {
   const navigate = useNavigate();
     const [planName, setPlanName] = useState();
     const [planStatus, setPlanStatus] = useState();
+    const [planDateData, setPlanDateData] = useState();
   const currentPlan = "Starter";
 
 
@@ -24,13 +25,21 @@ export default function Offers() {
           localStorage.setItem("plan", JSON.stringify(plan));
           setPlanName(plan?.Plan?.name);
           setPlanStatus(plan?.status);
+          setPlanDateData(plan)
+
         }
       } catch (err) {
         console.log(err);
       }
     };
 
-    console.log("setPlanName planStatus", planName, planStatus)
+    const today = new Date();
+    const endDate = new Date(planDateData?.endDate);
+
+    const diffTime = endDate - today;
+    const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    console.log("plan data", planDateData)
 
 
 

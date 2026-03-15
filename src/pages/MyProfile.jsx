@@ -98,12 +98,12 @@ const MyProfile = () => {
                 onClick={() => navigate("/Dashboard/allStats")}
               />
 
-              <SidebarItem
+              {/* <SidebarItem
                 title="Orders"
                 icon={<FaBox />}
                 active={activeTab === "orders"}
                 onClick={() => setActiveTab("orders")}
-              />
+              /> */}
 
               <SidebarItem
                 title="Plan & Billing"
@@ -130,7 +130,7 @@ const MyProfile = () => {
             {/* LOGOUT */}
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 text-sm text-slate-400 hover:text-red-500 transition pt-3 border-t border-slate-200"
+              className="flex items-center cursor-pointer gap-2 text-sm text-slate-400 hover:text-red-500 transition pt-3 border-t border-slate-200"
             >
               <FaSignOutAlt /> Sign out
             </button>

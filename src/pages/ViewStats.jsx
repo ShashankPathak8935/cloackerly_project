@@ -12,7 +12,7 @@ import {
   CartesianGrid,
   Legend,
 } from "recharts";
-import { getClickLogs,getAllCampNames } from "../api/Apis";
+import { getClickLogs,getAllCampNames,getClickIp } from "../api/Apis";
 import { apiFunction } from "../api/ApiFunction";
 // import { DateRangePicker } from "react-date-range"; // optional if using date picker
 import ViewStatsCards from "../pages/ViewStatsCards";
@@ -42,7 +42,8 @@ const ViewStats = () => {
   const [campaignList, setCampaignList] = useState([]);
   const [startdate, setStartdate] = useState("");
   const [enddate, setEnddate] = useState("");
-  const [viewstatsData, setViewStatsData] = useState();
+  const [viewstatsData, setViewStatsData] = useState(null);
+  const [clickDetailsData, setClickDetailsData] = useState(null);
   
 
 
@@ -94,16 +95,36 @@ const fetchData = async () => {
         enddate
       };
       console.log("payload", payload)
-
-      //   https://app.clockerly.io/api/v2/campaign/clicksbycamp?startdate=2025-11-01&enddate=2025-11-21&campId=14
-      const res = await apiFunction(
+      const [statsRes, detailsRes] = await Promise.all([
+      apiFunction(
         "get",
         `${getClickLogs}?startdate=${startdate}&enddate=${enddate}&campId=${campId}`,
         null,
-        null,
-      );
+        null
+      ),
 
-      setViewStatsData(res || "");
+      apiFunction(
+        "get",
+        `${getClickIp}?startdate=${startdate}&enddate=${enddate}&campId=${campId}`,
+        null,
+        null
+      )
+    ]);
+
+     setViewStatsData(statsRes?.data?.data || "");
+
+    // second API data
+    setClickDetailsData(detailsRes?.data?.data || "");
+
+      //   https://app.clockerly.io/api/v2/campaign/clicksbycamp?startdate=2025-11-01&enddate=2025-11-21&campId=14
+      // const res = await apiFunction(
+      //   "get",
+      //   `${getClickLogs}?startdate=${startdate}&enddate=${enddate}&campId=${campId}`,
+      //   null,
+      //   null,
+      // );
+
+      // setViewStatsData(res || "");
     } catch (err) {
       console.error("Error fetching data:", err);
     } finally {
@@ -111,7 +132,8 @@ const fetchData = async () => {
     }
   };
 
-  console.log("setViewStatsData", viewstatsData)
+  console.log("setViewStatsData", viewstatsData);
+  console.log("setClickDetailsData", clickDetailsData);
 
 
   
@@ -287,7 +309,6 @@ const fetchData = async () => {
             </PieChart>
           </ResponsiveContainer>
 
-          {/* ✅ Custom Legend */}
           <div className="flex flex-wrap justify-center gap-6 mt-4">
             {samplePieData.map((item, index) => {
               const total = samplePieData.reduce(
@@ -340,10 +361,10 @@ const fetchData = async () => {
         </div>
       </div>
       <div className="mt-3">
-        <ViewStatsCards />
+        <ViewStatsCards clickDetailsData={clickDetailsData}/>
       </div>
       <div className="mt-3">
-        <ViewStatsCards2nd/>
+        <ViewStatsCards2nd clickDetailsData={clickDetailsData}/>
       </div>
     </div>
   );

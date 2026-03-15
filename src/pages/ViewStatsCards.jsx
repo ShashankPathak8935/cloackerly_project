@@ -7,31 +7,29 @@ import {
   Laptop,
 } from "lucide-react";
 
-export default function ViewStatsCards() {
+export default function ViewStatsCards({clickDetailsData}) {
   // -------- SAMPLE DATA --------
-  const topIPs = [
-    { ip: "5.9.120.8", count: 21 },
-    { ip: "2a03:2880:f80e:48::", count: 2 },
-    { ip: "47.82.11.36", count: 2 },
-    { ip: "176.31.139.10", count: 2 },
-    { ip: "2a03:2880:f800:d::", count: 2 },
-    { ip: "178.17.58.159", count: 2 },
-    { ip: "192.168.1.1", count: 1 },
-    { ip: "10.0.0.2", count: 1 },
-  ];
 
-  const topOS = [
-    { name: "Unknown", count: 164, icon: <HelpCircle size={16} /> },
-    { name: "OS X", count: 11, icon: <Apple size={16} /> },
-    { name: "Windows", count: 6, icon: <Laptop size={16} /> },
-    { name: "iOS", count: 5, icon: <Smartphone size={16} /> },
-  ];
+const osIcons = {
+  "Windows": <Laptop size={16} />,
+  "OS X": <Apple size={16} />,
+  "Mac OS": <Apple size={16} />,
+  "iOS": <Smartphone size={16} />,
+  "Android": <Smartphone size={16} />,
+  "Unknown": <HelpCircle size={16} />,
+};
 
-  const devices = [
-    { name: "robot", count: 166, icon: <Bot size={16} /> },
-    { name: "desktop", count: 15, icon: <Monitor size={16} /> },
-    { name: "phone", count: 5, icon: <Smartphone size={16} /> },
-  ];
+const deviceIcon = {
+  "robot": <Bot size={16} />,
+  "desktop": <Monitor size={16} />,
+  "phone":<Smartphone size={16} />
+}
+
+  // const devices = [
+  //   { name: "robot", count: 166, icon: <Bot size={16} /> },
+  //   { name: "desktop", count: 15, icon: <Monitor size={16} /> },
+  //   { name: "phone", count: 5, icon: <Smartphone size={16} /> },
+  // ];
 
   // -------- COMMON CARD STYLE --------
   const cardStyle =
@@ -44,9 +42,8 @@ export default function ViewStatsCards() {
   <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
     <h3 className="text-gray-800 font-semibold mb-4">Top IPs</h3>
 
-    {/* Fixed height + Scroll */}
     <div className="h-[220px] overflow-y-auto pr-2 space-y-2">
-      {topIPs.map((item, i) => (
+      {clickDetailsData?.data?.ipClicks?.map((item, i) => (
         <div
           key={i}
           className="
@@ -58,11 +55,11 @@ export default function ViewStatsCards() {
           "
         >
           <span className="text-sm text-gray-800 truncate">
-            {item.ip}
+            {item?.ip}
           </span>
 
           <span className="text-green-600 font-semibold text-sm">
-            {item.count}
+            {item?.ip_click_count}
           </span>
         </div>
       ))}
@@ -74,7 +71,7 @@ export default function ViewStatsCards() {
     <h3 className="text-gray-800 font-semibold mb-4">Top OS</h3>
 
     <div className="space-y-2">
-      {topOS.map((item, i) => (
+      {clickDetailsData?.data?.clickOs?.map((item, i) => (
         <div
           key={i}
           className="
@@ -87,15 +84,15 @@ export default function ViewStatsCards() {
         >
           <div className="flex items-center gap-3 text-sm text-gray-700">
             <span className="text-gray-600">
-              {item.icon}
+              {osIcons[item?.os] || <HelpCircle size={16} />}
             </span>
             <span className="font-medium">
-              {item.name}
+              {item?.os}
             </span>
           </div>
 
           <span className="text-green-600 font-semibold text-sm">
-            {item.count}
+            {item?.os_click_count}
           </span>
         </div>
       ))}
@@ -109,7 +106,7 @@ export default function ViewStatsCards() {
     </h3>
 
     <div className="space-y-2">
-      {devices.map((item, i) => (
+      {clickDetailsData?.data?.deviceClicks?.map((item, i) => (
         <div
           key={i}
           className="
@@ -123,17 +120,17 @@ export default function ViewStatsCards() {
           {/* LEFT */}
           <div className="flex items-center gap-3 text-sm text-gray-700">
             <span className="text-gray-600">
-              {item.icon}
+              {deviceIcon[item?.os] || <HelpCircle size={16} />}
             </span>
 
             <span className="font-medium">
-              {item.name}
+              {item.device || "N/A"}
             </span>
           </div>
 
           {/* COUNT */}
           <span className="text-green-600 font-semibold text-sm">
-            {item.count}
+            {item.device_click_count || 0}
           </span>
         </div>
       ))}

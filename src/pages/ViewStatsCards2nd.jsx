@@ -1,6 +1,6 @@
 import { Link, Monitor, Smartphone, Tablet, Apple, Chrome } from "lucide-react";
 
-export default function ViewStatsCards2nd() {
+export default function ViewStatsCards2nd({clickDetailsData}) {
   // ---------------- DATA ----------------
 
   const referrers = [
@@ -77,7 +77,7 @@ export default function ViewStatsCards2nd() {
           <h3 className="text-gray-800 font-semibold mb-3">Top Referrers</h3>
 
           <div className="h-[220px] overflow-y-auto space-y-2 pr-2">
-            {referrers.map((item, i) => (
+            {clickDetailsData?.data?.data?.topReferrers?.map((item, i) => (
               <div
                 key={i}
                 className="flex justify-between items-center bg-gray-100 px-3 py-2 rounded-lg"
@@ -85,12 +85,12 @@ export default function ViewStatsCards2nd() {
                 <div className="flex items-center gap-2 text-sm text-blue-600 truncate">
                   <Link size={14} />
                   <a href={item.url} target="_blank">
-                    {item.url}
+                    {item.url || "url not found"}
                   </a>
                 </div>
 
                 <span className="text-green-700 font-semibold text-sm">
-                  {item.count}
+                  {item.url_count}
                 </span>
               </div>
             ))}
@@ -179,7 +179,7 @@ export default function ViewStatsCards2nd() {
     </h3>
 
     <div className="h-[220px] overflow-y-auto space-y-2 pr-1">
-      {ispData.map((item, index) => (
+      {clickDetailsData?.data?.topIsp?.map((item, index) => (
         <div
           key={index}
           className="
@@ -192,11 +192,11 @@ export default function ViewStatsCards2nd() {
           "
         >
           <span className="text-sm text-gray-700 truncate">
-            {item.name}
+            {item?.isp || "N/A"}
           </span>
 
           <span className="text-sm font-semibold text-emerald-600">
-            {item.count}
+            {item?.isp_click_count || ""}
           </span>
         </div>
       ))}

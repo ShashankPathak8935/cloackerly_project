@@ -264,7 +264,7 @@ const Header = ({ onMenuClick }) => {
                       className="
                     flex items-center w-full px-4 py-3
                     text-sm text-gray-700
-                    hover:bg-blue-50 transition
+                    hover:bg-blue-50 transition cursor-pointer
                   "
                     >
                       <item.icon className="w-4 h-4 mr-3 text-blue-500" />
@@ -279,7 +279,7 @@ const Header = ({ onMenuClick }) => {
                     className="
                   flex items-center w-full px-4 py-3
                   text-sm text-red-600
-                  hover:bg-red-50 transition
+                  hover:bg-red-50 transition cursor-pointer
                 "
                   >
                     <LogOut className="w-4 h-4 mr-3" />
